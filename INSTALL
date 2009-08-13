@@ -1,0 +1,21 @@
+Author: Brielle Bruns <bruns@2mbit.com>
+URL: http://www.sosdg.org/freestuff/firewall
+License: GPLv3
+
+Installation is easy.  Copy this directory to /etc and name
+it firewall-sosdg.  Edit options.default, rename to options,
+edit postrun and add anything you want to run after the firewall
+is up (such as fail2ban), edit tweaks if needed, edit port-forwards
+if needed as well.
+
+Then, its a matter of running /etc/firewall-sosdg/rc.firewall and
+your firewall is active until next reboot or the tables are flushed.
+If you are stupid and didn't edit options... Well, you will be locked
+out of your own system from the network.
+
+Hope you read this before running rc.firewall!
+
+This is a script in progress, and is nowhere near complete.  If you
+find obvious bugs or have a patch to add new features/remove bugs,
+please send them to me.
+
