@@ -86,9 +86,10 @@ if [ $ROUTING ]; then
 		FWINT2=${ROUTE[2]}
 		FWIP1=${ROUTE[1]}
 		FWIP2=${ROUTE[3]}
-		echo 1 > /proc/sys/net/ipv4/conf/{$FWINT1,$FWINT2}/forwarding
-		$IPTABLES -A FORWARD -i $FWINT1 -o $FWINT1 \
-			-s $FWIP1 -d $FWIP2} -j ACCEPT
+		echo 1 > /proc/sys/net/ipv4/conf/$FWINT1/forwarding
+		echo 1 > /proc/sys/net/ipv4/conf/$FWINT2/forwarding
+		$IPTABLES -A FORWARD -i $FWINT1 -o $FWINT2 \
+			-s $FWIP1 -d $FWIP2 -j ACCEPT
 		if [ ${ROUTE[4]} == "1" ]; then
 			echo -n "$FWINT1:$FWIP1}<->$FWINT1:$FWIP2} "
  			$IPTABLES -A FORWARD -o $FWINT1 -i $FWINT2 \
