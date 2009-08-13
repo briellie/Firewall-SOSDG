@@ -78,8 +78,9 @@ if [ $CONNTRACK ]; then
 	done
 fi
 
+echo -n "Adding route: "
+
 if [ $ROUTING ]; then
-	echo -n "Adding route: "
 	for i in `grep -v "\#" $ROUTING`; do
 		ROUTE=( ${i//:/ } )
 		FWINT1=${ROUTE[0]}
@@ -91,14 +92,16 @@ if [ $ROUTING ]; then
 		$IPTABLES -A FORWARD -i $FWINT1 -o $FWINT2 \
 			-s $FWIP1 -d $FWIP2 -j ACCEPT
 		if [ ${ROUTE[4]} == "1" ]; then
-			echo -n "$FWINT1:$FWIP1}<->$FWINT1:$FWIP2} "
+			echo -n "$FWINT1:$FWIP1<->$FWINT2:$FWIP2} "
  			$IPTABLES -A FORWARD -o $FWINT1 -i $FWINT2 \
 				-d $FWIP1 -s $FWIP2 -j ACCEPT
 		else
-			echo -n "$FWINT1:$FWIP1}->$FWINT1:$FWIP2} "
+			echo -n "$FWINT1:$FWIP1->$FWINT2:$FWIP2} "
 	fi
 	done
 fi
+
+echo -ne "\n"
 
 if [ $PORTFW ] && [ $NAT ]; then
 	for i in `grep -v "\#" $PORTFW`; do
