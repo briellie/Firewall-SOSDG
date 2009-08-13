@@ -1,33 +1,78 @@
-# Comment out the following to disable features
-IPTABLES=/sbin/iptables
-IP6TABLES=/sbin/ip6tables
+# This is for testing purposes.
+IPTABLES=/bin/true
+IP6TABLES=/bin/true
 
+# Uncomment below to actually activate firewall
+#IPTABLES=/sbin/iptables
+#IP6TABLES=/sbin/ip6tables
+
+
+# I'm trying to make this config as simple as possible.  Comment out
+# options you don't want to use, uncomment them to use them.
+
+# Do we want NAT/Conntrack/Forward features?
 NAT=1
 CONNTRACK=1
 FORWARD=1
+
+# Blocking incoming connections by default?
 BLOCKINCOMING=1
+
+# Clamp MSS, useful on DSL/VPN links
 #CLAMPMSS=ppp0
 
+# Port forwardings, requires NAT
+PORTFW=$BASEDIR/port-forwards
 
-#IPV6
-IPV6=1
-#IPV6FORWARD=1
-IPV6BLOCKINCOMING=1
-#IPV6ROUTEDCLIENTBLOCK=1
-#IPV6INT=he-ipv6
-
-#================
+# TCP/UDP/Protocol to allow
 TCPPORTS="20 21 22 53 80 113 123 443"
 UDPPORTS="53"
+
+# common protocols to allow include ipsec, gre, and ipv6
+ALLOWEDPROTO="41 47 50 51"
+
+# IPs that are allowed to bypass firewall
 TRUSTEDIP="127.0.0.1"
+
+# Don't track these IPs, useful in some occasions.  Don't
+# use otherwise.
 DONTTRACK="127.0.0.1"
+
+# IP range(s) to forward
 FORWARDRANGE="192.168.1.0/24"
+
+# IP ranges(s) to NAT using SNAT.
 NATRANGE="192.168.1.0/24"
+
+# External IP and interface for SNAT
 NATEXTIP="172.16.1.1"
 NATEXTIF="eth0"
-ALLOWEDPROTO="41 47 50 51"
-#================
+
+
+# IPv6 related features.  Commenting out IPV6 variable disables ALL
+# IPv6 related items
+IPV6=1
+
+# IPv6 Forwarding
+#IPV6FORWARD=1
+
+# Default block all incoming ipv6 connections?
+IPV6BLOCKINCOMING=1
+
+# Special case for routers that have ipv6 clients behind them.
+# Useful if clients do not have proper ipv6 firewalls.
+#IPV6ROUTEDCLIENTBLOCK=1
+
+# Interface IPv6 comes in on (either tunnel or real network interface)
+#IPV6INT=he-ipv6
+
+# Trusted IPv6 ranges
 IPV6TRUSTED="::1"
+
+# Allowed incoming IPv6 ports (for now, use $TCPPORTS and $UDPPORTS to
+# have same for both ipv4 and ipv6)
 IPV6TCP=$TCPPORTS
 IPV6UDP=$UDPPORTS
+
+# IPv6 range to forward
 #IPV6FORWARDRANGE=""

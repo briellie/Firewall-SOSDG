@@ -2,10 +2,10 @@
 # v0.2
 # By Brielle Bruns <bruns@2mbit.com>
 # URL: http://www.sosdg.org
-# License: GPLv2
+# License: GPLv3
 
 BASEDIR=/etc/sosdg-firewall
-
+#BASEDIR=`pwd`
 
 . $BASEDIR/options
 
@@ -83,6 +83,20 @@ if [ $CONNTRACK ]; then
 		$IPTABLES -A FORWARD -d $i -j ACCEPT
 	done
 fi
+
+if [ $PORTFW ] && [ $NAT ]; then
+	for i in `grep -v "\#" $PORTFW`; do
+		PORTADD=( ${i//:/ } )
+		echo "Adding port forward for ext port ${PORTADD[0]}/${PORTADD[1]} to ${PORTADD[2]}:${PORTADD[3]}"
+		$IPTABLES -A PREROUTING -t nat -i $NATEXTIF -p ${PORTADD[1]} \
+			--dport ${PORTADD[0]} -j DNAT --to \
+			${PORTADD[2]}:${PORTADD[3]}
+		$IPTABLES -A INPUT -p ${PORTADD[1]} -m state --state NEW \
+			--dport ${PORTADD[0]} -i $NATEXTIF -j ACCEPT
+
+	done
+fi
+
 
 if [ $NAT ]; then
 	for i in $NATRANGE; do
