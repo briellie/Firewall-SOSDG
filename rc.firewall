@@ -1,0 +1,158 @@
+#/bin/bash
+# v0.2
+# By Brielle Bruns <bruns@2mbit.com>
+# URL: http://www.sosdg.org
+# License: GPLv2
+
+BASEDIR=/etc/sosdg-firewall
+
+
+. $BASEDIR/options
+
+$IPTABLES --flush &>/dev/null
+$IPTABLES -F OUTPUT &>/dev/null
+$IPTABLES -F PREROUTING &>/dev/null
+$IPTABLES -F POSTROUTING &>/dev/null
+if [ $NAT ]; then
+	$IPTABLES -F -t nat &>/dev/null
+fi
+$IPTABLES -F -t raw &>/dev/null
+
+$IPTABLES -A INPUT -i lo -j ACCEPT
+$IPTABLES -A OUTPUT -o lo -j ACCEPT
+
+echo -n "Adding trusted IP: "
+
+for i in $TRUSTEDIP; do
+	echo -n "$i "
+	$IPTABLES -A INPUT -s $i -j ACCEPT
+	$IPTABLES -A OUTPUT -d $i -j ACCEPT
+done
+echo -ne "\n"
+
+if [ $CLAMPMSS ]; then
+	$IPTABLES -t mangle -o $CLAMPMSS -A FORWARD -p tcp \
+        	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
+        	-j TCPMSS --clamp-mss-to-pmtu
+
+	$IPTABLES -t mangle -o $CLAMPMSS -A OUTPUT -p tcp \
+        	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
+        	-j TCPMSS --clamp-mss-to-pmtu
+fi
+
+$IPTABLES -A INPUT -j DROP -p udp --dport domain -m u32 --u32 \
+"0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
+
+echo -n "Adding allowed port: "
+
+for i in $TCPPORTS; do
+	echo -n "TCP/$i "
+	$IPTABLES -A INPUT -p tcp --dport $i -j ACCEPT
+done
+
+for i in $UDPPORTS; do
+	echo -n "UDP/$i "
+	#$IPTABLES -A INPUT -p udp --dport $i -j ACCEPT
+	$IPTABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
+	$IPTABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
+done
+echo -en "\n"
+
+echo -n "Adding allowed protocols: "
+
+for i in $ALLOWEDPROTO; do
+	echo -n "$i "
+	$IPTABLES -A INPUT -p $i -j ACCEPT
+	$IPTABLES -A OUTPUT -p $i -j ACCEPT
+done
+echo -en "\n"
+
+
+if [ $CONNTRACK ]; then
+	for i in $DONTTRACK; do
+		$IPTABLES -t raw -I PREROUTING -s $i -j NOTRACK
+		$IPTABLES -t raw -I PREROUTING -d $i -j NOTRACK
+		$IPTABLES -t raw -I OUTPUT -s $i -j NOTRACK
+		$IPTABLES -t raw -I OUTPUT -d $i -j NOTRACK
+	done
+fi
+
+if [ $CONNTRACK ]; then
+	for i in $FORWARDRANGE; do
+		$IPTABLES -A FORWARD -s $i -j ACCEPT
+		$IPTABLES -A FORWARD -d $i -j ACCEPT
+	done
+fi
+
+if [ $NAT ]; then
+	for i in $NATRANGE; do
+		$IPTABLES -A POSTROUTING -t nat -s $i -o $NATEXTIF -j SNAT --to-source $NATEXTIP
+	done
+fi
+
+$IPTABLES --policy INPUT ACCEPT
+$IPTABLES --policy OUTPUT ACCEPT
+$IPTABLES --policy FORWARD DROP
+
+if [ $BLOCKINCOMING ]; then
+		$IPTABLES -A INPUT -p tcp --syn -j DROP
+		$IPTABLES -A INPUT -p udp -j DROP
+fi
+
+
+#================[IPv6]================
+if [ $IPV6 ]; then
+	$IP6TABLES --flush &>/dev/null
+	$IP6TABLES -F OUTPUT &>/dev/null
+	$IP6TABLES -F PREROUTING &>/dev/null
+	$IP6TABLES -F POSTROUTING &>/dev/null
+
+	echo -n "Adding trusted IPv6: "
+
+	$IP6TABLES -A INPUT -i lo -j ACCEPT
+	$IP6TABLES -A OUTPUT -o lo -j ACCEPT
+
+	for i in $IPV6TRUSTED; do
+		echo -n "$i "
+		$IP6TABLES -A INPUT -s $i -j ACCEPT
+		$IP6TABLES -A OUTPUT -d $i -j ACCEPT
+	done
+	echo -ne "\n"
+
+	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
+		$IP6TABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+		$IP6TABLES -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+		$IP6TABLES -A FORWARD -i $IPV6INT -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -i $IPV6INT -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP
+		$IP6TABLES -A FORWARD -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP
+	fi
+	
+	echo -n "Adding allowed IPv6 port: "
+
+	for i in $IPV6TCP; do
+		echo -n "TCP/$i "
+		$IP6TABLES -A INPUT -p tcp --dport $i -j ACCEPT
+	done
+
+	for i in $IPV6UDP; do
+		echo -n "UDP/$i "
+		$IP6TABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
+		$IP6TABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
+	done
+	echo -en "\n"
+
+	if [ $IPV6FORWARDRANGE ]; then
+		for i in $IPV6FORWARDRANGE; do
+			$IP6TABLES -A FORWARD -s $i -j ACCEPT
+			$IP6TABLES -A FORWARD -d $i -j ACCEPT
+		done
+	fi
+	
+	if [ $IPV6BLOCKINCOMING ]; then
+		$IP6TABLES -A INPUT -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -p udp -j DROP
+	fi
+fi
+
+$BASEDIR/postrun
