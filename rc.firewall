@@ -39,6 +39,7 @@ if [ $CLAMPMSS ]; then
         	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
         	-j TCPMSS --clamp-mss-to-pmtu
 fi
+echo -en "\n"
 
 $IPTABLES -A INPUT -j DROP -p udp --dport domain -m u32 --u32 \
 "0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
@@ -81,14 +82,15 @@ if [ $ROUTING ]; then
 	echo -n "Adding route: "
 	for i in `grep -v "\#" $ROUTING`; do
 		ROUTE=( ${i//:/ } )
+		echo 1 > /proc/sys/net/ipv4/conf/{${ROUTE[0]},${ROUTE[2]}}/forwarding
 		$IPTABLES -A FORWARD -i ${ROUTE[0]} -o ${ROUTE[2]} \
 			-s ${ROUTE[1]} -d ${ROUTE[3]} -j ACCEPT
 		if [ ${ROUTE[4]} == "1" ]; then
-			echo -n "${ROUTE[0]}/${ROUTE[1]}<->${ROUTE[1]}/${ROUTE[3]} "
+			echo -n "${ROUTE[0]}:${ROUTE[1]}<->${ROUTE[1]}:${ROUTE[3]} "
  			$IPTABLES -A FORWARD -o ${ROUTE[0]} -i ${ROUTE[2]} \
 				-d ${ROUTE[1]} -s ${ROUTE[3]} -j ACCEPT
 		else
-			echo -n "${ROUTE[0]}/${ROUTE[1]}->${ROUTE[1]}/${ROUTE[3]} "
+			echo -n "${ROUTE[0]}:${ROUTE[1]}->${ROUTE[1]}:${ROUTE[3]} "
 	fi
 	done
 fi
