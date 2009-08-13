@@ -1,10 +1,11 @@
 #/bin/bash
-# v0.2
+# v0.3
 # By Brielle Bruns <bruns@2mbit.com>
-# URL: http://www.sosdg.org
+# URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
 
 BASEDIR=/etc/firewall-sosdg
+TWEAKS=$BASEDIR/tweaks
 #BASEDIR=`pwd`
 
 . $BASEDIR/options
@@ -189,6 +190,13 @@ if [ $IPV6 ]; then
 		$IP6TABLES -A INPUT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -p udp -j DROP
 	fi
+fi
+
+if [ $TWEAKS ]; then
+	for i in `grep -v "\#" $TWEAKS`; do
+		PROCOPT=( ${i//=/ } )
+		echo ${PROCOPT[1]} > /proc/sys/net/${PROCOPT[0]} &>/dev/null
+	done
 fi
 
 $BASEDIR/postrun

@@ -6,7 +6,6 @@ IP6TABLES=/bin/true
 #IPTABLES=/sbin/iptables
 #IP6TABLES=/sbin/ip6tables
 
-
 # I'm trying to make this config as simple as possible.  Comment out
 # options you don't want to use, uncomment them to use them.
 
