@@ -82,15 +82,19 @@ if [ $ROUTING ]; then
 	echo -n "Adding route: "
 	for i in `grep -v "\#" $ROUTING`; do
 		ROUTE=( ${i//:/ } )
-		echo 1 > /proc/sys/net/ipv4/conf/{${ROUTE[0]},${ROUTE[2]}}/forwarding
-		$IPTABLES -A FORWARD -i ${ROUTE[0]} -o ${ROUTE[2]} \
-			-s ${ROUTE[1]} -d ${ROUTE[3]} -j ACCEPT
+		FWINT1=${ROUTE[0]}
+		FWINT2=${ROUTE[2]}
+		FWIP1=${ROUTE[1]}
+		FWIP2=${ROUTE[3]}
+		echo 1 > /proc/sys/net/ipv4/conf/{$FWINT1,$FWINT2}/forwarding
+		$IPTABLES -A FORWARD -i $FWINT1 -o $FWINT1 \
+			-s $FWIP1 -d $FWIP2} -j ACCEPT
 		if [ ${ROUTE[4]} == "1" ]; then
-			echo -n "${ROUTE[0]}:${ROUTE[1]}<->${ROUTE[1]}:${ROUTE[3]} "
- 			$IPTABLES -A FORWARD -o ${ROUTE[0]} -i ${ROUTE[2]} \
-				-d ${ROUTE[1]} -s ${ROUTE[3]} -j ACCEPT
+			echo -n "$FWINT1:$FWIP1}<->$FWINT1:$FWIP2} "
+ 			$IPTABLES -A FORWARD -o $FWINT1 -i $FWINT2 \
+				-d $FWIP1 -s $FWIP2 -j ACCEPT
 		else
-			echo -n "${ROUTE[0]}:${ROUTE[1]}->${ROUTE[1]}:${ROUTE[3]} "
+			echo -n "$FWINT1:$FWIP1}->$FWINT1:$FWIP2} "
 	fi
 	done
 fi
