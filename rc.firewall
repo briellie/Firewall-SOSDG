@@ -78,14 +78,18 @@ if [ $CONNTRACK ]; then
 fi
 
 if [ $ROUTING ]; then
+	echo -n "Adding route: "
 	for i in `grep -v "\#" $ROUTING`; do
 		ROUTE=( ${i//:/ } )
 		$IPTABLES -A FORWARD -i ${ROUTE[0]} -o ${ROUTE[2]} \
 			-s ${ROUTE[1]} -d ${ROUTE[3]} -j ACCEPT
-		if [ ${ROUTE[4]} == "1" ]
+		if [ ${ROUTE[4]} == "1" ]; then
+			echo -n "${ROUTE[0]}/${ROUTE[1]}<->${ROUTE[1]}/${ROUTE[3]} "
  			$IPTABLES -A FORWARD -o ${ROUTE[0]} -i ${ROUTE[2]} \
 				-d ${ROUTE[1]} -s ${ROUTE[3]} -j ACCEPT
-		fi
+		else
+			echo -n "${ROUTE[0]}/${ROUTE[1]}->${ROUTE[1]}/${ROUTE[3]} "
+	fi
 	done
 fi
 
