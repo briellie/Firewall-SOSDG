@@ -1,0 +1,4 @@
+# IPv4 routing
+# Format is:
+# int1:int1range:int2:int2range:reverse?
+# eth0:192.168.0.0/24:eth1:192.168.1.0/24:1

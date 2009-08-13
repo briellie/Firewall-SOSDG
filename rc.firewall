@@ -77,10 +77,15 @@ if [ $CONNTRACK ]; then
 	done
 fi
 
-if [ $CONNTRACK ]; then
-	for i in $FORWARDRANGE; do
-		$IPTABLES -A FORWARD -s $i -j ACCEPT
-		$IPTABLES -A FORWARD -d $i -j ACCEPT
+if [ $ROUTING ]; then
+	for i in `grep -v "\#" $ROUTING`; do
+		ROUTE=( ${i//:/ } )
+		$IPTABLES -A FORWARD -i ${ROUTE[0]} -o ${ROUTE[2]} \
+			-s ${ROUTE[1]} -d ${ROUTE[3]} -j ACCEPT
+		if [ ${ROUTE[4]} == "1" ]
+ 			$IPTABLES -A FORWARD -o ${ROUTE[0]} -i ${ROUTE[2]} \
+				-d ${ROUTE[1]} -s ${ROUTE[3]} -j ACCEPT
+		fi
 	done
 fi
 
