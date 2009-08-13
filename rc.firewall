@@ -4,7 +4,7 @@
 # URL: http://www.sosdg.org
 # License: GPLv3
 
-BASEDIR=/etc/sosdg-firewall
+BASEDIR=/etc/firewall-sosdg
 #BASEDIR=`pwd`
 
 . $BASEDIR/options
