@@ -97,6 +97,9 @@ if [ $PORTFW ] && [ $NAT ]; then
 	done
 fi
 
+if [ $LANDHCPSERVER ]; then
+	$IPTABLES -A INPUT -i $INTIF -s 0.0.0.0 -j ACCEPT
+fi
 
 if [ $NAT ]; then
 	for i in $NATRANGE; do

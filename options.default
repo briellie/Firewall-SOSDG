@@ -21,6 +21,9 @@ BLOCKINCOMING=1
 # Clamp MSS, useful on DSL/VPN links
 #CLAMPMSS=ppp0
 
+# Do we run a LAN DHCP server?
+LANDHCPSERVER=1
+
 # Port forwardings, requires NAT
 PORTFW=$BASEDIR/port-forwards
 
