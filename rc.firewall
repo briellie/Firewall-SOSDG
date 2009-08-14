@@ -32,13 +32,17 @@ done
 echo -ne "\n"
 
 if [ $CLAMPMSS ]; then
-	$IPTABLES -t mangle -o $CLAMPMSS -A FORWARD -p tcp \
-        	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
-        	-j TCPMSS --clamp-mss-to-pmtu
+	echo "Clamping MSS to PMTU..."
+	iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+		--clamp-mss-to-pmtu
 
-	$IPTABLES -t mangle -o $CLAMPMSS -A OUTPUT -p tcp \
-        	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
-        	-j TCPMSS --clamp-mss-to-pmtu
+	#$IPTABLES -t mangle -o $CLAMPMSS -A FORWARD -p tcp \
+        #	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
+        #	-j TCPMSS --clamp-mss-to-pmtu
+
+	#$IPTABLES -t mangle -o $CLAMPMSS -A OUTPUT -p tcp \
+        #	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
+        #	-j TCPMSS --clamp-mss-to-pmtu
 fi
 echo -en "\n"
 
