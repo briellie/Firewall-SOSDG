@@ -128,6 +128,16 @@ if [ $LANDHCPSERVER ]; then
 	$IPTABLES -A INPUT -i $INTIF -s 0.0.0.0 -j ACCEPT
 fi
 
+
+if [ $CONNTRACK ]; then
+	$IPTABLES -A INPUT -i lo -m state --state NEW -j ACCEPT
+	$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+	$IPTABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+	$IPTABLES -A INPUT -m state --state INVALID -j DROP
+	$IPTABLES -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+	$IPTABLES -A OUTPUT -m state --state NEW -j ACCEPT
+fi
+
 if [ $NAT ]; then
 	for i in $NATRANGE; do
 		$IPTABLES -A POSTROUTING -t nat -s $i -o $NATEXTIF -j SNAT --to-source $NATEXTIP
