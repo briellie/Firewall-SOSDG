@@ -19,6 +19,8 @@ if [ $NAT ]; then
 fi
 $IPTABLES -F -t raw &>/dev/null
 
+$BASEDIR/prerun
+
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
@@ -61,7 +63,7 @@ done
 for i in $UDPPORTS; do
 	echo -n "UDP/$i "
 	#$IPTABLES -A INPUT -p udp --dport $i -j ACCEPT
-	#$IPTABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
+	$IPTABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
         $IPTABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
         $IPTABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
 done
