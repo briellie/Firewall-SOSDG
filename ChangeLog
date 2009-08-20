@@ -1,0 +1,3 @@
+0.4 - Brielle Bruns <bruns@2mbit.com>
+	- Added support for pre-run commands
+	- Fixed several bugs with NAT commands
