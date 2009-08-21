@@ -1,5 +1,5 @@
 #/bin/bash
-# v0.4
+# v0.5
 # By Brielle Bruns <bruns@2mbit.com>
 # URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
@@ -193,8 +193,9 @@ if [ $IPV6 ]; then
 
 	for i in $IPV6UDP; do
 		echo -n "UDP/$i "
-		$IP6TABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
 		$IP6TABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
+	        $IP6TABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
+        	$IP6TABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
 	done
 	echo -en "\n"
 
