@@ -70,6 +70,9 @@ IPV6BLOCKINCOMING=1
 # Interface IPv6 comes in on (either tunnel or real network interface)
 #IPV6INT=he-ipv6
 
+# LAN interface for IPv6
+#IPV6LAN=eth1
+
 # Trusted IPv6 ranges
 IPV6TRUSTED="::1"
 
