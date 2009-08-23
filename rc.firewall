@@ -175,15 +175,6 @@ if [ $IPV6 ]; then
 	done
 	echo -ne "\n"
 
-	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
-		$IP6TABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-		$IP6TABLES -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
-		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p tcp --syn -j DROP
-		$IP6TABLES -A INPUT -i $IPV6INT -p tcp --syn -j DROP
-		$IP6TABLES -A INPUT -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP
-		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p udp ! --dport 32768:65535 -j DROP
-	fi
-	
 	echo -n "Adding allowed IPv6 port: "
 
 	for i in $IPV6TCP; do
@@ -198,6 +189,17 @@ if [ $IPV6 ]; then
         	$IP6TABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
 	done
 	echo -en "\n"
+
+	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
+		$IP6TABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+		$IP6TABLES -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -i $IPV6INT -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP
+		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p udp ! --dport 32768:65535 -j DROP
+	fi
+	
+
 
 	if [ $IPV6FORWARDRANGE ]; then
 		for i in $IPV6FORWARDRANGE; do
