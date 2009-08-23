@@ -1,3 +1,6 @@
+0.5 - Brielle Bruns <bruns@2mbit.com>
+	- Fixing ipv6 UDP firewalling rules
+
 0.4 - Brielle Bruns <bruns@2mbit.com>
 	- Added support for pre-run commands
 	- Fixed several bugs with NAT commands
