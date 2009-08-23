@@ -1,5 +1,7 @@
 0.5 - Brielle Bruns <bruns@2mbit.com>
 	- Fixing ipv6 UDP firewalling rules
+	- Fixing IPv6 client routing block rules
+	- Added new IPV6LAN interface option
 
 0.4 - Brielle Bruns <bruns@2mbit.com>
 	- Added support for pre-run commands
