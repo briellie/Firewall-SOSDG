@@ -1,5 +1,5 @@
 #/bin/bash
-# v0.5
+# v0.6
 # By Brielle Bruns <bruns@2mbit.com>
 # URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
@@ -52,6 +52,15 @@ echo -en "\n"
 
 $IPTABLES -A INPUT -j DROP -p udp --dport domain -m u32 --u32 \
 "0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
+
+if [ $CONNTRACK ]; then
+	$IPTABLES -A INPUT -i lo -m state --state NEW -j ACCEPT
+	$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+	$IPTABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+	$IPTABLES -A INPUT -m state --state INVALID -j DROP
+	$IPTABLES -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+	$IPTABLES -A OUTPUT -m state --state NEW -j ACCEPT
+fi
 
 echo -n "Adding allowed port: "
 
@@ -131,14 +140,6 @@ if [ $LANDHCPSERVER ]; then
 fi
 
 
-if [ $CONNTRACK ]; then
-	$IPTABLES -A INPUT -i lo -m state --state NEW -j ACCEPT
-	$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
-	$IPTABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-	$IPTABLES -A INPUT -m state --state INVALID -j DROP
-	$IPTABLES -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
-	$IPTABLES -A OUTPUT -m state --state NEW -j ACCEPT
-fi
 
 if [ $NAT ]; then
 	for i in $NATRANGE; do
