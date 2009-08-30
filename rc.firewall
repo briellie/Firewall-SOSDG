@@ -38,8 +38,8 @@ echo -n "Adding blocked IPs: "
 if [ $BLOCKEDIP ]; then
 	for i in `grep -v "\#" $BLOCKEDIP`; do
 		echo -n "$i"
-		$IPTABLES -A INPUT -s $i -j DENY
-		$IPTABLES -A OUTPUT -d $i -j DENY
+		$IPTABLES -A INPUT -s $i -j DROP
+		$IPTABLES -A OUTPUT -d $i -j DROP
 	done
 fi
 
