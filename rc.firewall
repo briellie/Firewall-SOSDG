@@ -33,17 +33,16 @@ for i in $TRUSTEDIP; do
 done
 echo -ne "\n"
 
-echo -n "Adding blocked IPs: "
 
 if [ $BLOCKEDIP ]; then
+	echo -n "Adding blocked IPs: "
 	for i in `grep -v "\#" $BLOCKEDIP`; do
-		echo -n "$i"
+		echo -n "$i "
 		$IPTABLES -A INPUT -s $i -j DROP
 		$IPTABLES -A OUTPUT -d $i -j DROP
 	done
-fi
-
 echo -ne "\n"
+fi
 
 if [ $CLAMPMSS ]; then
 	echo "Clamping MSS to PMTU..."
