@@ -1,5 +1,6 @@
 0.6 - Brielle Bruns <bruns@2mbit.com>
 	- Fixed some potential ordering issues with NAT
+	- Added file for blocked IPs, plus new config option
 
 0.5 - Brielle Bruns <bruns@2mbit.com>
 	- Fixing ipv6 UDP firewalling rules

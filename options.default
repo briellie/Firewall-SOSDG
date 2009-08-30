@@ -52,6 +52,9 @@ NATRANGE="192.168.1.0/24"
 NATEXTIP="172.16.1.1"
 NATEXTIF="eth0"
 
+# IP Ranges to block all traffic incoming/outgoing
+BLOCKEDIP=$BASEDIR/blocked
+
 
 # IPv6 related features.  Commenting out IPV6 variable disables ALL
 # IPv6 related items

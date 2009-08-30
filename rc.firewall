@@ -33,6 +33,18 @@ for i in $TRUSTEDIP; do
 done
 echo -ne "\n"
 
+echo -n "Adding blocked IPs: "
+
+if [ $BLOCKEDIP ]; then
+	for i in `grep -v "\#" $BLOCKEDIP`; do
+		echo -n "$i"
+		$IPTABLES -A INPUT -s $i -j DENY
+		$IPTABLES -A OUTPUT -d $i -j DENY
+	done
+fi
+
+echo -ne "\n"
+
 if [ $CLAMPMSS ]; then
 	echo "Clamping MSS to PMTU..."
 	iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
