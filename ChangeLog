@@ -1,3 +1,7 @@
+0.7 - Brielle Bruns <bruns@2mbit.com>
+	- Beginning support for bogons filtering and updater
+	  script.
+
 0.6 - Brielle Bruns <bruns@2mbit.com>
 	- Fixed some potential ordering issues with NAT
 	- Added file for blocked IPs, plus new config option
