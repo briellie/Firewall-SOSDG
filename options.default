@@ -23,7 +23,10 @@ BLOCKINCOMING=1
 #CLAMPMSS=ppp0
 
 # Do we run a LAN DHCP server?
-LANDHCPSERVER=1
+#LANDHCPSERVER=1
+
+# Internal Interface
+#INTINF=ppp+
 
 # Port forwardings, requires NAT
 PORTFW=$BASEDIR/port-forwards
@@ -51,6 +54,7 @@ NATRANGE="192.168.1.0/24"
 # External IP and interface for SNAT
 NATEXTIP="172.16.1.1"
 NATEXTIF="eth0"
+
 
 # IP Ranges to block all traffic incoming/outgoing
 BLOCKEDIP=$BASEDIR/blocked
