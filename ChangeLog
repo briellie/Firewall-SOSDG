@@ -1,7 +1,8 @@
 0.7 - Brielle Bruns <bruns@2mbit.com>
-	- MSS Clamp on IPv6 as well
+	- MSS Clamp on IPv6
+	- MSS Fixes, yes, its ugly
 	- Beginning support for bogons filtering and updater
-	  script.
+	  script.  Does not work yet, so don't use.
 
 0.6 - Brielle Bruns <bruns@2mbit.com>
 	- Fixed some potential ordering issues with NAT

@@ -203,10 +203,10 @@ if [ $IPV6 ]; then
 		for i in $CLAMPMSSIPV6; do
 			$IP6TABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN \
 			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
-			--mss 1400:1536
+			--mss 1280:1536
 			$IP6TABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN \
 			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
-			--mss 1400:1536
+			--mss 1280:1536
 			# This is necessary to make sure that PMTU works
 			$IP6TABLES -A OUTPUT -p icmpv6 --icmpv6-type time-exceeded \
 			-o $i -j ACCEPT
