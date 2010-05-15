@@ -48,9 +48,9 @@ if [ $CLAMPMSS ]; then
 	echo "Clamping MSS to PMTU..."
 	for i in $CLAMPMSS; do
 		$IPTABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-			--clamp-mss-to-pmtu -o $i --mss 1400:1536
+			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
 		$IPTABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-			--clamp-mss-to-pmtu -o $i --mss 1400:1536
+			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
 		# This is necessary to make sure that PMTU works
 		$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
 			-o $i -j ACCEPT
