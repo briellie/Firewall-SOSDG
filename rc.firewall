@@ -208,13 +208,13 @@ if [ $IPV6 ]; then
 			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
 			--mss 1400:1536
 			# This is necessary to make sure that PMTU works
-			$IP6TABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
+			$IP6TABLES -A OUTPUT -p icmpv6 --icmpv6-type time-exceeded \
 			-o $i -j ACCEPT
-			$IP6TABLES -A INPUT -p icmp --icmp-type time-exceeded \
+			$IP6TABLES -A INPUT -p icmpv6 --icmpv6-type time-exceeded \
 			-i $i -j ACCEPT
-			$IP6TABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
+			$IP6TABLES -A OUTPUT -p icmpv6 --icmpv6-type packet-too-big \
 			-o $i -j ACCEPT
-			$IP6TABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
+			$IP6TABLES -A INPUT -p icmpv6 --icmpv6-type packet-too-big \
 			-i $i -j ACCEPT
 		done
 	fi
