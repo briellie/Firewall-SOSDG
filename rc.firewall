@@ -200,7 +200,7 @@ if [ $IPV6 ]; then
 
 	if [ $CLAMPMSSIPV6 ]; then
 		echo "Clamping IPV6 MSS to PMTU..."
-		for i in $CLAMPMSS; do
+		for i in $CLAMPMSSIPV6; do
 			$IP6TABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN \
 			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
 			--mss 1400:1536
