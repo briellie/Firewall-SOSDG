@@ -61,13 +61,6 @@ if [ $CLAMPMSS ]; then
 		$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
 			-i $i -j ACCEPT
 	done
-	#$IPTABLES -t mangle -o $CLAMPMSS -A FORWARD -p tcp \
-        #	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
-        #	-j TCPMSS --clamp-mss-to-pmtu
-
-	#$IPTABLES -t mangle -o $CLAMPMSS -A OUTPUT -p tcp \
-        #	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
-        #	-j TCPMSS --clamp-mss-to-pmtu
 fi
 echo -en "\n"
 
@@ -206,11 +199,24 @@ if [ $IPV6 ]; then
 
 
 	if [ $CLAMPMSSIPV6 ]; then
-        	echo "Clamping IPv6 MSS to PMTU..."
-        	ip6tables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-                	--clamp-mss-to-pmtu
-        	ip6tables -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-                --clamp-mss-to-pmtu
+		echo "Clamping IPV6 MSS to PMTU..."
+		for i in $CLAMPMSS; do
+			$IP6TABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN \
+			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
+			--mss 1400:1536
+			$IP6TABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN \
+			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
+			--mss 1400:1536
+			# This is necessary to make sure that PMTU works
+			$IP6TABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
+			-o $i -j ACCEPT
+			$IP6TABLES -A INPUT -p icmp --icmp-type time-exceeded \
+			-i $i -j ACCEPT
+			$IP6TABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
+			-o $i -j ACCEPT
+			$IP6TABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
+			-i $i -j ACCEPT
+		done
 	fi
 	echo -n "Adding allowed IPv6 port: "
 
