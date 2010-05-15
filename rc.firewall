@@ -44,7 +44,7 @@ if [ $BLOCKEDIP ]; then
 echo -ne "\n"
 fi
 
-if [ $CLAMPMSS ]; then
+if [ "$CLAMPMSS" ]; then
 	echo "Clamping MSS to PMTU..."
 	for i in $CLAMPMSS; do
 		$IPTABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
@@ -198,7 +198,7 @@ if [ $IPV6 ]; then
 	echo -ne "\n"
 
 
-	if [ $CLAMPMSSIPV6 ]; then
+	if [ "$CLAMPMSSIPV6" ]; then
 		echo "Clamping IPV6 MSS to PMTU..."
 		for i in $CLAMPMSSIPV6; do
 			$IP6TABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN \
