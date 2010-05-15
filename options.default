@@ -20,7 +20,8 @@ FORWARD=1
 BLOCKINCOMING=1
 
 # Clamp MSS, useful on DSL/VPN links
-#CLAMPMSS=ppp0
+# Space separated list of interfaces to apply this on
+#CLAMPMSS="ppp0 eth0"
 
 # Do we run a LAN DHCP server?
 #LANDHCPSERVER=1
@@ -73,6 +74,11 @@ IPV6BLOCKINCOMING=1
 # Special case for routers that have ipv6 clients behind them.
 # Useful if clients do not have proper ipv6 firewalls.
 #IPV6ROUTEDCLIENTBLOCK=1
+
+# Clamp MSS, useful on DSL/VPN links
+# Space separated list of interfaces to apply this on
+# it may be used eventually.
+#CLAMPMSSIPV6="he-ipv6"
 
 # Interface IPv6 comes in on (either tunnel or real network interface)
 #IPV6INT=he-ipv6

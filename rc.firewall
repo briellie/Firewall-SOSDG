@@ -46,11 +46,21 @@ fi
 
 if [ $CLAMPMSS ]; then
 	echo "Clamping MSS to PMTU..."
-	iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-		--clamp-mss-to-pmtu
-	iptables -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-		--clamp-mss-to-pmtu
-
+	for i in $CLAMPMSS; do
+		$IPTABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+			--clamp-mss-to-pmtu -o $i --mss 1400:1536
+		$IPTABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+			--clamp-mss-to-pmtu -o $i --mss 1400:1536
+		# This is necessary to make sure that PMTU works
+		$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
+			-o $i -j ACCEPT
+		$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded \
+			-i $i -j ACCEPT
+		$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
+			-o $i -j ACCEPT
+		$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
+			-i $i -j ACCEPT
+	done
 	#$IPTABLES -t mangle -o $CLAMPMSS -A FORWARD -p tcp \
         #	--tcp-flags SYN,RST SYN -m tcpmss --mss 1400:1536 \
         #	-j TCPMSS --clamp-mss-to-pmtu
@@ -152,10 +162,17 @@ fi
 
 
 
+
+
 if [ $NAT ]; then
 	for i in $NATRANGE; do
 		$IPTABLES -A POSTROUTING -t nat -s $i -o $NATEXTIF -j SNAT --to-source $NATEXTIP
 	done
+	# This is necessary to make sure that PMTU works
+	$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o $NATEXTIF \
+			-j ACCEPT
+	$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
+			-o $NATEXTIF -j ACCEPT
 fi
 
 $IPTABLES --policy INPUT ACCEPT
@@ -187,6 +204,14 @@ if [ $IPV6 ]; then
 	done
 	echo -ne "\n"
 
+
+	if [ $CLAMPMSSIPV6 ]; then
+        	echo "Clamping IPv6 MSS to PMTU..."
+        	ip6tables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+                	--clamp-mss-to-pmtu
+        	ip6tables -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+                --clamp-mss-to-pmtu
+	fi
 	echo -n "Adding allowed IPv6 port: "
 
 	for i in $IPV6TCP; do

@@ -1,4 +1,5 @@
 0.7 - Brielle Bruns <bruns@2mbit.com>
+	- MSS Clamp on IPv6 as well
 	- Beginning support for bogons filtering and updater
 	  script.
 
