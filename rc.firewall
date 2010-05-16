@@ -236,6 +236,8 @@ if [ $IPV6 ]; then
 	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
 		$IP6TABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 		$IP6TABLES -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+	        $IP6TABLES -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+        	$IP6TABLES -A OUTPUT -m state --state NEW -j ACCEPT
 		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -i $IPV6INT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP

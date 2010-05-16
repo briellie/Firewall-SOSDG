@@ -1,3 +1,6 @@
+0.8 - Brielle Bruns <bruns@2mbit.com>
+	- IPv6 Connection Tracking fixes
+
 0.7 - Brielle Bruns <bruns@2mbit.com>
 	- MSS Clamp on IPv6
 	- MSS Fixes, yes, its ugly
