@@ -60,6 +60,10 @@ NATEXTIF="eth0"
 # IP Ranges to block all traffic incoming/outgoing
 BLOCKEDIP=$BASEDIR/blocked
 
+# Strip ECN off of packets - helps with blackholes
+# Either individual IPs or 0.0.0.0/0
+STRIPECN="0.0.0.0/0"
+
 
 # IPv6 related features.  Commenting out IPV6 variable disables ALL
 # IPv6 related items

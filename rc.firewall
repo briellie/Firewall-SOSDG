@@ -44,6 +44,16 @@ if [ $BLOCKEDIP ]; then
 echo -ne "\n"
 fi
 
+if [ "$STRIPECN" ]; then
+	for i in $STRIPECN; do
+		echo "Stripping ECN off of TCP packets to $i"
+		$IPTABLES -A PREROUTING -t mangle -p tcp -d $i -j ECN \
+			--ecn-remove 1
+	done
+echo -ne "\n"
+fi
+
+
 if [ "$CLAMPMSS" ]; then
 	echo "Clamping MSS to PMTU..."
 	for i in $CLAMPMSS; do
