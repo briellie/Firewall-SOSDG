@@ -50,9 +50,7 @@ if [ "$STRIPECN" ]; then
 		$IPTABLES -A PREROUTING -t mangle -p tcp -d $i -j ECN \
 			--ecn-tcp-remove
 	done
-echo -ne "\n"
 fi
-
 
 if [ "$CLAMPMSS" ]; then
 	echo "Clamping MSS to PMTU..."
