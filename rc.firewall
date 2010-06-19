@@ -48,7 +48,7 @@ if [ "$STRIPECN" ]; then
 	for i in $STRIPECN; do
 		echo "Stripping ECN off of TCP packets to $i"
 		$IPTABLES -A PREROUTING -t mangle -p tcp -d $i -j ECN \
-			--ecn-remove
+			--ecn-tcp-remove
 	done
 echo -ne "\n"
 fi
