@@ -172,7 +172,7 @@ if [ $ROUTING ]; then
 		$IPTABLES -A FORWARD -i $FWINT1 -o $FWINT2 \
 			-s $FWIP1 -d $FWIP2 -j ACCEPT
 		if [ ${ROUTE[4]} == "1" ]; then
-			echo -n "$FWINT1:$FWIP1<->$FWINT2:$FWIP2 "
+			echo -en "\E[35m$FWINT1\E[37m:$FWIP1<->\E[35m$FWINT2\E[37m:$FWIP2 "
  			$IPTABLES -A FORWARD -o $FWINT1 -i $FWINT2 \
 				-d $FWIP1 -s $FWIP2 -j ACCEPT
 		else
