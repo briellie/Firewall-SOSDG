@@ -102,7 +102,7 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 			$IPTABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
 			if [ "$NATRANGE" ]; then
 				for i in $NATRANGE; do
-					$IPTABLES -A PREROUTING -t raw -p tcp -s $i --dport $i --syn -j DROP
+					$IPTABLES -A FORWARD -p tcp -s $i --dport $i --syn -j DROP
 				done
 			fi
 		done
@@ -113,7 +113,7 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 			$IPTABLES -A OUTPUT -p udp --dport $i -j DROP
 			if [ "$NATRANGE" ]; then
 				for i in $NATRANGE; do
-					$IPTABLES -A PREROUTING -t raw -p udp -s $i --dport $i -j DROP
+					$IPTABLES -A FORWARD -p udp -s $i --dport $i -j DROP
 				done
 			fi
 		done
