@@ -4,6 +4,10 @@
 # URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
 
+echo -e "SOSDG/Firewall v0.9"
+echo -e "Brielle Bruns <bruns@2mbit.com>"
+echo -e "http://www.sosdg.org/freestuff/firewall\n"
+
 BASEDIR=/etc/firewall-sosdg
 TWEAKS=$BASEDIR/tweaks
 #BASEDIR=`pwd`
@@ -25,15 +29,16 @@ $BASEDIR/prerun
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
-echo -ne "\E[33mAdding trusted IP:\E[37m "
 
-for i in $TRUSTEDIP; do
-	echo -n "$i "
-	$IPTABLES -A INPUT -s $i -j ACCEPT
-	$IPTABLES -A OUTPUT -d $i -j ACCEPT
-done
-echo -ne "\n"
-
+if [ "$TRUSTEDIP" ]; then
+	echo -ne "\E[33mAdding trusted IP:\E[37m "
+	for i in $TRUSTEDIP; do
+		echo -n "$i "
+		$IPTABLES -A INPUT -s $i -j ACCEPT
+		$IPTABLES -A OUTPUT -d $i -j ACCEPT
+	done
+	echo -ne "\n"
+fi
 
 if [ $BLOCKEDIP ]; then
 	echo -en "\E[33mAdding blocked IPs:\E[37m "
