@@ -174,7 +174,7 @@ fi
 if [ $PORTFW ] && [ $NAT ]; then
 	echo -en "\E[33mAdding port forward for:\E[37m "
 	for i in `grep -v "\#" $PORTFW`; do
-		echo -en "${PORTADD[0]}/${PORTADD[1]}-\>${PORTADD[2]}:${PORTADD[3]} "
+		echo -en "\E[32m${PORTADD[0]}\E[37m/\E[35m${PORTADD[1]}\E[37m->${PORTADD[2]}:${PORTADD[3]} "
 		PORTADD=( ${i//:/ } )
 		$IPTABLES -A PREROUTING -t nat -i $NATEXTIF -p ${PORTADD[1]} \
 			--dport ${PORTADD[0]} -j DNAT --to \
