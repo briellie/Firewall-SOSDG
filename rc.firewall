@@ -155,8 +155,13 @@ if [ $ROUTING ]; then
 		FWINT2=${ROUTE[2]}
 		FWIP1=${ROUTE[1]}
 		FWIP2=${ROUTE[3]}
-		echo 1 > /proc/sys/net/ipv4/conf/$FWINT1/forwarding
-		echo 1 > /proc/sys/net/ipv4/conf/$FWINT2/forwarding
+
+		if [ -e "/proc/sys/net/ipv4/conf/$FWINT1/forwarding" ]; then
+			echo 1 > /proc/sys/net/ipv4/conf/$FWINT1/forwarding
+		fi
+		if [ -e "/proc/sys/net/ipv4/conf/$FWINT2/forwarding" ]; then
+			echo 1 > /proc/sys/net/ipv4/conf/$FWINT2/forwarding
+		fi
 		$IPTABLES -A FORWARD -i $FWINT1 -o $FWINT2 \
 			-s $FWIP1 -d $FWIP2 -j ACCEPT
 		if [ ${ROUTE[4]} == "1" ]; then
