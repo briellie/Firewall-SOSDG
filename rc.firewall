@@ -1,5 +1,5 @@
 #/bin/bash
-# v0.8
+# v0.9
 # By Brielle Bruns <bruns@2mbit.com>
 # URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
@@ -25,7 +25,7 @@ $BASEDIR/prerun
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
-echo -n "Adding trusted IP: "
+echo -ne "\E[33mAdding trusted IP:\E[37m "
 
 for i in $TRUSTEDIP; do
 	echo -n "$i "
@@ -36,7 +36,7 @@ echo -ne "\n"
 
 
 if [ $BLOCKEDIP ]; then
-	echo -n "Adding blocked IPs: "
+	echo -en "\E[33mAdding blocked IPs:\E[37m "
 	for i in `grep -v "\#" $BLOCKEDIP`; do
 		echo -n "$i "
 		$IPTABLES -A INPUT -s $i -j DROP
@@ -46,15 +46,16 @@ echo -ne "\n"
 fi
 
 if [ "$STRIPECN" ]; then
+	echo -en "\E[33mStripping ECN off of TCP packets to \E[37m"
 	for i in $STRIPECN; do
-		echo "Stripping ECN off of TCP packets to $i"
+		echo -en "$i "
 		$IPTABLES -A PREROUTING -t mangle -p tcp -d $i -j ECN \
 			--ecn-tcp-remove
 	done
 fi
 
 if [ "$CLAMPMSS" ]; then
-	echo "Clamping MSS to PMTU..."
+	echo -e "\E[33mClamping MSS to PMTU...\E[37m"
 	for i in $CLAMPMSS; do
 		$IPTABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
 			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
@@ -85,31 +86,56 @@ if [ $CONNTRACK ]; then
 	$IPTABLES -A OUTPUT -m state --state NEW -j ACCEPT
 fi
 
-echo -n "Adding allowed port: "
+if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
+	echo -en "\E[33mBlocking outbound port:\E[37m "
 
-for i in $TCPPORTS; do
-	echo -n "TCP/$i "
-	$IPTABLES -A INPUT -p tcp --dport $i -j ACCEPT
-done
+	if  [ "$BLOCKTCPPORTS" ]; then
+		for i in $BLOCKTCPPORTS; do
+			echo -en "\E[35mTCP\E[37m/\E[32m$i "
+			$IPTABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
+		done
+	fi
+	if  [ "$BLOCKUDPPORTS" ]; then
+		for i in $BLOCKUDPPORTS; do
+			echo -en "\E[34mUDP\E[37m/\E[32m$i "
+			$IPTABLES -A OUTPUT -p udp --dport $i -j DROP
+		done
+	fi
+	echo -en "\n"
+fi
 
-for i in $UDPPORTS; do
-	echo -n "UDP/$i "
-	#$IPTABLES -A INPUT -p udp --dport $i -j ACCEPT
-	$IPTABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
-        $IPTABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
-        $IPTABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
-done
-echo -en "\n"
+if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
+	echo -en "\E[33mAdding allowed port:\E[37m "
 
-echo -n "Adding allowed protocols: "
+	if [ "$TCPPORTS" ]; then
+		for i in $TCPPORTS; do
+			echo -en "\E[35mTCP\E[37m/\E[32m$i "
+			$IPTABLES -A INPUT -p tcp --dport $i -j ACCEPT
+		done
+	fi
+	if [ "$UDPPORTS" ]; then
+		for i in $UDPPORTS; do
+			echo -en "\E[34mUDP\E[37m/\E[32m$i "
+			#$IPTABLES -A INPUT -p udp --dport $i -j ACCEPT
+			$IPTABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
+        		$IPTABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
+			$IPTABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
+		done
+	fi
+	echo -en "\n\E[37m"
+fi
 
-for i in $ALLOWEDPROTO; do
-	echo -n "$i "
-	$IPTABLES -A INPUT -p $i -j ACCEPT
-	$IPTABLES -A OUTPUT -p $i -j ACCEPT
-done
-echo -en "\n"
 
+
+if [ "$ALLOWEDPROTO" ]; then
+	echo -en "\E[33mAdding allowed protocols:\E[37m "
+	for i in $ALLOWEDPROTO; do
+		echo -n "$i "
+		$IPTABLES -A INPUT -p $i -j ACCEPT
+		$IPTABLES -A OUTPUT -p $i -j ACCEPT
+	done
+	echo -en "\n\E[37m"
+fi
 
 if [ $CONNTRACK ]; then
 	for i in $DONTTRACK; do
@@ -120,9 +146,9 @@ if [ $CONNTRACK ]; then
 	done
 fi
 
-echo -n "Adding route: "
 
 if [ $ROUTING ]; then
+	echo -en "\E[33mAdding route:\E[37m "
 	for i in `grep -v "\#" $ROUTING`; do
 		ROUTE=( ${i//:/ } )
 		FWINT1=${ROUTE[0]}
@@ -141,14 +167,15 @@ if [ $ROUTING ]; then
 			echo -n "$FWINT1:$FWIP1->$FWINT2:$FWIP2 "
 	fi
 	done
+echo -ne "\n"
 fi
 
-echo -ne "\n"
 
 if [ $PORTFW ] && [ $NAT ]; then
+	echo -en "\E[33mAdding port forward for:\E[37m "
 	for i in `grep -v "\#" $PORTFW`; do
+		echo -en "${PORTADD[0]}/${PORTADD[1]}-\>${PORTADD[2]}:${PORTADD[3]} "
 		PORTADD=( ${i//:/ } )
-		echo "Adding port forward for ext port ${PORTADD[0]}/${PORTADD[1]} to ${PORTADD[2]}:${PORTADD[3]}"
 		$IPTABLES -A PREROUTING -t nat -i $NATEXTIF -p ${PORTADD[1]} \
 			--dport ${PORTADD[0]} -j DNAT --to \
 			${PORTADD[2]}:${PORTADD[3]}
@@ -194,7 +221,7 @@ if [ $IPV6 ]; then
 	$IP6TABLES -F PREROUTING &>/dev/null
 	$IP6TABLES -F POSTROUTING &>/dev/null
 
-	echo -n "Adding trusted IPv6: "
+	echo -ne "\E[33mAdding trusted IPv6:\E[37m "
 
 	$IP6TABLES -A INPUT -i lo -j ACCEPT
 	$IP6TABLES -A OUTPUT -o lo -j ACCEPT
@@ -204,11 +231,11 @@ if [ $IPV6 ]; then
 		$IP6TABLES -A INPUT -s $i -j ACCEPT
 		$IP6TABLES -A OUTPUT -d $i -j ACCEPT
 	done
-	echo -ne "\n"
+	echo -ne "\n\E[37m"
 
 
 	if [ "$CLAMPMSSIPV6" ]; then
-		echo "Clamping IPV6 MSS to PMTU..."
+		echo -e "\E[33mClamping IPV6 MSS to PMTU...\E[37m"
 		for i in $CLAMPMSSIPV6; do
 			$IP6TABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN \
 			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
@@ -227,21 +254,45 @@ if [ $IPV6 ]; then
 			-i $i -j ACCEPT
 		done
 	fi
-	echo -n "Adding allowed IPv6 port: "
 
-	for i in $IPV6TCP; do
-		echo -n "TCP/$i "
-		$IP6TABLES -A INPUT -p tcp --dport $i -j ACCEPT
-	done
+	if [ "$BLOCKIPV6TCPPORTS" ] || [ "$BLOCKIPV6UDPPORTS" ]; then
+		echo -en "\E[33mBlocking outbound port:\E[37m "
+		if [ "$BLOCKIPV6TCPPORTS" ]; then
+			for i in $BLOCKIPV6TCPPORTS; do
+				echo -en "\E[35mTCP\E[37m/\E[32m$i "
+				$IP6TABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
+			done
+		fi
+		if [ "$BLOCKIPV6UDPPORTS" ]; then
+			for i in $BLOCKIPV6UDPPORTS; do
+				echo -en "\E[34mUDP\E[37m/\E[32m$i "
+				$IP6TABLES -A OUTPUT -p udp --dport $i -j DROP
+			done
+		fi
+		echo -en "\n\E[37m"
+	fi
 
-	for i in $IPV6UDP; do
-		echo -n "UDP/$i "
-		$IP6TABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
-	        $IP6TABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
-        	$IP6TABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
-	done
-	echo -en "\n"
+	if [ "$IPV6TCP" ] || [ "$IPV6UDP" ]; then
+		echo -en "\E[33mAdding allowed IPv6 port:\E[37m "
 
+		if [ "$IPV6TCP" ]; then
+			for i in $IPV6TCP; do
+				echo -en "\E[35mTCP\E[37m/\E[32m$i "
+				$IP6TABLES -A INPUT -p tcp --dport $i -j ACCEPT
+			done
+		fi
+
+		if [ "$IPV6UDP" ]; then
+			for i in $IPV6UDP; do
+				echo -en "\E[34mUDP\E[37m/\E[32m$i "
+				$IP6TABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
+	        		$IP6TABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
+        			$IP6TABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
+			done
+		fi
+		echo -en "\n\E[37m"
+	fi
+	fi
 	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
 		$IP6TABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 		$IP6TABLES -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
@@ -266,7 +317,6 @@ if [ $IPV6 ]; then
 		$IP6TABLES -A INPUT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -p udp -j DROP
 	fi
-fi
 
 if [ $TWEAKS ]; then
 	for i in `grep -v "\#" $TWEAKS`; do

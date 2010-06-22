@@ -1,3 +1,7 @@
+0.9 - Brielle Bruns <bruns@2mbit.com>
+	- Colorize output
+	- Added outbound port blocking options
+
 0.8 - Brielle Bruns <bruns@2mbit.com>
 	- IPv6 Connection Tracking fixes
 	- Strip ECN off of specific outbound packets

@@ -60,6 +60,10 @@ NATEXTIF="eth0"
 # IP Ranges to block all traffic incoming/outgoing
 BLOCKEDIP=$BASEDIR/blocked
 
+# Block outgoing traffic on these TCP/UDP ports
+#BLOCKTCPPORTS="6881"
+#BLOCKUDPPORTS="6881"
+
 # Strip ECN off of packets - helps with blackholes
 # Either individual IPs or 0.0.0.0/0
 STRIPECN="0.0.0.0/0"
@@ -100,3 +104,7 @@ IPV6UDP=$UDPPORTS
 
 # IPv6 range to forward
 #IPV6FORWARDRANGE=""
+
+# Block outgoing IPv6 traffic on these TCP/UDP ports
+#BLOCKIPV6TCPPORTS=$BLOCKTCPPORTS
+#BLOCKIPV6UDPPORTS=$BLOCKUDPPORTS
