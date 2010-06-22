@@ -52,6 +52,7 @@ if [ "$STRIPECN" ]; then
 		$IPTABLES -A PREROUTING -t mangle -p tcp -d $i -j ECN \
 			--ecn-tcp-remove
 	done
+echo -ne "\n"
 fi
 
 if [ "$CLAMPMSS" ]; then
@@ -71,8 +72,8 @@ if [ "$CLAMPMSS" ]; then
 		$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
 			-i $i -j ACCEPT
 	done
-fi
 echo -en "\n"
+fi
 
 $IPTABLES -A INPUT -j DROP -p udp --dport domain -m u32 --u32 \
 "0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
