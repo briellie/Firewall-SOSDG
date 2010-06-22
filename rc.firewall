@@ -101,8 +101,8 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 			echo -en "\E[35mTCP\E[37m/\E[32m$i "
 			$IPTABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
 			if [ "$NATRANGE" ]; then
-				for i in $NATRANGE; do
-					$IPTABLES -A FORWARD -p tcp -s $i --dport $i --syn -j DROP
+				for src in $NATRANGE; do
+					$IPTABLES -A FORWARD -p tcp -s $src --dport $i --syn -j DROP
 				done
 			fi
 		done
@@ -112,8 +112,8 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 			echo -en "\E[34mUDP\E[37m/\E[32m$i "
 			$IPTABLES -A OUTPUT -p udp --dport $i -j DROP
 			if [ "$NATRANGE" ]; then
-				for i in $NATRANGE; do
-					$IPTABLES -A FORWARD -p udp -s $i --dport $i -j DROP
+				for src in $NATRANGE; do
+					$IPTABLES -A FORWARD -p udp -s $src --dport $i -j DROP
 				done
 			fi
 		done
