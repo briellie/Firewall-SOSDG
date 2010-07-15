@@ -61,6 +61,12 @@ if [ "$STRIPECN" ]; then
 echo -ne "\n"
 fi
 
+if [ -s "$BASEDIR/include/ipv4_custom_mssclamp" ]; then
+	echo -e "\E[33mLoading custom MSS Clamp rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_mssclamp"
+	echo -ne "\n"
+fi
+
 if [ "$CLAMPMSS" ]; then
 	echo -e "\E[33mClamping MSS to PMTU...\E[37m"
 	for i in $CLAMPMSS; do
@@ -84,6 +90,12 @@ fi
 $IPTABLES -A INPUT -j DROP -p udp --dport domain -m u32 --u32 \
 "0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
 
+if [ -s "$BASEDIR/include/ipv4_custom_conntrack" ]; then
+	echo -e "\E[33mLoading custom conntrack rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_conntrack"
+	echo -ne "\n"
+fi
+
 if [ $CONNTRACK ]; then
 	$IPTABLES -A INPUT -m state --state NEW -j ACCEPT
 	$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
@@ -94,6 +106,12 @@ if [ $CONNTRACK ]; then
 	$IPTABLES -A INPUT -m state --state INVALID -j DROP
 	$IPTABLES -A OUTPUT -m state --state INVALID -j DROP
 	$IPTABLES -A FORWARD -m state --state INVALID -j DROP
+fi
+
+if [ -s "$BASEDIR/include/ipv4_custom_blockports" ]; then
+	echo -e "\E[33mLoading custom blocked port rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_blockports"
+	echo -ne "\n"
 fi
 
 if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
@@ -124,6 +142,12 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 	echo -en "\n"
 fi
 
+if [ -s "$BASEDIR/include/ipv4_custom_allowedports" ]; then
+	echo -e "\E[33mLoading custom allowed port rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_allowedports"
+	echo -ne "\n"
+fi
+
 if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 	echo -en "\E[33mAdding allowed port:\E[37m "
 
@@ -147,6 +171,12 @@ fi
 
 
 
+if [ -s "$BASEDIR/include/ipv4_custom_proto" ]; then
+	echo -e "\E[33mLoading custom protocol rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_proto"
+	echo -ne "\n"
+fi
+
 if [ "$ALLOWEDPROTO" ]; then
 	echo -en "\E[33mAdding allowed protocols:\E[37m "
 	for i in $ALLOWEDPROTO; do
@@ -155,6 +185,13 @@ if [ "$ALLOWEDPROTO" ]; then
 		$IPTABLES -A OUTPUT -p $i -j ACCEPT
 	done
 	echo -en "\n\E[37m"
+fi
+
+
+if [ -s "$BASEDIR/include/ipv4_custom_notrack" ]; then
+	echo -e "\E[33mLoading custom NOTRACK rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_notrack"
+	echo -ne "\n"
 fi
 
 if [ $CONNTRACK ]; then
@@ -166,6 +203,12 @@ if [ $CONNTRACK ]; then
 	done
 fi
 
+
+if [ -s "$BASEDIR/include/ipv4_custom_routing" ]; then
+	echo -e "\E[33mLoading custom routing rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_routing"
+	echo -ne "\n"
+fi
 
 if [ $ROUTING ]; then
 	echo -en "\E[33mAdding route:\E[37m "
@@ -196,6 +239,12 @@ echo -ne "\n"
 fi
 
 
+if [ -s "$BASEDIR/include/ipv4_custom_portforward" ]; then
+	echo -e "\E[33mLoading custom port forwarding rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_portforward"
+	echo -ne "\n"
+fi
+
 if [ $PORTFW ] && [ $NAT ]; then
 	echo -en "\E[33mAdding port forward for:\E[37m "
 	for i in `grep -v "\#" $PORTFW`; do
@@ -215,8 +264,11 @@ if [ $LANDHCPSERVER ]; then
 fi
 
 
-
-
+if [ -s "$BASEDIR/include/ipv4_custom_nat" ]; then
+	echo -e "\E[33mLoading custom nat rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_nat"
+	echo -ne "\n"
+fi
 
 if [ $NAT ]; then
 	for i in $NATRANGE; do
@@ -232,6 +284,13 @@ fi
 $IPTABLES --policy INPUT ACCEPT
 $IPTABLES --policy OUTPUT ACCEPT
 $IPTABLES --policy FORWARD DROP
+
+
+if [ -s "$BASEDIR/include/ipv4_custom_blockincoming" ]; then
+	echo -e "\E[33mLoading custom incoming blocked rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_blockincoming"
+	echo -ne "\n"
+fi
 
 if [ $BLOCKINCOMING ]; then
 		$IPTABLES -A INPUT -p tcp --syn -j DROP
