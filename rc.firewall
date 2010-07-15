@@ -1,10 +1,10 @@
 #/bin/bash
-# v0.9
+# v0.9.3
 # By Brielle Bruns <bruns@2mbit.com>
 # URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
 echo -e "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
-echo -e "SOSDG/Firewall v0.9"
+echo -e "SOSDG/Firewall v0.9.3"
 echo -e "Brielle Bruns <bruns@2mbit.com>"
 echo -e "http://www.sosdg.org/freestuff/firewall"
 echo -e "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
@@ -24,12 +24,20 @@ if [ $NAT ]; then
 	$IPTABLES -F -t nat &>/dev/null
 fi
 $IPTABLES -F -t raw &>/dev/null
+if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then
+	echo -e "\E[33mLoading custom flush rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_flush"
+fi
 
 $BASEDIR/prerun
 
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
+if [ -s "$BASEDIR/include/ipv4_custom_trust" ]; then
+	echo -e "\E[33mLoading custom trust rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_trust"
+fi
 
 if [ "$TRUSTEDIP" ]; then
 	echo -ne "\E[33mAdding trusted IP:\E[37m "
@@ -39,6 +47,11 @@ if [ "$TRUSTEDIP" ]; then
 		$IPTABLES -A OUTPUT -d $i -j ACCEPT
 	done
 	echo -ne "\n"
+fi
+
+if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
+	echo -e "\E[33mLoading custom ip block rules...\E[37m"
+	. "$BASEDIR/include/ipv6_custom_blockip"
 fi
 
 if [ $BLOCKEDIP ]; then
@@ -106,9 +119,9 @@ if [ $CONNTRACK ]; then
 	$IPTABLES -A FORWARD -m state --state INVALID -j DROP
 fi
 
-if [ -s "$BASEDIR/include/ipv4_custom_blockports" ]; then
-	echo -e "\E[33mLoading custom blocked port rules...\E[37m"
-	. "$BASEDIR/include/ipv4_custom_blockports"
+if [ -s "$BASEDIR/include/ipv4_custom_blockoutports" ]; then
+	echo -e "\E[33mLoading custom blocked outbound port rules...\E[37m"
+	. "$BASEDIR/include/ipv4_custom_blockoutports"
 fi
 
 if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
@@ -294,12 +307,20 @@ if [ $IPV6 ]; then
 	$IP6TABLES -F OUTPUT &>/dev/null
 	$IP6TABLES -F PREROUTING &>/dev/null
 	$IP6TABLES -F POSTROUTING &>/dev/null
+	if [ -s "$BASEDIR/include/ipv6_custom_flush" ]; then
+		echo -e "\E[33mLoading custom IPv6 flush rules...\E[37m"
+		. "$BASEDIR/include/ipv6_custom_flush"
+	fi
 
 	echo -ne "\E[33mAdding trusted IPv6:\E[37m "
 
 	$IP6TABLES -A INPUT -i lo -j ACCEPT
 	$IP6TABLES -A OUTPUT -o lo -j ACCEPT
 
+	if [ -s "$BASEDIR/include/ipv6_custom_trust" ]; then
+		echo -e "\E[33mLoading custom IPv6 trust rules...\E[37m"
+		. "$BASEDIR/include/ipv6_custom_trust"
+	fi
 	for i in $IPV6TRUSTED; do
 		echo -n "$i "
 		$IP6TABLES -A INPUT -s $i -j ACCEPT
@@ -307,6 +328,10 @@ if [ $IPV6 ]; then
 	done
 	echo -ne "\n\E[37m"
 
+	if [ -s "$BASEDIR/include/ipv6_custom_mssclamp" ]; then
+		echo -e "\E[33mLoading custom IPv6 MSS Clamp rules...\E[37m"
+		. "$BASEDIR/include/ipv6_custom_mssclamp"
+	fi
 
 	if [ "$CLAMPMSSIPV6" ]; then
 		echo -e "\E[33mClamping IPV6 MSS to PMTU...\E[37m"
@@ -329,6 +354,10 @@ if [ $IPV6 ]; then
 		done
 	fi
 
+	if [ -s "$BASEDIR/include/ipv6_custom_blockoutports" ]; then
+		echo -e "\E[33mLoading custom IPv6 blocked outbound port rules...\E[37m"
+		. "$BASEDIR/include/ipv6_custom_blockoutports"
+	fi
 	if [ "$BLOCKIPV6TCPPORTS" ] || [ "$BLOCKIPV6UDPPORTS" ]; then
 		echo -en "\E[33mBlocking outbound port:\E[37m "
 		if [ "$BLOCKIPV6TCPPORTS" ]; then
@@ -346,6 +375,10 @@ if [ $IPV6 ]; then
 		echo -en "\n\E[37m"
 	fi
 
+	if [ -s "$BASEDIR/include/ipv6_custom_allowedports" ]; then
+		echo -e "\E[33mLoading custom IPv6 allowed port rules...\E[37m"
+		. "$BASEDIR/include/ipv6_custom_allowedports"
+	fi
 	if [ "$IPV6TCP" ] || [ "$IPV6UDP" ]; then
 		echo -en "\E[33mAdding allowed IPv6 port:\E[37m "
 
@@ -367,11 +400,22 @@ if [ $IPV6 ]; then
 		echo -en "\n\E[37m"
 	fi
 	fi
+
+	if [ -s "$BASEDIR/include/ipv6_custom_conntrack" ]; then
+		echo -e "\E[33mLoading custom IPv6 conntrack rules...\E[37m"
+		. "$BASEDIR/include/ipv6_custom_conntrack"
+	fi
+
 	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
-		$IP6TABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-		$IP6TABLES -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
-	        $IP6TABLES -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
-        	$IP6TABLES -A OUTPUT -m state --state NEW -j ACCEPT
+		$IP6TABLES -A INPUT -m state --state NEW -j ACCEPT
+		$IP6TABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+		$IP6TABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+		$IP6TABLES -A FORWARD -m state --state NEW -j ACCEPT
+		$IP6TABLES -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+		$IP6TABLES -A OUTPUT -m state --state NEW -j ACCEPT
+		$IP6TABLES -A INPUT -m state --state INVALID -j DROP
+		$IP6TABLES -A OUTPUT -m state --state INVALID -j DROP
+		$IP6TABLES -A FORWARD -m state --state INVALID -j DROP
 		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -i $IPV6INT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP
@@ -380,6 +424,10 @@ if [ $IPV6 ]; then
 	
 
 
+	if [ -s "$BASEDIR/include/ipv6_custom_routing" ]; then
+		echo -e "\E[33mLoading custom IPv6 routing rules...\E[37m"
+		. "$BASEDIR/include/ipv6_custom_routing"
+	fi
 	if [ $IPV6FORWARDRANGE ]; then
 		for i in $IPV6FORWARDRANGE; do
 			$IP6TABLES -A FORWARD -s $i -j ACCEPT
@@ -387,6 +435,10 @@ if [ $IPV6 ]; then
 		done
 	fi
 	
+	if [ -s "$BASEDIR/include/ipv6_custom_blockincoming" ]; then
+		echo -e "\E[33mLoading custom IPv6 incoming blocked port rules...\E[37m"
+		. "$BASEDIR/include/ipv6_custom_blockincoming"
+	fi
 	if [ $IPV6BLOCKINCOMING ]; then
 		$IP6TABLES -A INPUT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -p udp -j DROP

@@ -15,6 +15,11 @@ out of your own system from the network.
 
 Hope you read this before running rc.firewall!
 
+[Update 7/14/2010]
+You can now place custom rules in at specific points of the firewall
+rule loading.  See include/README for more details.
+
+
 This is a script in progress, and is nowhere near complete.  If you
 find obvious bugs or have a patch to add new features/remove bugs,
 please send them to me.

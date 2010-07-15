@@ -3,5 +3,10 @@ custom rules at each section of the firewall script:
 
 ipv4_custom_allowedports   ipv4_custom_mssclamp     ipv4_custom_proto
 ipv4_custom_blockincoming  ipv4_custom_nat          ipv4_custom_routing
-ipv4_custom_blockports     ipv4_custom_notrack
-ipv4_custom_conntrack      ipv4_custom_portforward
+ipv4_custom_blockoutports  ipv4_custom_notrack      ipv4_custom_flush
+ipv4_custom_conntrack      ipv4_custom_portforward  ipv4_custom_trust
+ipv4_custom_blockip
+
+ipv6_custom_flush          ipv6_custom_trust        ipv6_custom_mssclamp
+ipv6_custom_blockoutports  ipv6_custom_allowedports ipv6_custom_conntrack
+ipv6_custom_routing        ipv6_custom_blockincoming
