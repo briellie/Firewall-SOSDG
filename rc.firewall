@@ -89,9 +89,11 @@ if [ $CONNTRACK ]; then
 	$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 	$IPTABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
 	$IPTABLES -A FORWARD -m state --state NEW -j ACCEPT
-	$IPTABLES -A INPUT -m state --state INVALID -j DROP
 	$IPTABLES -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
 	$IPTABLES -A OUTPUT -m state --state NEW -j ACCEPT
+	$IPTABLES -A INPUT -m state --state INVALID -j DROP
+	$IPTABLES -A OUTPUT -m state --state INVALID -j DROP
+	$IPTABLES -A FORWARD -m state --state INVALID -j DROP
 fi
 
 if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
