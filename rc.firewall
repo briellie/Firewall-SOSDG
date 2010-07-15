@@ -64,7 +64,6 @@ fi
 if [ -s "$BASEDIR/include/ipv4_custom_mssclamp" ]; then
 	echo -e "\E[33mLoading custom MSS Clamp rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_mssclamp"
-	echo -ne "\n"
 fi
 
 if [ "$CLAMPMSS" ]; then
@@ -93,7 +92,6 @@ $IPTABLES -A INPUT -j DROP -p udp --dport domain -m u32 --u32 \
 if [ -s "$BASEDIR/include/ipv4_custom_conntrack" ]; then
 	echo -e "\E[33mLoading custom conntrack rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_conntrack"
-	echo -ne "\n"
 fi
 
 if [ $CONNTRACK ]; then
@@ -111,7 +109,6 @@ fi
 if [ -s "$BASEDIR/include/ipv4_custom_blockports" ]; then
 	echo -e "\E[33mLoading custom blocked port rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_blockports"
-	echo -ne "\n"
 fi
 
 if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
@@ -145,7 +142,6 @@ fi
 if [ -s "$BASEDIR/include/ipv4_custom_allowedports" ]; then
 	echo -e "\E[33mLoading custom allowed port rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_allowedports"
-	echo -ne "\n"
 fi
 
 if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
@@ -174,7 +170,6 @@ fi
 if [ -s "$BASEDIR/include/ipv4_custom_proto" ]; then
 	echo -e "\E[33mLoading custom protocol rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_proto"
-	echo -ne "\n"
 fi
 
 if [ "$ALLOWEDPROTO" ]; then
@@ -191,7 +186,6 @@ fi
 if [ -s "$BASEDIR/include/ipv4_custom_notrack" ]; then
 	echo -e "\E[33mLoading custom NOTRACK rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_notrack"
-	echo -ne "\n"
 fi
 
 if [ $CONNTRACK ]; then
@@ -207,7 +201,6 @@ fi
 if [ -s "$BASEDIR/include/ipv4_custom_routing" ]; then
 	echo -e "\E[33mLoading custom routing rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_routing"
-	echo -ne "\n"
 fi
 
 if [ $ROUTING ]; then
@@ -242,7 +235,6 @@ fi
 if [ -s "$BASEDIR/include/ipv4_custom_portforward" ]; then
 	echo -e "\E[33mLoading custom port forwarding rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_portforward"
-	echo -ne "\n"
 fi
 
 if [ $PORTFW ] && [ $NAT ]; then
@@ -267,7 +259,6 @@ fi
 if [ -s "$BASEDIR/include/ipv4_custom_nat" ]; then
 	echo -e "\E[33mLoading custom nat rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_nat"
-	echo -ne "\n"
 fi
 
 if [ $NAT ]; then
@@ -289,7 +280,6 @@ $IPTABLES --policy FORWARD DROP
 if [ -s "$BASEDIR/include/ipv4_custom_blockincoming" ]; then
 	echo -e "\E[33mLoading custom incoming blocked rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_blockincoming"
-	echo -ne "\n"
 fi
 
 if [ $BLOCKINCOMING ]; then
