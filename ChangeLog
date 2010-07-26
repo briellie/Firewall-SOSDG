@@ -1,3 +1,12 @@
+0.9.4 - Brielle Bruns <bruns@2mbit.com>
+	- Initscript
+	- stop-firewall for...  stopping the firewall!
+	- Code cleanups
+
+0.9.3 - Brielle Bruns <bruns@2mbit.com>
+	- Misc tweaks and reorg
+	- Custom command files
+
 0.9 - Brielle Bruns <bruns@2mbit.com>
 	- Colorize output
 	- Added outbound port blocking options

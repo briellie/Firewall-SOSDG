@@ -1,0 +1,34 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          sosdg-firewall
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs $network
+# X-Start-Before:    
+# X-Stop-After:      
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Manage firewall status
+# Description:       Manage Firewall/SOSDG status
+### END INIT INFO
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+FIREWALL_START=/etc/firewall-sosdg/rc.firewall
+FIREWALL_STOP=/etc/firewall-sosdg/stop-firewall
+. /lib/lsb/init-functions
+
+case "${1:-}" in
+  start)
+        log_begin_msg "Starting Firewall/SOSDG..."
+        $FIREWALL_START
+        log_end_msg $?
+  ;;
+  stop)
+        log_begin_msg "Stopping Firewall/SOSDG..."
+	$FIREWALL_STOP
+        log_end_msg $?
+  ;;
+  *)
+        log_success_msg "Usage: $0 {start|stop}"
+        exit 1
+esac
+exit 0
