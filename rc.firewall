@@ -1,13 +1,33 @@
 #/bin/sh
-# v0.9.3
+# v0.9.4
 # By Brielle Bruns <bruns@2mbit.com>
 # URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
-echo -e "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
-echo -e "SOSDG/Firewall v0.9.3"
-echo -e "Brielle Bruns <bruns@2mbit.com>"
-echo -e "http://www.sosdg.org/freestuff/firewall"
-echo -e "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n"
+#
+#    Copyright (C) 2009 - 2010  Brielle Bruns
+#    Copyright (C) 2009 - 2010  The Summit Open Source Development Group
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+ SOSDG/Firewall v0.9.3
+ Brielle Bruns <bruns@2mbit.com>
+ http://www.sosdg.org/freestuff/firewall
+ This program comes with ABSOLUTELY NO WARRANTY.
+ This is free software, and you are welcome to 
+ redistribute it under certain conditions.
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
 
 BASEDIR=/etc/firewall-sosdg
 TWEAKS=$BASEDIR/tweaks
