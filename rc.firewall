@@ -448,7 +448,7 @@ if [ $IPV6 ]; then
 		echo -e "\E[33mLoading custom IPv6 routing rules...\E[37m"
 		. "$BASEDIR/include/ipv6_custom_routing"
 	fi
-	if [ $IPV6FORWARDRANGE ]; then
+	if [ "$IPV6FORWARDRANGE" ]; then
 		for i in $IPV6FORWARDRANGE; do
 			$IP6TABLES -A FORWARD -s $i -j ACCEPT
 			$IP6TABLES -A FORWARD -d $i -j ACCEPT
