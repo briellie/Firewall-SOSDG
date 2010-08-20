@@ -47,8 +47,7 @@ if [ $NAT ]; then
 fi
 $IPTABLES -F -t raw &>/dev/null
 if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then
-	display_c YELLOW "Loading custom flush rules..." Y
-	#echo -e "\E[33mLoading custom flush rules...\E[37m"
+	display_c YELLOW "Loading custom flush rules..."
 	. "$BASEDIR/include/ipv4_custom_flush"
 fi
 
@@ -58,14 +57,12 @@ $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
 if [ -s "$BASEDIR/include/ipv4_custom_trust" ]; then
-	display_c YELLOW "Loading custom trust rules..." Y
-	#echo -e "\E[33mLoading custom trust rules...\E[37m"
+	display_c YELLOW "Loading custom trust rules..."
 	. "$BASEDIR/include/ipv4_custom_trust"
 fi
 
 if [ "$TRUSTEDIP" ]; then
 	display_c YELLOW "Adding trusted IP: " N
-	#echo -ne "\E[33mAdding trusted IP:\E[37m "
 	for i in $TRUSTEDIP; do
 		echo -n "$i "
 		$IPTABLES -A INPUT -s $i -j ACCEPT
@@ -75,12 +72,12 @@ if [ "$TRUSTEDIP" ]; then
 fi
 
 if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
-	echo -e "\E[33mLoading custom ip block rules...\E[37m"
+	display_c YELLOW "Loading custom ip block rules..."
 	. "$BASEDIR/include/ipv6_custom_blockip"
 fi
 
 if [ $BLOCKEDIP ]; then
-	echo -en "\E[33mAdding blocked IPs:\E[37m "
+	display_c YELLOW "Adding blocked IPs: " N
 	for i in `grep -v "\#" $BLOCKEDIP`; do
 		echo -n "$i "
 		$IPTABLES -A INPUT -s $i -j DROP
@@ -90,7 +87,7 @@ echo -ne "\n"
 fi
 
 if [ "$STRIPECN" ]; then
-	echo -en "\E[33mStripping ECN off of TCP packets to \E[37m"
+	display_c YELLOW "Stripping ECN off of TCP packets to " N
 	for i in $STRIPECN; do
 		echo -en "$i "
 		$IPTABLES -A PREROUTING -t mangle -p tcp -d $i -j ECN \
@@ -100,12 +97,12 @@ echo -ne "\n"
 fi
 
 if [ -s "$BASEDIR/include/ipv4_custom_mssclamp" ]; then
-	echo -e "\E[33mLoading custom MSS Clamp rules...\E[37m"
+	display_c YELLOW "Loading custom MSS Clamp rules..."
 	. "$BASEDIR/include/ipv4_custom_mssclamp"
 fi
 
 if [ "$CLAMPMSS" ]; then
-	echo -e "\E[33mClamping MSS to PMTU...\E[37m"
+	display_c YELLOW "Clamping MSS to PMTU..."
 	for i in $CLAMPMSS; do
 		$IPTABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
 			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
@@ -128,7 +125,7 @@ $IPTABLES -A INPUT -j DROP -p udp --dport domain -m u32 --u32 \
 "0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
 
 if [ -s "$BASEDIR/include/ipv4_custom_conntrack" ]; then
-	echo -e "\E[33mLoading custom conntrack rules...\E[37m"
+	display_c YELLOW "Loading custom conntrack rules..."
 	. "$BASEDIR/include/ipv4_custom_conntrack"
 fi
 
@@ -145,12 +142,12 @@ if [ $CONNTRACK ]; then
 fi
 
 if [ -s "$BASEDIR/include/ipv4_custom_blockoutports" ]; then
-	echo -e "\E[33mLoading custom blocked outbound port rules...\E[37m"
+	display_c YELLOW "Loading custom blocked outbound port rules..."
 	. "$BASEDIR/include/ipv4_custom_blockoutports"
 fi
 
 if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
-	echo -en "\E[33mBlocking outbound port:\E[37m "
+	display_c YELLOW "Blocking outbound port: " N
 
 	if  [ "$BLOCKTCPPORTS" ]; then
 		for i in $BLOCKTCPPORTS; do
@@ -178,12 +175,12 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 fi
 
 if [ -s "$BASEDIR/include/ipv4_custom_allowedports" ]; then
-	echo -e "\E[33mLoading custom allowed port rules...\E[37m"
+	display_c YELLOW "Loading custom allowed port rules..."
 	. "$BASEDIR/include/ipv4_custom_allowedports"
 fi
 
 if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
-	echo -en "\E[33mAdding allowed port:\E[37m "
+	display_c YELLOW "Adding allowed port: " N
 
 	if [ "$TCPPORTS" ]; then
 		for i in $TCPPORTS; do
