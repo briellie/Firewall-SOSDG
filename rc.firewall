@@ -58,12 +58,14 @@ $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
 if [ -s "$BASEDIR/include/ipv4_custom_trust" ]; then
-	echo -e "\E[33mLoading custom trust rules...\E[37m"
+	display_c YELLOW "Loading custom trust rules..." Y
+	#echo -e "\E[33mLoading custom trust rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_trust"
 fi
 
 if [ "$TRUSTEDIP" ]; then
-	echo -ne "\E[33mAdding trusted IP:\E[37m "
+	display_c YELLOW "Adding trusted IP: " N
+	#echo -ne "\E[33mAdding trusted IP:\E[37m "
 	for i in $TRUSTEDIP; do
 		echo -n "$i "
 		$IPTABLES -A INPUT -s $i -j ACCEPT
