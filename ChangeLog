@@ -2,6 +2,7 @@
 	- Initscript
 	- stop-firewall for...  stopping the firewall!
 	- Code cleanups
+	- Use of functions for some processes
 
 0.9.3 - Brielle Bruns <bruns@2mbit.com>
 	- Misc tweaks and reorg
