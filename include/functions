@@ -21,7 +21,7 @@
 
 # display_c($COLOR,$TEXT,BOOL)
 # $COLOR being bash colors
-# $TEXT being what to output
+# $TEXT being what to output (make sure to put " " around text)
 # BOOL being (Y or N) to do newline at end or not
 function display_c {
 	unset COLOR_CODE TEXT NEWLINE
@@ -34,7 +34,7 @@ function display_c {
 	echo -e $NEWLINE "$COLOR_CODE$TEXT$DEFAULT_COLOR"
 }
 
-# pick_color($COLOR)
+# pick_color $COLOR
 # returns appropriate color codes for use in display_c and such
 function pick_color {
 	case $1 in
@@ -49,4 +49,13 @@ function pick_color {
 		*) COLOR="\E[37m" ;;
 	esac
 	echo "$COLOR"
+}
+
+# reset_color
+function reset_color {
+	DEFAULT_COLOR="\E[39m"
+	if [ "$1" == "N" ]; then
+		NEWLINE="-n"
+	fi
+	echo $NEWLINE -e "$DEFAULT_COLOR"
 }

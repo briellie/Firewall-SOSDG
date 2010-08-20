@@ -197,29 +197,29 @@ if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 			$IPTABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
 		done
 	fi
-	echo -en "\n\E[37m"
+	reset_color
 fi
 
 
 
 if [ -s "$BASEDIR/include/ipv4_custom_proto" ]; then
-	echo -e "\E[33mLoading custom protocol rules...\E[37m"
+	display_c YELLOW "Loading custom protocol rules..."
 	. "$BASEDIR/include/ipv4_custom_proto"
 fi
 
 if [ "$ALLOWEDPROTO" ]; then
-	echo -en "\E[33mAdding allowed protocols:\E[37m "
+	display_c YELLOW "Adding allowed protocols: " N
 	for i in $ALLOWEDPROTO; do
 		echo -n "$i "
 		$IPTABLES -A INPUT -p $i -j ACCEPT
 		$IPTABLES -A OUTPUT -p $i -j ACCEPT
 	done
-	echo -en "\n\E[37m"
+	reset_color
 fi
 
 
 if [ -s "$BASEDIR/include/ipv4_custom_notrack" ]; then
-	echo -e "\E[33mLoading custom NOTRACK rules...\E[37m"
+	display_c YELLOW "Loading custom NOTRACK rules..."
 	. "$BASEDIR/include/ipv4_custom_notrack"
 fi
 
@@ -234,12 +234,12 @@ fi
 
 
 if [ -s "$BASEDIR/include/ipv4_custom_routing" ]; then
-	echo -e "\E[33mLoading custom routing rules...\E[37m"
+	display_c YELLOW "Loading custom routing rules..."
 	. "$BASEDIR/include/ipv4_custom_routing"
 fi
 
 if [ $ROUTING ]; then
-	echo -en "\E[33mAdding route:\E[37m "
+	display_c YELLOW "Adding route: " N
 	for i in `grep -v "\#" $ROUTING`; do
 		ROUTE=( ${i//:/ } )
 		FWINT1=${ROUTE[0]}
@@ -268,12 +268,12 @@ fi
 
 
 if [ -s "$BASEDIR/include/ipv4_custom_portforward" ]; then
-	echo -e "\E[33mLoading custom port forwarding rules...\E[37m"
+	display_c YELLOW "Loading custom port forwarding rules..."
 	. "$BASEDIR/include/ipv4_custom_portforward"
 fi
 
 if [ $PORTFW ] && [ $NAT ]; then
-	echo -en "\E[33mAdding port forward for:\E[37m "
+	display_c YELLOW "Adding port forward for: " N
 	for i in `grep -v "\#" $PORTFW`; do
 		PORTADD=( ${i//:/ } )
 		$IPTABLES -A PREROUTING -t nat -i $NATEXTIF -p ${PORTADD[1]} \
@@ -292,7 +292,7 @@ fi
 
 
 if [ -s "$BASEDIR/include/ipv4_custom_nat" ]; then
-	echo -e "\E[33mLoading custom nat rules...\E[37m"
+	display_c YELLOW "Loading custom nat rules..."
 	. "$BASEDIR/include/ipv4_custom_nat"
 fi
 
@@ -313,7 +313,7 @@ $IPTABLES --policy FORWARD DROP
 
 
 if [ -s "$BASEDIR/include/ipv4_custom_blockincoming" ]; then
-	echo -e "\E[33mLoading custom incoming blocked rules...\E[37m"
+	display_c YELLOW "Loading custom incoming blocked rules..."
 	. "$BASEDIR/include/ipv4_custom_blockincoming"
 fi
 
@@ -330,17 +330,17 @@ if [ $IPV6 ]; then
 	$IP6TABLES -F PREROUTING &>/dev/null
 	$IP6TABLES -F POSTROUTING &>/dev/null
 	if [ -s "$BASEDIR/include/ipv6_custom_flush" ]; then
-		echo -e "\E[33mLoading custom IPv6 flush rules...\E[37m"
+		display_c YELLOW "Loading custom IPv6 flush rules..."
 		. "$BASEDIR/include/ipv6_custom_flush"
 	fi
 
-	echo -ne "\E[33mAdding trusted IPv6:\E[37m "
+	display_c YELLOW "Adding trusted IPv6: " N
 
 	$IP6TABLES -A INPUT -i lo -j ACCEPT
 	$IP6TABLES -A OUTPUT -o lo -j ACCEPT
 
 	if [ -s "$BASEDIR/include/ipv6_custom_trust" ]; then
-		echo -e "\E[33mLoading custom IPv6 trust rules...\E[37m"
+		display_c YELLOW "Loading custom IPv6 trust rules..."
 		. "$BASEDIR/include/ipv6_custom_trust"
 	fi
 	for i in $IPV6TRUSTED; do
@@ -348,15 +348,15 @@ if [ $IPV6 ]; then
 		$IP6TABLES -A INPUT -s $i -j ACCEPT
 		$IP6TABLES -A OUTPUT -d $i -j ACCEPT
 	done
-	echo -ne "\n\E[37m"
+	reset_color
 
 	if [ -s "$BASEDIR/include/ipv6_custom_mssclamp" ]; then
-		echo -e "\E[33mLoading custom IPv6 MSS Clamp rules...\E[37m"
+		display_c YELLOW "Loading custom IPv6 MSS Clamp rules..."
 		. "$BASEDIR/include/ipv6_custom_mssclamp"
 	fi
 
 	if [ "$CLAMPMSSIPV6" ]; then
-		echo -e "\E[33mClamping IPV6 MSS to PMTU...\E[37m"
+		display_c YELLOW "Clamping IPV6 MSS to PMTU..."
 		for i in $CLAMPMSSIPV6; do
 			$IP6TABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN \
 			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
@@ -377,11 +377,11 @@ if [ $IPV6 ]; then
 	fi
 
 	if [ -s "$BASEDIR/include/ipv6_custom_blockoutports" ]; then
-		echo -e "\E[33mLoading custom IPv6 blocked outbound port rules...\E[37m"
+		display_c YELLOW "Loading custom IPv6 blocked outbound port rules..."
 		. "$BASEDIR/include/ipv6_custom_blockoutports"
 	fi
 	if [ "$BLOCKIPV6TCPPORTS" ] || [ "$BLOCKIPV6UDPPORTS" ]; then
-		echo -en "\E[33mBlocking outbound port:\E[37m "
+		display_c YELLOW "Blocking outbound port: " N
 		if [ "$BLOCKIPV6TCPPORTS" ]; then
 			for i in $BLOCKIPV6TCPPORTS; do
 				echo -en "\E[35mTCP\E[37m/\E[32m$i "
@@ -394,15 +394,15 @@ if [ $IPV6 ]; then
 				$IP6TABLES -A OUTPUT -p udp --dport $i -j DROP
 			done
 		fi
-		echo -en "\n\E[37m"
+		reset_color
 	fi
 
 	if [ -s "$BASEDIR/include/ipv6_custom_allowedports" ]; then
-		echo -e "\E[33mLoading custom IPv6 allowed port rules...\E[37m"
+		display_c YELLOW "Loading custom IPv6 allowed port rules..."
 		. "$BASEDIR/include/ipv6_custom_allowedports"
 	fi
 	if [ "$IPV6TCP" ] || [ "$IPV6UDP" ]; then
-		echo -en "\E[33mAdding allowed IPv6 port:\E[37m "
+		display_c YELLOW "Adding allowed IPv6 port: " N
 
 		if [ "$IPV6TCP" ]; then
 			for i in $IPV6TCP; do
@@ -419,12 +419,12 @@ if [ $IPV6 ]; then
         			$IP6TABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
 			done
 		fi
-		echo -en "\n\E[37m"
+		reset_color
 	fi
 	fi
 
 	if [ -s "$BASEDIR/include/ipv6_custom_conntrack" ]; then
-		echo -e "\E[33mLoading custom IPv6 conntrack rules...\E[37m"
+		display_c YELLOW "Loading custom IPv6 conntrack rules..."
 		. "$BASEDIR/include/ipv6_custom_conntrack"
 	fi
 
@@ -447,7 +447,7 @@ if [ $IPV6 ]; then
 
 
 	if [ -s "$BASEDIR/include/ipv6_custom_routing" ]; then
-		echo -e "\E[33mLoading custom IPv6 routing rules...\E[37m"
+		display_c YELLOW "Loading custom IPv6 routing rules..."
 		. "$BASEDIR/include/ipv6_custom_routing"
 	fi
 	if [ "$IPV6FORWARDRANGE" ]; then
@@ -458,7 +458,7 @@ if [ $IPV6 ]; then
 	fi
 	
 	if [ -s "$BASEDIR/include/ipv6_custom_blockincoming" ]; then
-		echo -e "\E[33mLoading custom IPv6 incoming blocked port rules...\E[37m"
+		display_c YELLOW "Loading custom IPv6 incoming blocked port rules..."
 		. "$BASEDIR/include/ipv6_custom_blockincoming"
 	fi
 	if [ $IPV6BLOCKINCOMING ]; then
