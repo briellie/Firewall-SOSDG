@@ -21,7 +21,7 @@
 
 
 echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- SOSDG/Firewall v0.9.3
+ SOSDG/Firewall v0.9.4
  Brielle Bruns <bruns@2mbit.com>
  http://www.sosdg.org/freestuff/firewall
  This program comes with ABSOLUTELY NO WARRANTY.
@@ -34,6 +34,8 @@ TWEAKS=$BASEDIR/tweaks
 #BASEDIR=`pwd`
 
 . $BASEDIR/options
+. $BASEDIR/include/functions
+
 
 $IPTABLES --flush &>/dev/null
 $IPTABLES -F OUTPUT &>/dev/null
@@ -45,7 +47,8 @@ if [ $NAT ]; then
 fi
 $IPTABLES -F -t raw &>/dev/null
 if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then
-	echo -e "\E[33mLoading custom flush rules...\E[37m"
+	display_c YELLOW "Loading custom flush rules..." Y
+	#echo -e "\E[33mLoading custom flush rules...\E[37m"
 	. "$BASEDIR/include/ipv4_custom_flush"
 fi
 
