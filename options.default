@@ -49,12 +49,19 @@ DONTTRACK="127.0.0.1"
 # IP range(s) to forward
 ROUTING=$BASEDIR/ipv4-routing
 
+#==============
+# Obsolete - DO NOT USE ANYMORE. Will be removed in 1.0
 # IP ranges(s) to NAT using SNAT.
-NATRANGE="192.168.1.0/24"
-
+#NATRANGE="192.168.1.0/24"
 # External IP and interface for SNAT
-NATEXTIP="172.16.1.1"
-NATEXTIF="eth0"
+#NATEXTIP="172.16.1.1"
+#NATEXTIF="eth0"
+#==============
+
+# IP NAT Rules
+# SNAT:<INT IF>:<INT IP>:<EXT IF>:<EXT IP>
+# MASQ:<INT IF>:<INT IP>:<EXT IF>
+#NAT_RANGE=
 
 
 # IP Ranges to block all traffic incoming/outgoing

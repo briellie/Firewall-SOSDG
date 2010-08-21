@@ -3,6 +3,9 @@
 	- stop-firewall for...  stopping the firewall!
 	- Code cleanups
 	- Use of functions for some processes
+	- Fix DHCP rule
+	- Obsoleted NATRANGE, NATEXTIP, NATEXTIF
+	- Added NAT_RANGE which can take SNAT/MASQ rules
 
 0.9.3 - Brielle Bruns <bruns@2mbit.com>
 	- Misc tweaks and reorg

@@ -287,7 +287,10 @@ echo -ne "\n"
 fi
 
 if [ $LANDHCPSERVER ]; then
-	$IPTABLES -A INPUT -i $INTIF -s 0.0.0.0 -j ACCEPT
+	#$IPTABLES -A INPUT -i $INTIF -s 0.0.0.0 -j ACCEPT
+	$IPTABLES  -I INPUT -i $INTIF -p udp --dport 67:68 --sport \
+     67:68 -j ACCEPT
+
 fi
 
 
@@ -297,14 +300,39 @@ if [ -s "$BASEDIR/include/ipv4_custom_nat" ]; then
 fi
 
 if [ $NAT ]; then
+	if [ $NAT_RANGE ]; then
+		display_c YELLOW "Adding NAT rule: " N
+		for i in $NAT_RANGE; do
+			NAT_RULE=( ${i//:/ } )
+			case $NAT_RULE[1] in
+			SNAT)
+				$IPTABLES -A POSTROUTING -t nat -i ${NAT_RULE[2]} -s ${NAT_RULE[3]} -j SNAT \
+					-o ${NAT_RULE[4]} --to-source ${NAT_RULE[5]} 
+					display_c PURPLE "SNAT:${NAT_RULE[2]}:${NAT_RULE[3]}->${NAT_RULE[4]}:${NAT_RULE[5]} " N
+					;;
+			MASQ)
+				$IPTABLES -A POSTROUTING -t nat -i ${NAT_RULE[2]} -s ${NAT_RULE[3]} \
+					-j MASQUERADE -o ${NAT_RULE[4]}
+					display_c PURPLE "MASQ:${NAT_RULE[2]}:${NAT_RULE[3]}->${NAT_RULE[4]} " N
+					;;
+				*) display_c RED "Invalid NAT rule in NAT_RANGE" ;;
+			esac
+			$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[4]} -j ACCEPT
+			$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[4]} -j ACCEPT
+		done
+		echo -ne "\n"
+	fi			
+	#=================
+    # This section is going away in 1.0
 	for i in $NATRANGE; do
 		$IPTABLES -A POSTROUTING -t nat -s $i -o $NATEXTIF -j SNAT --to-source $NATEXTIP
 	done
-	# This is necessary to make sure that PMTU works
+	 This is necessary to make sure that PMTU works
 	$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o $NATEXTIF \
 			-j ACCEPT
 	$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
 			-o $NATEXTIF -j ACCEPT
+	#=================
 fi
 
 $IPTABLES --policy INPUT ACCEPT

@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# display_c($COLOR,$TEXT,BOOL)
+# display_c $COLOR $TEXT BOOL(YN)
 # $COLOR being bash colors
 # $TEXT being what to output (make sure to put " " around text)
 # BOOL being (Y or N) to do newline at end or not
@@ -32,6 +32,18 @@ function display_c {
 		NEWLINE="-n"
 	fi
 	echo -e $NEWLINE "$COLOR_CODE$TEXT$DEFAULT_COLOR"
+}
+
+
+# display_m $COLOR(IGNORED) $TEXT BOOL(YN)
+# Non-color version of display_c
+function display_m {
+	unset TEXT NEWLINE
+	TEXT="$2"
+	if [ "$3" == "N" ]; then
+		NEWLINE="-n"
+	fi
+	echo -e $NEWLINE "$TEXT"
 }
 
 # pick_color $COLOR
