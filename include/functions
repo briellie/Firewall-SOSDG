@@ -65,6 +65,7 @@ function pick_color {
 
 # reset_color
 function reset_color {
+	unset NEWLINE
 	DEFAULT_COLOR="\E[39m"
 	if [ "$1" == "N" ]; then
 		NEWLINE="-n"
