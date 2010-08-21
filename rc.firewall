@@ -171,7 +171,7 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 			fi
 		done
 	fi
-	echo -en "\n"
+	reset_color
 fi
 
 if [ -s "$BASEDIR/include/ipv4_custom_allowedports" ]; then
@@ -302,22 +302,21 @@ fi
 if [ $NAT ]; then
 	if [ $NAT_RANGE ]; then
 		display_c YELLOW "Adding NAT rule: " N
-		for i in $NAT_RANGE; do
+		for i in "$NAT_RANGE"; do
 			NAT_RULE=( ${i//:/ } )
 			case ${NAT_RULE[0]} in
 			SNAT)
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j SNAT \
 					-o ${NAT_RULE[3]} --to-source ${NAT_RULE[4]} 
-					display_c PURPLE "SNAT:${NAT_RULE[1]}:${NAT_RULE[2]}->${NAT_RULE[3]}:${NAT_RULE[4]} " N
-					$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
-					$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+				display_c PURPLE "SNAT:${NAT_RULE[1]}:${NAT_RULE[2]}->${NAT_RULE[3]}:${NAT_RULE[4]} " N
+				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
+				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
 					;;
 			MASQ)
-				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} \
-					-j MASQUERADE -o ${NAT_RULE[3]}
-					display_c PURPLE "MASQ:${NAT_RULE[1]}:${NAT_RULE[2]}->${NAT_RULE[3]} " N
-					$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
-					$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j MASQUERADE -o ${NAT_RULE[3]}
+				display_c PURPLE "MASQ:${NAT_RULE[2]}->${NAT_RULE[3]} " N
+				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
+				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
 					;;
 				*) display_c RED "Invalid NAT rule in NAT_RANGE" ;;
 			esac
