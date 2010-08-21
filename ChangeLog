@@ -6,6 +6,7 @@
 	- Fix DHCP rule
 	- Obsoleted NATRANGE, NATEXTIP, NATEXTIF
 	- Added NAT_RANGE which can take SNAT/MASQ rules
+	- Changed port forwarding rules to include external interface
 
 0.9.3 - Brielle Bruns <bruns@2mbit.com>
 	- Misc tweaks and reorg

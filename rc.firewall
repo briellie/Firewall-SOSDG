@@ -276,14 +276,14 @@ if [ $PORTFW ] && [ $NAT ]; then
 	display_c YELLOW "Adding port forward for: " N
 	for i in `grep -v "\#" $PORTFW`; do
 		PORTADD=( ${i//:/ } )
-		$IPTABLES -A PREROUTING -t nat -i $NATEXTIF -p ${PORTADD[1]} \
-			--dport ${PORTADD[0]} -j DNAT --to \
-			${PORTADD[2]}:${PORTADD[3]}
-		$IPTABLES -A INPUT -p ${PORTADD[1]} -m state --state NEW \
-			--dport ${PORTADD[0]} -i $NATEXTIF -j ACCEPT
-		echo -en "\E[32m${PORTADD[0]}\E[37m/\E[35m${PORTADD[1]}\E[37m->${PORTADD[2]}:${PORTADD[3]} "
+		$IPTABLES -A PREROUTING -t nat -i ${PORTADD[0]} -p ${PORTADD[2]} \
+			--dport ${PORTADD[1]} -j DNAT --to \
+			${PORTADD[3]}:${PORTADD[4]}
+		$IPTABLES -A INPUT -p ${PORTADD[2]} -m state --state NEW \
+			--dport ${PORTADD[1]} -i ${PORTADD[0]} -j ACCEPT
+		display_c PURPLE "${PORTADD[0]}:${PORTADD[1]}:${PORTADD[2]}->${PORTADD[3]}:${PORTADD[4]} " N
 	done
-echo -ne "\n"
+reset_color
 fi
 
 if [ $LANDHCPSERVER ]; then
