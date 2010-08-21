@@ -300,9 +300,9 @@ if [ -s "$BASEDIR/include/ipv4_custom_nat" ]; then
 fi
 
 if [ $NAT ]; then
-	if [ $NAT_RANGE ]; then
+	if [ "$NAT_RANGE" ]; then
 		display_c YELLOW "Adding NAT rule: " N
-		for i in "$NAT_RANGE"; do
+		for i in $NAT_RANGE; do
 			NAT_RULE=( ${i//:/ } )
 			case ${NAT_RULE[0]} in
 			SNAT)
@@ -321,7 +321,7 @@ if [ $NAT ]; then
 				*) display_c RED "Invalid NAT rule in NAT_RANGE" ;;
 			esac
 		done
-		echo -ne "\n"
+		reset_color
 	fi			
 	#=================
     # This section is going away in 1.0
