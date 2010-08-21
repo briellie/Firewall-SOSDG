@@ -322,18 +322,20 @@ if [ $NAT ]; then
 			esac
 		done
 		reset_color
-	fi			
+	fi
 	#=================
     # This section is going away in 1.0
-	for i in $NATRANGE; do
-		$IPTABLES -A POSTROUTING -t nat -s $i -o $NATEXTIF -j SNAT --to-source $NATEXTIP
-	done
-	 #This is necessary to make sure that PMTU works
-	$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o $NATEXTIF \
-			-j ACCEPT
-	$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
-			-o $NATEXTIF -j ACCEPT
+	if [ "$NATRANGE" ]; then
+		for i in $NATRANGE; do
+			$IPTABLES -A POSTROUTING -t nat -s $i -o $NATEXTIF -j SNAT --to-source $NATEXTIP
+		done
+	 	#This is necessary to make sure that PMTU works
+		$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o $NATEXTIF \
+				-j ACCEPT
+		$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
+				-o $NATEXTIF -j ACCEPT
 	#=================
+	fi
 fi
 
 $IPTABLES --policy INPUT ACCEPT
