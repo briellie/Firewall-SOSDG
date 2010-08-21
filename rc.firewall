@@ -304,7 +304,7 @@ if [ $NAT ]; then
 		display_c YELLOW "Adding NAT rule: " N
 		for i in $NAT_RANGE; do
 			NAT_RULE=( ${i//:/ } )
-			case $NAT_RULE[0] in
+			case ${NAT_RULE[0]} in
 			SNAT)
 				$IPTABLES -A POSTROUTING -t nat -i ${NAT_RULE[1]} -s ${NAT_RULE[2]} -j SNAT \
 					-o ${NAT_RULE[3]} --to-source ${NAT_RULE[4]} 
