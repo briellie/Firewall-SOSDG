@@ -416,13 +416,13 @@ if [ $IPV6 ]; then
 		display_c YELLOW "Blocking outbound port: " N
 		if [ "$BLOCKIPV6TCPPORTS" ]; then
 			for i in $BLOCKIPV6TCPPORTS; do
-				echo -en "\E[35mTCP\E[37m/\E[32m$i "
+				echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
 				$IP6TABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
 			done
 		fi
 		if [ "$BLOCKIPV6UDPPORTS" ]; then
 			for i in $BLOCKIPV6UDPPORTS; do
-				echo -en "\E[34mUDP\E[37m/\E[32m$i "
+				echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
 				$IP6TABLES -A OUTPUT -p udp --dport $i -j DROP
 			done
 		fi
@@ -438,14 +438,14 @@ if [ $IPV6 ]; then
 
 		if [ "$IPV6TCP" ]; then
 			for i in $IPV6TCP; do
-				echo -en "\E[35mTCP\E[37m/\E[32m$i "
+				echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
 				$IP6TABLES -A INPUT -p tcp --dport $i -j ACCEPT
 			done
 		fi
 
 		if [ "$IPV6UDP" ]; then
 			for i in $IPV6UDP; do
-				echo -en "\E[34mUDP\E[37m/\E[32m$i "
+				echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
 				$IP6TABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
 	        		$IP6TABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
         			$IP6TABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
