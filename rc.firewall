@@ -261,7 +261,7 @@ if [ $ROUTING ]; then
  			$IPTABLES -A FORWARD -o $FWINT1 -i $FWINT2 \
 				-d $FWIP1 -s $FWIP2 -j ACCEPT
 		else
-			echo -n "$FWINT1:$FWIP1->$FWINT2:$FWIP2 "
+			echo -en "${PURPLE}$FWINT1:$FWIP1${AQUA}->${BLUE}$FWINT2:$FWIP2 "
 	fi
 	done
 echo -ne "\n"
@@ -282,7 +282,7 @@ if [ $PORTFW ] && [ $NAT ]; then
 			${PORTADD[3]}:${PORTADD[4]}
 		$IPTABLES -A INPUT -p ${PORTADD[2]} -m state --state NEW \
 			--dport ${PORTADD[1]} -i ${PORTADD[0]} -j ACCEPT
-		display_c PURPLE "${PORTADD[0]}:${PORTADD[1]}:${PORTADD[2]}->${PORTADD[3]}:${PORTADD[4]} " N
+		echo -en "${GREEN}${PORTADD[0]}:${PURPLE}${PORTADD[1]}:${PORTADD[2]}${AQUA}->${BLUE}${PORTADD[3]}:${PORTADD[4]} "
 	done
 reset_color
 fi
@@ -309,13 +309,13 @@ if [ $NAT ]; then
 			SNAT)
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j SNAT \
 					-o ${NAT_RULE[3]} --to-source ${NAT_RULE[4]} 
-				display_c PURPLE "SNAT:${NAT_RULE[1]}:${NAT_RULE[2]}->${NAT_RULE[3]}:${NAT_RULE[4]} " N
+				echo -en "${GREEN}SNAT:${PURPLE}${NAT_RULE[1]}:${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}:${NAT_RULE[4]} "
 				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
 					;;
 			MASQ)
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j MASQUERADE -o ${NAT_RULE[3]}
-				display_c PURPLE "MASQ:${NAT_RULE[2]}->${NAT_RULE[3]} " N
+				echo -en "${GREEN}MASQ:${PURPLE}${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]} "
 				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
 					;;
