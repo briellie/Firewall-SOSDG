@@ -21,7 +21,7 @@
 
 
 echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- Firewall/SOSDG v0.9.4
+ Firewall/SOSDG v0.9.4 BETA/UNSTABLE
  Brielle Bruns <bruns@2mbit.com>
  http://www.sosdg.org/freestuff/firewall
  This program comes with ABSOLUTELY NO WARRANTY.
@@ -32,6 +32,7 @@ echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 BASEDIR=/etc/firewall-sosdg
 TWEAKS=$BASEDIR/tweaks
 #BASEDIR=`pwd`
+
 . $BASEDIR/include/static
 . $BASEDIR/options
 . $BASEDIR/include/functions
