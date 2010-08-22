@@ -328,6 +328,10 @@ if [ $NAT ]; then
 	#=================
     # This section is going away in 1.0
 	if [ "$NATRANGE" ]; then
+		echo -e "${RED} **** WARNING ****"
+		echo -e "${RED} NATRANGE option detected.  Please switch to using"
+		echo -e "${RED} NAT_RANGE which uses the newer style NAT mappings."
+		echo -e "${RED} NATRANGE will be removed in v1.0"
 		for i in $NATRANGE; do
 			$IPTABLES -A POSTROUTING -t nat -s $i -o $NATEXTIF -j SNAT --to-source $NATEXTIP
 		done
