@@ -151,7 +151,8 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 
 	if  [ "$BLOCKTCPPORTS" ]; then
 		for i in $BLOCKTCPPORTS; do
-			echo -en "\E[35mTCP\E[37m/\E[32m$i "
+			#echo -en "\E[35mTCP\E[37m/\E[32m$i "
+			echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
 			$IPTABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
 			if [ "$NATRANGE" ]; then
 				for src in $NATRANGE; do
@@ -162,7 +163,8 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 	fi
 	if  [ "$BLOCKUDPPORTS" ]; then
 		for i in $BLOCKUDPPORTS; do
-			echo -en "\E[34mUDP\E[37m/\E[32m$i "
+			#echo -en "\E[34mUDP\E[37m/\E[32m$i "
+			echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
 			$IPTABLES -A OUTPUT -p udp --dport $i -j DROP
 			if [ "$NATRANGE" ]; then
 				for src in $NATRANGE; do
