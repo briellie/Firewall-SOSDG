@@ -32,7 +32,7 @@ echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 BASEDIR=/etc/firewall-sosdg
 TWEAKS=$BASEDIR/tweaks
 #BASEDIR=`pwd`
-
+. $BASEDIR/include/static
 . $BASEDIR/options
 . $BASEDIR/include/functions
 
