@@ -151,7 +151,6 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 
 	if  [ "$BLOCKTCPPORTS" ]; then
 		for i in $BLOCKTCPPORTS; do
-			#echo -en "\E[35mTCP\E[37m/\E[32m$i "
 			echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
 			$IPTABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
 			if [ "$NATRANGE" ]; then
@@ -163,7 +162,6 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 	fi
 	if  [ "$BLOCKUDPPORTS" ]; then
 		for i in $BLOCKUDPPORTS; do
-			#echo -en "\E[34mUDP\E[37m/\E[32m$i "
 			echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
 			$IPTABLES -A OUTPUT -p udp --dport $i -j DROP
 			if [ "$NATRANGE" ]; then
@@ -186,13 +184,13 @@ if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 
 	if [ "$TCPPORTS" ]; then
 		for i in $TCPPORTS; do
-			echo -en "\E[35mTCP\E[37m/\E[32m$i "
+			echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
 			$IPTABLES -A INPUT -p tcp --dport $i -j ACCEPT
 		done
 	fi
 	if [ "$UDPPORTS" ]; then
 		for i in $UDPPORTS; do
-			echo -en "\E[34mUDP\E[37m/\E[32m$i "
+			echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
 			#$IPTABLES -A INPUT -p udp --dport $i -j ACCEPT
 			$IPTABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
         		$IPTABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
@@ -258,7 +256,8 @@ if [ $ROUTING ]; then
 		$IPTABLES -A FORWARD -i $FWINT1 -o $FWINT2 \
 			-s $FWIP1 -d $FWIP2 -j ACCEPT
 		if [ ${ROUTE[4]} == "1" ]; then
-			echo -en "\E[35m$FWINT1\E[37m:$FWIP1<->\E[34m$FWINT2\E[37m:$FWIP2 "
+			#echo -en "\E[35m$FWINT1\E[37m:$FWIP1<->\E[34m$FWINT2\E[37m:$FWIP2 "
+			echo -en "${PURPLE}$FWINT1:$FWIP1${AQUA}<->${BLUE}$FWINT2:$FWIP2 "
  			$IPTABLES -A FORWARD -o $FWINT1 -i $FWINT2 \
 				-d $FWIP1 -s $FWIP2 -j ACCEPT
 		else
