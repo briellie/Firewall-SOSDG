@@ -58,7 +58,7 @@ echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
 
 
-iptables_v4_rules_flush
+iptables_rules_flush ipv4
 
 if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then
 	display_c YELLOW "Loading custom flush rules..."
