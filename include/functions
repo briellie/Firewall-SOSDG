@@ -72,3 +72,53 @@ function reset_color {
 	fi
 	echo $NEWLINE -e "$DEFAULT_COLOR"
 }
+
+# iptables_rules_flush (ipv6|ipv4)
+# Clear all rules from iptables - be very careful in how this is called as it
+# could easily lock out the user from the network.  Best way to be safe, is to
+# call iptables_policy_reset first then this function.
+function iptables_rules_flush {
+	IP_VERSION=$0
+	case $IP_VERSION in
+		ipv6) VER_IPTABLES=$IP6TABLES ;;
+		ipv4|*) VER_IPTABLES=$IPTABLES ;;
+	esac
+	$VER_IPTABLES --flush &>/dev/null
+	$VER_IPTABLES -F OUTPUT &>/dev/null
+	$VER_IPTABLES -F PREROUTING &>/dev/null
+	$VER_IPTABLES -F POSTROUTING &>/dev/null
+	$VER_IPTABLES -F -t mangle &>/dev/null
+	if [ $NAT ] && [ $IP_VERSION == "ipv4" ]; then
+		$VER_IPTABLES -F -t nat &>/dev/null
+	fi
+	$VER_IPTABLES -F -t raw &>/dev/null
+}
+
+# iptables_policy_set (ipv6|ipv4) (ACCEPT|DROP)
+# Sets all policy rules to either ACCEPT or DROP for ipv4 or ipv6
+function iptables_policy_reset {
+	IP_VERSION=$0
+	SET_POLICY=${1=ACCEPT}
+	case $IP_VERSION in
+		ipv6) VER_IPTABLES=$IP6TABLES ;;
+		ipv4|*) VER_IPTABLES=$IPTABLES ;;
+	esac
+	$VER_IPTABLES --policy INPUT $SET_POLICY
+	$VER_IPTABLES --policy OUTPUT $SET_POLICY
+	$VER_IPTABLES --policy FORWARD $SET_POLICY
+}
+
+# show_help
+# Show command line options help
+function show_help {
+	 echo -e "Firewall/SOSDG ${FW_VERSION}
+	 	Brielle Bruns <bruns@2mbit.com>
+ 		http://www.sosdg.org/freestuff/firewall
+ 		This program comes with ABSOLUTELY NO WARRANTY.
+ 		This is free software, and you are welcome to 
+ 		redistribute it under certain conditions.
+ 		
+ 		--help\t\tShows this info
+ 		--flush\t\tFlushes all rules back to default ACCEPT
+ 		"
+ }

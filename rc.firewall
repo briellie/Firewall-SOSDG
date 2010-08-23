@@ -19,9 +19,30 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+FW_VERSION="0.9.4 BETA"
+. $BASEDIR/include/static
+. $BASEDIR/options
+. $BASEDIR/include/functions
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+	-f|--flush)
+		iptables_policy_reset ipv4 ACCEPT
+		iptables_policy_reset ipv6 ACCEPT
+		iptables_rules_flush ipv4
+		iptables_rules_flush ipv6
+		;;
+	-h|--help)
+		show_help
+		;;	
+	esac
+	shift
+done
+
+
 
 echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- Firewall/SOSDG v0.9.4 BETA/UNSTABLE
+ Firewall/SOSDG ${FW_VERSION}
  Brielle Bruns <bruns@2mbit.com>
  http://www.sosdg.org/freestuff/firewall
  This program comes with ABSOLUTELY NO WARRANTY.
@@ -33,20 +54,8 @@ BASEDIR=/etc/firewall-sosdg
 TWEAKS=$BASEDIR/tweaks
 #BASEDIR=`pwd`
 
-. $BASEDIR/include/static
-. $BASEDIR/options
-. $BASEDIR/include/functions
+iptables_v4_rules_flush
 
-
-$IPTABLES --flush &>/dev/null
-$IPTABLES -F OUTPUT &>/dev/null
-$IPTABLES -F PREROUTING &>/dev/null
-$IPTABLES -F POSTROUTING &>/dev/null
-$IPTABLES -F -t mangle &>/dev/null
-if [ $NAT ]; then
-	$IPTABLES -F -t nat &>/dev/null
-fi
-$IPTABLES -F -t raw &>/dev/null
 if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then
 	display_c YELLOW "Loading custom flush rules..."
 	. "$BASEDIR/include/ipv4_custom_flush"
