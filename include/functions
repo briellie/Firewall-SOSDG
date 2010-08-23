@@ -78,7 +78,7 @@ function reset_color {
 # could easily lock out the user from the network.  Best way to be safe, is to
 # call iptables_policy_reset first then this function.
 function iptables_rules_flush {
-	IP_VERSION=$0
+	IP_VERSION=$1
 	case $IP_VERSION in
 		ipv6) VER_IPTABLES=$IP6TABLES ;;
 		ipv4|*) VER_IPTABLES=$IPTABLES ;;
@@ -98,8 +98,8 @@ function iptables_rules_flush {
 # iptables_policy_set (ipv6|ipv4) (ACCEPT|DROP)
 # Sets all policy rules to either ACCEPT or DROP for ipv4 or ipv6
 function iptables_policy_reset {
-	IP_VERSION=$0
-	SET_POLICY=${1=ACCEPT}
+	IP_VERSION=$1
+	SET_POLICY=${2=ACCEPT}
 	case $IP_VERSION in
 		ipv6) VER_IPTABLES=$IP6TABLES ;;
 		ipv4|*) VER_IPTABLES=$IPTABLES ;;
