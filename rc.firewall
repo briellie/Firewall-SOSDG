@@ -20,6 +20,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 FW_VERSION="0.9.4 BETA"
+
+BASEDIR=/etc/firewall-sosdg
+#BASEDIR=`pwd`
+
+TWEAKS=$BASEDIR/tweaks
+
 . $BASEDIR/include/static
 . $BASEDIR/options
 . $BASEDIR/include/functions
@@ -51,9 +57,6 @@ echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
  redistribute it under certain conditions.
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
 
-BASEDIR=/etc/firewall-sosdg
-TWEAKS=$BASEDIR/tweaks
-#BASEDIR=`pwd`
 
 iptables_v4_rules_flush
 
