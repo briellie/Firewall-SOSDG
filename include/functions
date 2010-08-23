@@ -112,14 +112,12 @@ function iptables_policy_reset {
 # show_help
 # Show command line options help
 function show_help {
-	 echo -e "Firewall/SOSDG ${FW_VERSION}
-	 	Brielle Bruns <bruns@2mbit.com>
- 		http://www.sosdg.org/freestuff/firewall
- 		This program comes with ABSOLUTELY NO WARRANTY.
- 		This is free software, and you are welcome to 
- 		redistribute it under certain conditions.
- 		
- 		--help\t\tShows this info
- 		--flush\t\tFlushes all rules back to default ACCEPT
- 		"
+	 echo "Firewall/SOSDG ${FW_VERSION}"
+	 echo "Brielle Bruns <bruns@2mbit.com>"
+ 	 echo "http://www.sosdg.org/freestuff/firewall"
+ 	 echo "This program comes with ABSOLUTELY NO WARRANTY."
+ 	 echo "This is free software, and you are welcome to"
+ 	 echo "redistribute it under certain conditions."
+ 	 echo -e "\t--help\t\tShows this info"
+ 	 echo -e "\t--flush\t\tFlushes all rules back to default ACCEPT"
  }
