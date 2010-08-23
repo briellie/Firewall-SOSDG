@@ -83,6 +83,7 @@ function iptables_rules_flush {
 		ipv6) VER_IPTABLES=$IP6TABLES ;;
 		ipv4|*) VER_IPTABLES=$IPTABLES ;;
 	esac
+	display_c RED "Flushing $VER_IPTABLES rules..."
 	$VER_IPTABLES --flush &>/dev/null
 	$VER_IPTABLES -F OUTPUT &>/dev/null
 	$VER_IPTABLES -F PREROUTING &>/dev/null
