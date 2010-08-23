@@ -1,3 +1,7 @@
+0.9.5 - Brielle Bruns <bruns@2mbit.com>
+	- Makefile to automate building tarball and for future use
+
+
 0.9.4 - Brielle Bruns <bruns@2mbit.com>
 	- Initscript
 	- stop-firewall for...  stopping the firewall!

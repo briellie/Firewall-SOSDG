@@ -1,5 +1,5 @@
 #/bin/sh
-# v0.9.4
+# v0.9.5
 # By Brielle Bruns <bruns@2mbit.com>
 # URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
@@ -19,7 +19,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FW_VERSION="0.9.4 BETA"
+FW_VERSION="0.9.5 BETA"
 
 BASEDIR=/etc/firewall-sosdg
 #BASEDIR=`pwd`
