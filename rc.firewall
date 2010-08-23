@@ -37,6 +37,7 @@ while [ $# -gt 0 ]; do
 		iptables_policy_reset ipv6 ACCEPT
 		iptables_rules_flush ipv4
 		iptables_rules_flush ipv6
+		exit 0
 		;;
 	-h|--help)
 		show_help
