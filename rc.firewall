@@ -378,10 +378,7 @@ fi
 
 #================[IPv6]================
 if [ $IPV6 ]; then
-	$IP6TABLES --flush &>/dev/null
-	$IP6TABLES -F OUTPUT &>/dev/null
-	$IP6TABLES -F PREROUTING &>/dev/null
-	$IP6TABLES -F POSTROUTING &>/dev/null
+	iptables_rules_flush ipv6
 	if [ -s "$BASEDIR/include/ipv6_custom_flush" ]; then
 		display_c YELLOW "Loading custom IPv6 flush rules..."
 		. "$BASEDIR/include/ipv6_custom_flush"
