@@ -118,3 +118,20 @@ function show_help {
  	 echo -e "\t--help\t\tShows this info"
  	 echo -e "\t--flush\t\tFlushes all rules back to default ACCEPT"
  }
+ 
+ 
+ 
+# apply_ipv4_hack $HACKS
+function apply_ipv4_hack {
+	display_c YELLOW "Applying IPv4 hack/fix:" N
+	while [ $# -gt 0 ]; do
+		case "$1" in
+		NS-IN-DDOS)
+			display_c PURPLE " ./NS/IN-DDOS-FIX"
+			$IPTABLES -A INPUT -j DROP -p udp --dport domain -m u32 --u32 \
+			"0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
+		;;	
+		esac
+		shift
+	done
+}
