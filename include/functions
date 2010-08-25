@@ -136,7 +136,7 @@ function apply_ipv4_hack {
 				$IPTABLES -A INPUT -j DROP -p udp --dport 53 -m u32 --u32 \
 				"0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
 			else
-				display_c RED \nError: could not load $MOD_U32 module into the kernel.  Not using fix."
+				display_c RED "\nError: could not load $MOD_U32 module into the kernel.  Not using fix."
 			fi
 		;;	
 		esac
