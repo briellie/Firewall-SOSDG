@@ -26,8 +26,23 @@ BASEDIR=/etc/firewall-sosdg
 
 TWEAKS=$BASEDIR/tweaks
 
+if [ ! -r $BASEDIR/include/static ] || [ ! -r $BASEDIR/include/functions ]; then
+	echo "Error: Missing either include/static or include/functions. These are critical to operation"
+	echo "of this script.  Please make sure they are readable and exist!"
+	exit 1
+fi
+
+
 . $BASEDIR/include/static
-. $BASEDIR/options
+
+
+if [ -r $BASEDIR/options ]; then
+	. $BASEDIR/options
+else
+	echo -e "${RED}Error: Can not load options file.  Did you forget to rename options.default?"
+	exit 1
+fi
+
 . $BASEDIR/include/functions
 
 while [ $# -gt 0 ]; do
