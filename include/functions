@@ -80,19 +80,21 @@ function reset_color {
 function iptables_rules_flush {
 	IP_VERSION=$1
 	case $IP_VERSION in
-		ipv6) VER_IPTABLES=$IP6TABLES ;;
-		ipv4|*) VER_IPTABLES=$IPTABLES ;;
+		ipv6) VER_IPTABLES=$IP6TABLES ; TABLE_NAMES=/proc/net/ip6_tables_names ;;
+		ipv4|*) VER_IPTABLES=$IPTABLES ; TABLE_NAMES=/proc/net/ip_tables_names ;;
 	esac
 	display_c RED "Flushing ${IP_VERSION} rules..."
 	$VER_IPTABLES --flush &>/dev/null
 	$VER_IPTABLES -F OUTPUT &>/dev/null
 	$VER_IPTABLES -F PREROUTING &>/dev/null
 	$VER_IPTABLES -F POSTROUTING &>/dev/null
-	$VER_IPTABLES -F -t mangle &>/dev/null
-	if [ $NAT ] && [ $IP_VERSION == "ipv4" ]; then
-		$VER_IPTABLES -F -t nat &>/dev/null
-	fi
-	$VER_IPTABLES -F -t raw &>/dev/null
+	for i in `cat $TABLE_NAMES`; do
+		$VER_IPTABLES -F -t $i &>/dev/null
+	done
+	#if [ $NAT ] && [ $IP_VERSION == "ipv4" ]; then
+	#	$VER_IPTABLES -F -t nat &>/dev/null
+	#fi
+	#$VER_IPTABLES -F -t raw &>/dev/null
 }
 
 # iptables_policy_set (ipv6|ipv4) (ACCEPT|DROP)
