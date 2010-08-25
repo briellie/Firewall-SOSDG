@@ -58,6 +58,25 @@ echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
  redistribute it under certain conditions.
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
 
+if [ $UID != "0" ]; then
+	display_c RED "You must be root to run this script."
+	exit 2
+fi
+
+if [ ! -x $IPTABLES ]; then
+	display_c RED "iptables command not found.  Please make sure you have the iptables"
+	display_c RED "installed (package or source) and you have the IPTABLES option properly"
+	display_c RED "defined in the 'options' file."
+	exit 3
+fi
+
+
+if [ ! -x $IP6TABLES ] && [ $IPV6 == "1" ]; then
+	display_c RED "ip6tables command not found.  Please make sure you have the iptables"
+	display_c RED "installed (package or source) and you have the IP6TABLES option properly"
+	display_c RED "defined in the 'options' file."
+	exit 3
+fi
 
 iptables_rules_flush ipv4
 

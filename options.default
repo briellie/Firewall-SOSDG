@@ -6,6 +6,9 @@ IP6TABLES=/bin/true
 #IPTABLES=/sbin/iptables
 #IP6TABLES=/sbin/ip6tables
 
+#This is important for loading kernel modules
+MODPROBE=/sbin/modprobe
+
 # Don't forget to rename this file to 'options'!
 
 # I'm trying to make this config as simple as possible.  Comment out

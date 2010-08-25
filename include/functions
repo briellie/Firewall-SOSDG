@@ -132,8 +132,12 @@ function apply_ipv4_hack {
 			# NS-IN-DDOS - Block DNS DDoS using NS/IN spoof, see:
 			# http://www.stupendous.net/archives/2009/01/24/dropping-spurious-nsin-recursive-queries/
 			display_c PURPLE " ./NS/IN-DDOS-FIX"
-			$IPTABLES -A INPUT -j DROP -p udp --dport 53 -m u32 --u32 \
-			"0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
+			if `$MODPROBE --quiet $MOD_U32 &>/dev/null`; then
+				$IPTABLES -A INPUT -j DROP -p udp --dport 53 -m u32 --u32 \
+				"0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
+			else
+				display_c RED \nError: could not load $MOD_U32 module into the kernel.  Not using fix."
+			fi
 		;;	
 		esac
 		shift

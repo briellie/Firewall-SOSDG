@@ -32,3 +32,6 @@ AQUA="\E[36m"
 WHITE="\E[1m"
 GREY="\E[37m"
 DEFAULT_COLOR="\E[39m"
+
+# Module names that we may need to load
+MOD_U32="xt_u32"
