@@ -330,15 +330,15 @@ if [ -s "$BASEDIR/include/ipv4_custom_portforward" ]; then
 fi
 
 if [ $PORTFW ] && [ $NAT ]; then
-	display_c YELLOW "Adding port forward for: " N
+	display_c YELLOW "Adding port forward for:"
 	for i in `grep -v "\#" $PORTFW`; do
 		PORTADD=( ${i//:/ } )
-		$IPTABLES -A PREROUTING -t nat -i ${PORTADD[0]} -p ${PORTADD[3]} \
-			--dport ${PORTADD[2]} -d ${PORTADD[1]} -j DNAT --to \
-			${PORTADD[4]}:${PORTADD[5]}
-		$IPTABLES -A INPUT -p ${PORTADD[3]} -m state --state NEW \
-			--dport ${PORTADD[2]} -i ${PORTADD[0]} -j ACCEPT
-		echo -en "${GREEN}${PORTADD[0]}:${PURPLE}${PORTADD[1]}:${PORTADD[2]}:${PORTADD[3]}${AQUA}->${BLUE}${PORTADD[4]}:${PORTADD[5]} "
+		$IPTABLES -A PREROUTING -t nat -i ${PORTADD[0]} -p ${PORTADD[4]} -s ${PORTADD[1]} \
+			--dport ${PORTADD[3]} -d ${PORTADD[2]} -j DNAT --to \
+			${PORTADD[5]}:${PORTADD[6]}
+		$IPTABLES -A INPUT -p ${PORTADD[4]} -m state --state NEW -s ${PORTADD[1]} \
+			--dport ${PORTADD[3]} -d ${PORTADD[2]} -i ${PORTADD[0]} -j ACCEPT
+		display_c DEFAULT "\t${GREEN}${PORTADD[0]}:${BLUE}${PORTADD[1]}:${PURPLE}${PORTADD[2]}:${PORTADD[3]}:${PORTADD[4]}${AQUA}->${BLUE}${PORTADD[5]}:${PORTADD[6]} "
 	done
 reset_color
 fi
