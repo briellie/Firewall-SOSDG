@@ -334,7 +334,7 @@ if [ $PORTFW ] && [ $NAT ]; then
 	for i in `grep -v "\#" $PORTFW`; do
 		PORTADD=( ${i//:/ } )
 		$IPTABLES -A PREROUTING -t nat -i ${PORTADD[0]} -p ${PORTADD[3]} \
-			--dport ${PORTADD[2]} -d {PORTADD[1]} -j DNAT --to \
+			--dport ${PORTADD[2]} -d ${PORTADD[1]} -j DNAT --to \
 			${PORTADD[4]}:${PORTADD[5]}
 		$IPTABLES -A INPUT -p ${PORTADD[3]} -m state --state NEW \
 			--dport ${PORTADD[2]} -i ${PORTADD[0]} -j ACCEPT
