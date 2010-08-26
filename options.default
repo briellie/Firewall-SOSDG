@@ -1,3 +1,8 @@
+# Config file version.  Don't change this.  Will be used some day to
+# figure out if we need to alert the user that they need to redo their
+# config file.
+CONFIG_VERSION=0.9
+
 # This is for testing purposes.
 IPTABLES=/bin/true
 IP6TABLES=/bin/true

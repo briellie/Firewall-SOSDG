@@ -29,8 +29,6 @@ if [ $COMPAT_CONFIG == "1" ]; then
 	MODPROBE=`which modprobe`
 fi
 
-
-
 # ANSI color sequences
 BLUE="\E[34m"
 GREEN="\E[32m"
