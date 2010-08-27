@@ -359,20 +359,20 @@ fi
 
 if [ $NAT ]; then
 	if [ "$NAT_RANGE" ]; then
-		display_c YELLOW "Adding NAT rule: " N
+		display_c YELLOW "Adding NAT rule:"
 		for i in $NAT_RANGE; do
 			NAT_RULE=( ${i//:/ } )
 			case ${NAT_RULE[0]} in
 			SNAT)
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j SNAT \
 					-o ${NAT_RULE[3]} --to-source ${NAT_RULE[4]} 
-				echo -en "${GREEN}SNAT:${PURPLE}${NAT_RULE[1]}:${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}:${NAT_RULE[4]} "
+				display_c DEFAULT "${GREEN}SNAT:${PURPLE}${NAT_RULE[1]}:${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}:${NAT_RULE[4]}"
 				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
 					;;
 			MASQ)
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j MASQUERADE -o ${NAT_RULE[3]}
-				echo -en "${GREEN}MASQ:${PURPLE}${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]} "
+				display_c DEFAULT "${GREEN}MASQ:${PURPLE}${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}"
 				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
 					;;
