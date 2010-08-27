@@ -25,7 +25,7 @@ MODPROBE=/sbin/modprobe
 #FORWARD=1
 
 # Blocking incoming connections by default?
-BLOCKINCOMING=1
+#BLOCKINCOMING=1
 
 # Clamp MSS, useful on DSL/VPN links
 # Space separated list of interfaces to apply this on
@@ -38,7 +38,7 @@ BLOCKINCOMING=1
 #INTINF=ppp+
 
 # Port forwardings, requires NAT
-PORTFW=$BASEDIR/port-forwards
+#PORTFW=$BASEDIR/port-forwards
 
 # TCP/UDP/Protocol to allow
 TCPPORTS="20 21 22 53 80 113 123 443"

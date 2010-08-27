@@ -1,5 +1,4 @@
 #/bin/sh
-# v0.9.5
 # By Brielle Bruns <bruns@2mbit.com>
 # URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
@@ -37,7 +36,6 @@ if [ ! -r $BASEDIR/include/static ] || [ ! -r $BASEDIR/include/functions ]; then
 	exit 1
 fi
 
-
 . $BASEDIR/include/static
 
 
@@ -67,7 +65,11 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-
+if [ ! -r "${PORTFW}" ]; then
+	display_c RED "Error: Missing ${PORTFW} as defined in the PORTFW option.  Please make sure"
+	display_c RED "it exists, or comment out the PORTFW line in options."
+	exit 1
+fi
 
 echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
  Firewall/SOSDG ${FW_VERSION}
@@ -295,7 +297,7 @@ if [ -s "$BASEDIR/include/ipv4_custom_routing" ]; then
 fi
 
 if [ $ROUTING ]; then
-	display_c YELLOW "Adding route: " N
+	display_c YELLOW "Adding route: "
 	for i in `grep -v "\#" $ROUTING`; do
 		ROUTE=( ${i//:/ } )
 		FWINT1=${ROUTE[0]}
@@ -312,12 +314,11 @@ if [ $ROUTING ]; then
 		$IPTABLES -A FORWARD -i $FWINT1 -o $FWINT2 \
 			-s $FWIP1 -d $FWIP2 -j ACCEPT
 		if [ ${ROUTE[4]} == "1" ]; then
-			#echo -en "\E[35m$FWINT1\E[37m:$FWIP1<->\E[34m$FWINT2\E[37m:$FWIP2 "
-			echo -en "${PURPLE}$FWINT1:$FWIP1${AQUA}<->${BLUE}$FWINT2:$FWIP2 "
+			display_c DEFAULT "\t${PURPLE}$FWINT1:$FWIP1${AQUA}<->${BLUE}$FWINT2:$FWIP2"
  			$IPTABLES -A FORWARD -o $FWINT1 -i $FWINT2 \
 				-d $FWIP1 -s $FWIP2 -j ACCEPT
 		else
-			echo -en "${PURPLE}$FWINT1:$FWIP1${AQUA}->${BLUE}$FWINT2:$FWIP2 "
+			display_c DEFAULT "\t${PURPLE}$FWINT1:$FWIP1${AQUA}->${BLUE}$FWINT2:$FWIP2"
 	fi
 	done
 echo -ne "\n"
