@@ -29,6 +29,9 @@ if [ $COMPAT_CONFIG == "1" ]; then
 	MODPROBE=`which modprobe`
 fi
 
+PRERUN="$BASEDIR/prerun"
+POSTRUN="$BASEDIR/postrun"
+
 # ANSI color sequences
 BLUE="\E[34m"
 GREEN="\E[32m"

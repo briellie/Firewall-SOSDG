@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FW_VERSION="0.9.5 BETA"
+FW_VERSION="0.9.6"
 
 # These option is here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
@@ -26,6 +26,7 @@ FW_VERSION="0.9.5 BETA"
 COMPAT_CONFIG=1
 
 BASEDIR=/etc/firewall-sosdg
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
 #BASEDIR=`pwd`
 
 TWEAKS=$BASEDIR/tweaks
@@ -107,7 +108,9 @@ if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then
 	. "$BASEDIR/include/ipv4_custom_flush"
 fi
 
-$BASEDIR/prerun
+if [ -x $PRERUN ]; then
+	$PRERUN
+fi
 
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
@@ -563,4 +566,6 @@ if [ $TWEAKS ]; then
 	done
 fi
 
-$BASEDIR/postrun
+if [ -x $POSTRUN ]; then
+	$POSTRUN
+fi
