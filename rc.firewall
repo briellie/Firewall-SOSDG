@@ -65,7 +65,7 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-if [ ! -r "${PORTFW}" ]; then
+if [ ${PORTFW} ] && [ ! -r "${PORTFW}" ]; then
 	display_c RED "Error: Missing ${PORTFW} as defined in the PORTFW option.  Please make sure"
 	display_c RED "it exists, or comment out the PORTFW line in options."
 	exit 1
