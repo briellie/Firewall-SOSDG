@@ -1,3 +1,6 @@
+0.9.6 - Brielle Bruns <bruns@2mbit.com>
+	- Minor changes to procedures in planning of 1.0
+
 0.9.5 - Brielle Bruns <bruns@2mbit.com>
 	- Makefile to automate building tarball and for future use
 	- More changes to port-forwards file to support source IP and external IP (existing

@@ -12,7 +12,7 @@
 ### END INIT INFO
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
-FIREWALL_START=/etc/firewall-sosdg/rc.firewall
+FIREWALL_START=/etc/firewall-sosdg/bin/firewall-sosdg
 FIREWALL_STOP=/etc/firewall-sosdg/stop-firewall
 . /lib/lsb/init-functions
 

@@ -1,0 +1,571 @@
+#/bin/bash
+# By Brielle Bruns <bruns@2mbit.com>
+# URL: http://www.sosdg.org/freestuff/firewall
+# License: GPLv3
+#
+#    Copyright (C) 2009 - 2010  Brielle Bruns
+#    Copyright (C) 2009 - 2010  The Summit Open Source Development Group
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+FW_VERSION="0.9.6"
+
+# These option is here to help pre-1.0 users easily upgrade, defines critical defaults
+# that would otherwise require remaking their options file.  I leave this on by default,
+# but if you want to make sure you have a current options file, define this to 0.
+COMPAT_CONFIG=1
+
+BASEDIR=/etc/firewall-sosdg
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+#BASEDIR=`pwd`
+
+TWEAKS=$BASEDIR/tweaks
+
+if [ ! -r $BASEDIR/include/static ] || [ ! -r $BASEDIR/include/functions ]; then
+	echo "Error: Missing either include/static or include/functions. These are critical to operation"
+	echo "of this script.  Please make sure they are readable and exist!"
+	exit 1
+fi
+
+. $BASEDIR/include/static
+
+
+if [ -r $BASEDIR/options ]; then
+	. $BASEDIR/options
+else
+	echo -e "${RED}Error: Can not load options file.  Did you forget to rename options.default?"
+	exit 1
+fi
+
+. $BASEDIR/include/functions
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+	-f|--flush)
+		iptables_policy_reset ipv4 ACCEPT
+		iptables_policy_reset ipv6 ACCEPT
+		iptables_rules_flush ipv4
+		iptables_rules_flush ipv6
+		exit 0
+		;;
+	-h|--help)
+		show_help
+		exit 0
+		;;	
+	esac
+	shift
+done
+
+if [ ${PORTFW} ] && [ ! -r "${PORTFW}" ]; then
+	display_c RED "Error: Missing ${PORTFW} as defined in the PORTFW option.  Please make sure"
+	display_c RED "it exists, or comment out the PORTFW line in options."
+	exit 1
+fi
+
+echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+ Firewall/SOSDG ${FW_VERSION}
+ Brielle Bruns <bruns@2mbit.com>
+ http://www.sosdg.org/freestuff/firewall
+ This program comes with ABSOLUTELY NO WARRANTY.
+ This is free software, and you are welcome to 
+ redistribute it under certain conditions.
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
+
+if [ $UID != "0" ]; then
+	display_c RED "You must be root to run this script."
+	exit 2
+fi
+
+if [ ! -x $IPTABLES ]; then
+	display_c RED "iptables command not found.  Please make sure you have the iptables"
+	display_c RED "installed (package or source) and you have the IPTABLES option properly"
+	display_c RED "defined in the 'options' file."
+	exit 3
+fi
+
+
+if [ ! -x $IP6TABLES ] && [ $IPV6 == "1" ]; then
+	display_c RED "ip6tables command not found.  Please make sure you have the iptables"
+	display_c RED "installed (package or source) and you have the IP6TABLES option properly"
+	display_c RED "defined in the 'options' file."
+	exit 3
+fi
+
+iptables_rules_flush ipv4
+
+if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then
+	display_c YELLOW "Loading custom flush rules..."
+	. "$BASEDIR/include/ipv4_custom_flush"
+fi
+
+if [ -x $PRERUN ]; then
+	$PRERUN
+fi
+
+$IPTABLES -A INPUT -i lo -j ACCEPT
+$IPTABLES -A OUTPUT -o lo -j ACCEPT
+
+if [ -s "$BASEDIR/include/ipv4_custom_trust" ]; then
+	display_c YELLOW "Loading custom trust rules..."
+	. "$BASEDIR/include/ipv4_custom_trust"
+fi
+
+if [ "$TRUSTEDIP" ]; then
+	display_c YELLOW "Adding trusted IP: " N
+	for i in $TRUSTEDIP; do
+		echo -n "$i "
+		$IPTABLES -A INPUT -s $i -j ACCEPT
+		$IPTABLES -A OUTPUT -d $i -j ACCEPT
+	done
+	echo -ne "\n"
+fi
+
+if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
+	display_c YELLOW "Loading custom ip block rules..."
+	. "$BASEDIR/include/ipv6_custom_blockip"
+fi
+
+if [ $BLOCKEDIP ]; then
+	display_c YELLOW "Adding blocked IPs: " N
+	for i in `grep -v "\#" $BLOCKEDIP`; do
+		echo -n "$i "
+		$IPTABLES -A INPUT -s $i -j DROP
+		$IPTABLES -A OUTPUT -d $i -j DROP
+	done
+echo -ne "\n"
+fi
+
+if [ "$STRIPECN" ]; then
+	display_c YELLOW "Stripping ECN off of TCP packets to " N
+	for i in $STRIPECN; do
+		echo -en "$i "
+		$IPTABLES -A PREROUTING -t mangle -p tcp -d $i -j ECN \
+			--ecn-tcp-remove
+	done
+echo -ne "\n"
+fi
+
+if [ -s "$BASEDIR/include/ipv4_custom_mssclamp" ]; then
+	display_c YELLOW "Loading custom MSS Clamp rules..."
+	. "$BASEDIR/include/ipv4_custom_mssclamp"
+fi
+
+if [ "$CLAMPMSS" ]; then
+	display_c YELLOW "Clamping MSS to PMTU..."
+	for i in $CLAMPMSS; do
+		$IPTABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
+		$IPTABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
+		# This is necessary to make sure that PMTU works
+		$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
+			-o $i -j ACCEPT
+		$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded \
+			-i $i -j ACCEPT
+		$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
+			-o $i -j ACCEPT
+		$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
+			-i $i -j ACCEPT
+	done
+echo -en "\n"
+fi
+
+
+if [ $HACK_IPV4 ]; then
+	apply_ipv4_hack $HACK_IPV4
+fi
+
+if [ -s "$BASEDIR/include/ipv4_custom_conntrack" ]; then
+	display_c YELLOW "Loading custom conntrack rules..."
+	. "$BASEDIR/include/ipv4_custom_conntrack"
+fi
+
+if [ $CONNTRACK ]; then
+	$IPTABLES -A INPUT -m state --state NEW -j ACCEPT
+	$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+	$IPTABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+	$IPTABLES -A FORWARD -m state --state NEW -j ACCEPT
+	$IPTABLES -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+	$IPTABLES -A OUTPUT -m state --state NEW -j ACCEPT
+	$IPTABLES -A INPUT -m state --state INVALID -j DROP
+	$IPTABLES -A OUTPUT -m state --state INVALID -j DROP
+	$IPTABLES -A FORWARD -m state --state INVALID -j DROP
+fi
+
+if [ -s "$BASEDIR/include/ipv4_custom_blockoutports" ]; then
+	display_c YELLOW "Loading custom blocked outbound port rules..."
+	. "$BASEDIR/include/ipv4_custom_blockoutports"
+fi
+
+if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
+	display_c YELLOW "Blocking outbound port: " N
+
+	if  [ "$BLOCKTCPPORTS" ]; then
+		for i in $BLOCKTCPPORTS; do
+			echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
+			$IPTABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
+			if [ "$NATRANGE" ]; then
+				for src in $NATRANGE; do
+					$IPTABLES -A FORWARD -p tcp -s $src --dport $i --syn -j DROP
+				done
+			fi
+		done
+	fi
+	if  [ "$BLOCKUDPPORTS" ]; then
+		for i in $BLOCKUDPPORTS; do
+			echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
+			$IPTABLES -A OUTPUT -p udp --dport $i -j DROP
+			if [ "$NATRANGE" ]; then
+				for src in $NATRANGE; do
+					$IPTABLES -A FORWARD -p udp -s $src --dport $i -j DROP
+				done
+			fi
+		done
+	fi
+	reset_color
+fi
+
+if [ -s "$BASEDIR/include/ipv4_custom_allowedports" ]; then
+	display_c YELLOW "Loading custom allowed port rules..."
+	. "$BASEDIR/include/ipv4_custom_allowedports"
+fi
+
+if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
+	display_c YELLOW "Adding allowed port: " N
+
+	if [ "$TCPPORTS" ]; then
+		for i in $TCPPORTS; do
+			echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
+			$IPTABLES -A INPUT -p tcp --dport $i -j ACCEPT
+		done
+	fi
+	if [ "$UDPPORTS" ]; then
+		for i in $UDPPORTS; do
+			echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
+			#$IPTABLES -A INPUT -p udp --dport $i -j ACCEPT
+			$IPTABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
+        		$IPTABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
+			$IPTABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
+		done
+	fi
+	reset_color
+fi
+
+
+
+if [ -s "$BASEDIR/include/ipv4_custom_proto" ]; then
+	display_c YELLOW "Loading custom protocol rules..."
+	. "$BASEDIR/include/ipv4_custom_proto"
+fi
+
+if [ "$ALLOWEDPROTO" ]; then
+	display_c YELLOW "Adding allowed protocols: " N
+	for i in $ALLOWEDPROTO; do
+		echo -n "$i "
+		$IPTABLES -A INPUT -p $i -j ACCEPT
+		$IPTABLES -A OUTPUT -p $i -j ACCEPT
+	done
+	reset_color
+fi
+
+
+if [ -s "$BASEDIR/include/ipv4_custom_notrack" ]; then
+	display_c YELLOW "Loading custom NOTRACK rules..."
+	. "$BASEDIR/include/ipv4_custom_notrack"
+fi
+
+if [ $CONNTRACK ]; then
+	for i in $DONTTRACK; do
+		$IPTABLES -t raw -I PREROUTING -s $i -j NOTRACK
+		$IPTABLES -t raw -I PREROUTING -d $i -j NOTRACK
+		$IPTABLES -t raw -I OUTPUT -s $i -j NOTRACK
+		$IPTABLES -t raw -I OUTPUT -d $i -j NOTRACK
+	done
+fi
+
+
+if [ -s "$BASEDIR/include/ipv4_custom_routing" ]; then
+	display_c YELLOW "Loading custom routing rules..."
+	. "$BASEDIR/include/ipv4_custom_routing"
+fi
+
+if [ $ROUTING ]; then
+	display_c YELLOW "Adding route: "
+	for i in `grep -v "\#" $ROUTING`; do
+		ROUTE=( ${i//:/ } )
+		FWINT1=${ROUTE[0]}
+		FWINT2=${ROUTE[2]}
+		FWIP1=${ROUTE[1]}
+		FWIP2=${ROUTE[3]}
+
+		if [ -e "/proc/sys/net/ipv4/conf/$FWINT1/forwarding" ]; then
+			echo 1 > /proc/sys/net/ipv4/conf/$FWINT1/forwarding
+		fi
+		if [ -e "/proc/sys/net/ipv4/conf/$FWINT2/forwarding" ]; then
+			echo 1 > /proc/sys/net/ipv4/conf/$FWINT2/forwarding
+		fi
+		$IPTABLES -A FORWARD -i $FWINT1 -o $FWINT2 \
+			-s $FWIP1 -d $FWIP2 -j ACCEPT
+		if [ ${ROUTE[4]} == "1" ]; then
+			display_c DEFAULT "\t${GREEN}$FWINT1:${PURPLE}$FWIP1${AQUA}<->${BLUE}$FWINT2:$FWIP2"
+ 			$IPTABLES -A FORWARD -o $FWINT1 -i $FWINT2 \
+				-d $FWIP1 -s $FWIP2 -j ACCEPT
+		else
+			display_c DEFAULT "\t${GREEN}$FWINT1:${PURPLE}$FWIP1${AQUA}->${BLUE}$FWINT2:$FWIP2"
+	fi
+	done
+echo -ne "\n"
+fi
+
+
+if [ -s "$BASEDIR/include/ipv4_custom_portforward" ]; then
+	display_c YELLOW "Loading custom port forwarding rules..."
+	. "$BASEDIR/include/ipv4_custom_portforward"
+fi
+
+if [ $PORTFW ] && [ $NAT ]; then
+	display_c YELLOW "Adding port forward for:"
+	for i in `grep -v "\#" $PORTFW`; do
+		PORTADD=( ${i//:/ } )
+		$IPTABLES -A PREROUTING -t nat -i ${PORTADD[0]} -p ${PORTADD[4]} -s ${PORTADD[1]} \
+			--dport ${PORTADD[3]} -d ${PORTADD[2]} -j DNAT --to \
+			${PORTADD[5]}:${PORTADD[6]}
+		$IPTABLES -A INPUT -p ${PORTADD[4]} -m state --state NEW -s ${PORTADD[1]} \
+			--dport ${PORTADD[3]} -d ${PORTADD[2]} -i ${PORTADD[0]} -j ACCEPT
+		display_c DEFAULT "\t${GREEN}${PORTADD[0]}:${BLUE}${PORTADD[1]}:${PURPLE}${PORTADD[2]}:${PORTADD[3]}:${PORTADD[4]}${AQUA}->${BLUE}${PORTADD[5]}:${PORTADD[6]} "
+	done
+reset_color
+fi
+
+if [ $LANDHCPSERVER ]; then
+	#$IPTABLES -A INPUT -i $INTIF -s 0.0.0.0 -j ACCEPT
+	$IPTABLES  -I INPUT -i $INTIF -p udp --dport 67:68 --sport \
+     67:68 -j ACCEPT
+
+fi
+
+
+if [ -s "$BASEDIR/include/ipv4_custom_nat" ]; then
+	display_c YELLOW "Loading custom nat rules..."
+	. "$BASEDIR/include/ipv4_custom_nat"
+fi
+
+if [ $NAT ]; then
+	if [ "$NAT_RANGE" ]; then
+		display_c YELLOW "Adding NAT rule:"
+		for i in $NAT_RANGE; do
+			NAT_RULE=( ${i//:/ } )
+			case ${NAT_RULE[0]} in
+			SNAT)
+				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j SNAT \
+					-o ${NAT_RULE[3]} --to-source ${NAT_RULE[4]} 
+				display_c DEFAULT "\t${GREEN}SNAT:${PURPLE}${NAT_RULE[1]}:${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}:${NAT_RULE[4]}"
+				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
+				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+					;;
+			MASQ)
+				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j MASQUERADE -o ${NAT_RULE[3]}
+				display_c DEFAULT "\t${GREEN}MASQ:${PURPLE}${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}"
+				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
+				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+					;;
+				*) display_c RED "Invalid NAT rule in NAT_RANGE" ;;
+			esac
+		done
+		reset_color
+	fi
+	#=================
+    # This section is going away in 1.0
+	if [ "$NATRANGE" ]; then
+		echo -e "${RED} **** WARNING ****"
+		echo -e "${RED} NATRANGE option detected.  Please switch to using"
+		echo -e "${RED} NAT_RANGE which uses the newer style NAT mappings."
+		echo -e "${RED} NATRANGE will be removed in v1.0"
+		for i in $NATRANGE; do
+			$IPTABLES -A POSTROUTING -t nat -s $i -o $NATEXTIF -j SNAT --to-source $NATEXTIP
+		done
+	 	#This is necessary to make sure that PMTU works
+		$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o $NATEXTIF \
+				-j ACCEPT
+		$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
+				-o $NATEXTIF -j ACCEPT
+	#=================
+	fi
+fi
+
+$IPTABLES --policy INPUT ACCEPT
+$IPTABLES --policy OUTPUT ACCEPT
+$IPTABLES --policy FORWARD DROP
+
+
+if [ -s "$BASEDIR/include/ipv4_custom_blockincoming" ]; then
+	display_c YELLOW "Loading custom incoming blocked rules..."
+	. "$BASEDIR/include/ipv4_custom_blockincoming"
+fi
+
+if [ $BLOCKINCOMING ]; then
+		$IPTABLES -A INPUT -p tcp --syn -j DROP
+		$IPTABLES -A INPUT -p udp -j DROP
+fi
+
+
+#================[IPv6]================
+if [ $IPV6 ]; then
+	iptables_rules_flush ipv6
+	if [ -s "$BASEDIR/include/ipv6_custom_flush" ]; then
+		display_c YELLOW "Loading custom IPv6 flush rules..."
+		. "$BASEDIR/include/ipv6_custom_flush"
+	fi
+
+	display_c YELLOW "Adding trusted IPv6: " N
+
+	$IP6TABLES -A INPUT -i lo -j ACCEPT
+	$IP6TABLES -A OUTPUT -o lo -j ACCEPT
+
+	if [ -s "$BASEDIR/include/ipv6_custom_trust" ]; then
+		display_c YELLOW "Loading custom IPv6 trust rules..."
+		. "$BASEDIR/include/ipv6_custom_trust"
+	fi
+	for i in $IPV6TRUSTED; do
+		echo -n "$i "
+		$IP6TABLES -A INPUT -s $i -j ACCEPT
+		$IP6TABLES -A OUTPUT -d $i -j ACCEPT
+	done
+	reset_color
+
+	if [ -s "$BASEDIR/include/ipv6_custom_mssclamp" ]; then
+		display_c YELLOW "Loading custom IPv6 MSS Clamp rules..."
+		. "$BASEDIR/include/ipv6_custom_mssclamp"
+	fi
+
+	if [ "$CLAMPMSSIPV6" ]; then
+		display_c YELLOW "Clamping IPV6 MSS to PMTU..."
+		for i in $CLAMPMSSIPV6; do
+			$IP6TABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN \
+			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
+			--mss 1280:1536
+			$IP6TABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN \
+			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
+			--mss 1280:1536
+			# This is necessary to make sure that PMTU works
+			$IP6TABLES -A OUTPUT -p icmpv6 --icmpv6-type time-exceeded \
+			-o $i -j ACCEPT
+			$IP6TABLES -A INPUT -p icmpv6 --icmpv6-type time-exceeded \
+			-i $i -j ACCEPT
+			$IP6TABLES -A OUTPUT -p icmpv6 --icmpv6-type packet-too-big \
+			-o $i -j ACCEPT
+			$IP6TABLES -A INPUT -p icmpv6 --icmpv6-type packet-too-big \
+			-i $i -j ACCEPT
+		done
+	fi
+
+	if [ -s "$BASEDIR/include/ipv6_custom_blockoutports" ]; then
+		display_c YELLOW "Loading custom IPv6 blocked outbound port rules..."
+		. "$BASEDIR/include/ipv6_custom_blockoutports"
+	fi
+	if [ "$BLOCKIPV6TCPPORTS" ] || [ "$BLOCKIPV6UDPPORTS" ]; then
+		display_c YELLOW "Blocking outbound port: " N
+		if [ "$BLOCKIPV6TCPPORTS" ]; then
+			for i in $BLOCKIPV6TCPPORTS; do
+				echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
+				$IP6TABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
+			done
+		fi
+		if [ "$BLOCKIPV6UDPPORTS" ]; then
+			for i in $BLOCKIPV6UDPPORTS; do
+				echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
+				$IP6TABLES -A OUTPUT -p udp --dport $i -j DROP
+			done
+		fi
+		reset_color
+	fi
+
+	if [ -s "$BASEDIR/include/ipv6_custom_allowedports" ]; then
+		display_c YELLOW "Loading custom IPv6 allowed port rules..."
+		. "$BASEDIR/include/ipv6_custom_allowedports"
+	fi
+	if [ "$IPV6TCP" ] || [ "$IPV6UDP" ]; then
+		display_c YELLOW "Adding allowed IPv6 port: " N
+
+		if [ "$IPV6TCP" ]; then
+			for i in $IPV6TCP; do
+				echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
+				$IP6TABLES -A INPUT -p tcp --dport $i -j ACCEPT
+			done
+		fi
+
+		if [ "$IPV6UDP" ]; then
+			for i in $IPV6UDP; do
+				echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
+				$IP6TABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
+	        		$IP6TABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
+        			$IP6TABLES -A INPUT -p udp --sport $i --dport 1:65535 -j ACCEPT
+			done
+		fi
+		reset_color
+	fi
+	fi
+
+	if [ -s "$BASEDIR/include/ipv6_custom_conntrack" ]; then
+		display_c YELLOW "Loading custom IPv6 conntrack rules..."
+		. "$BASEDIR/include/ipv6_custom_conntrack"
+	fi
+
+	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
+		$IP6TABLES -A INPUT -m state --state NEW -j ACCEPT
+		$IP6TABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+		$IP6TABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+		$IP6TABLES -A FORWARD -m state --state NEW -j ACCEPT
+		$IP6TABLES -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
+		$IP6TABLES -A OUTPUT -m state --state NEW -j ACCEPT
+		$IP6TABLES -A INPUT -m state --state INVALID -j DROP
+		$IP6TABLES -A OUTPUT -m state --state INVALID -j DROP
+		$IP6TABLES -A FORWARD -m state --state INVALID -j DROP
+		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -i $IPV6INT -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP
+		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p udp ! --dport 32768:65535 -j DROP
+	fi
+	
+
+
+	if [ -s "$BASEDIR/include/ipv6_custom_routing" ]; then
+		display_c YELLOW "Loading custom IPv6 routing rules..."
+		. "$BASEDIR/include/ipv6_custom_routing"
+	fi
+	if [ "$IPV6FORWARDRANGE" ]; then
+		for i in $IPV6FORWARDRANGE; do
+			$IP6TABLES -A FORWARD -s $i -j ACCEPT
+			$IP6TABLES -A FORWARD -d $i -j ACCEPT
+		done
+	fi
+	
+	if [ -s "$BASEDIR/include/ipv6_custom_blockincoming" ]; then
+		display_c YELLOW "Loading custom IPv6 incoming blocked port rules..."
+		. "$BASEDIR/include/ipv6_custom_blockincoming"
+	fi
+	if [ $IPV6BLOCKINCOMING ]; then
+		$IP6TABLES -A INPUT -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -p udp -j DROP
+	fi
+
+if [ $TWEAKS ]; then
+	for i in `grep -v "\#" $TWEAKS`; do
+		PROCOPT=( ${i//=/ } )
+		echo ${PROCOPT[1]} > /proc/sys/net/${PROCOPT[0]} &>/dev/null
+	done
+fi
+
+if [ -x $POSTRUN ]; then
+	$POSTRUN
+fi
