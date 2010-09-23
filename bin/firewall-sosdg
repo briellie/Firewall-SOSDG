@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FW_VERSION="0.9.6"
+FW_VERSION="0.9.7"
 
 # These option is here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
@@ -353,6 +353,38 @@ if [ $LANDHCPSERVER ]; then
      67:68 -j ACCEPT
 
 fi
+
+if [ -s "$BASEDIR/include/ipv4_custom_mark" ]; then
+	display_c YELLOW "Loading custom mark rules..."
+	. "$BASEDIR/include/ipv4_custom_mark"
+fi
+
+if [ -r "$IPv4_MARK" ]; then
+	display_c YELLOW "Adding mark: "
+	for i in `grep -v "\#" $IPv4_MARK`; do
+		MARK=( ${i//:/ } )
+		INIF=${MARK[0]}
+		INIP=${MARK[1]}
+		DSTIP=${MARK[2]}
+		IPMARK=${MARK[3]}
+
+		case $INIP in
+			!*) INNEG="!"
+				INIP=${INIP#\!};;
+		esac
+		case $DSTIP in
+			!*) DSTNEG="!"
+				DSTIP=${DSTIP#\!};;
+		esac
+
+		$IPTABLES -t mangle -A PREROUTING -i ${INIF} ${INNEG} -s ${INIP} \
+   		     ${DSTNEG} -d ${DSTIP} -j MARK --set-mark=${IPMARK}
+		display_c DEFAULT "\t${GREEN}${INNEG}${INIF}:${PURPLE}${INIP}${AQUA}->${BLUE}${DSTNEG}${DSTIP}:${RED}${IPMARK}"
+		unset INNEG DSTNET
+	done
+echo -ne "\n"
+fi
+
 
 
 if [ -s "$BASEDIR/include/ipv4_custom_nat" ]; then

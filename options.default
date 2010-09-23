@@ -57,6 +57,8 @@ DONTTRACK="127.0.0.1"
 # IP range(s) to forward
 ROUTING=$BASEDIR/ipv4-routing
 
+# Mark ipv4 packets for advanced purposes
+IPv4_MARK=$BASEDIR/ipv4-marks
 
 # Hacks to either block specific kinds of attacks or fix problems
 #

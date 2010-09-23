@@ -1,0 +1,6 @@
+# IPv4 Packet Marking
+# Used to mark packets for specific routing (or other) purposes
+# incoming-interface:src-range:dst-range:mark-num
+# Use ! before IP/range to negate
+# eth0:192.168.0.0/24:192.168.1.0/24:5
+# ORDER MATTERS!
