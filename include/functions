@@ -144,6 +144,7 @@ function apply_ipv4_hack {
 			#						do not actually have the IP in question.  In some (alot in my case),
 			#						I have things going through specific wires for a reason.  This fixes
 			#						that and makes it behave as expected.
+			display_c PURPLE " MULTI-NIC-ARP-LOCK"
 			for i in default all; do
 				echo "1" > /proc/sys/net/ipv4/conf/$i/arp_ignore
 				echo "2" > /proc/sys/net/ipv4/conf/$i/arp_announce
