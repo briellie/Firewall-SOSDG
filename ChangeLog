@@ -1,6 +1,8 @@
 0.9.7 - Brielle Bruns <bruns@2mbit.com>
 	- Support for marking packets, uses new config file and
 	  IPv4_MARK file option
+	- MULTI-NIC-ARP-LOCK hack added, to fix what I consider to be an annoying 'feature' of
+	  arp requests on Linux
 
 0.9.6 - Brielle Bruns <bruns@2mbit.com>
 	- Minor changes to procedures in planning of 1.0
