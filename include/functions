@@ -138,7 +138,17 @@ function apply_ipv4_hack {
 			else
 				display_c RED "\nError: could not load $MOD_U32 module into the kernel.  Not using fix."
 			fi
-		;;	
+		;;
+		MULTI-NIC-ARP-LOCK)
+			# MULTI-NIC-ARP-LOCK - By default, in Linux, arp requests may be answered by interfaces that
+			#						do not actually have the IP in question.  In some (alot in my case),
+			#						I have things going through specific wires for a reason.  This fixes
+			#						that and makes it behave as expected.
+			for i in default all; do
+				echo "1" > /proc/sys/net/ipv4/conf/$i/arp_ignore
+				echo "2" > /proc/sys/net/ipv4/conf/$i/arp_announce
+			done
+		;;
 		esac
 		shift
 	done
