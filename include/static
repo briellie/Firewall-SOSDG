@@ -45,3 +45,6 @@ DEFAULT_COLOR="\E[39m"
 
 # Module names that we may need to load
 MOD_U32="xt_u32"
+
+# Location of the ipv4 network conf in proc
+PROC_NET_IPV4="/proc/sys/net/ipv4/conf"

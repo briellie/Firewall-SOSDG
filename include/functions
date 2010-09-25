@@ -145,7 +145,6 @@ function apply_ipv4_hack {
 			#						I have things going through specific wires for a reason.  This fixes
 			#						that and makes it behave as expected.
 			display_c PURPLE " MULTI-NIC-ARP-LOCK"
-			PROC_NET_IPV4="/proc/sys/net/ipv4/conf"
 			for i in default all; do
 				if [ -w ${PROC_NET_IPV4}/$i/arp_ignore ]; then
 					echo "1" > ${PROC_NET_IPV4}/$i/arp_ignore
