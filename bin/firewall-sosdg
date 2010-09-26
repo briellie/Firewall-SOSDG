@@ -581,6 +581,7 @@ if [ $IPV6 ]; then
         		PORTS_COUNT_CURR=$y
 			done
 			unset y PORTS PORTS_COUNT_CURR PORTS_COUNT
+			fi
 		else
 				for i in $IPV6TCP; do
 					echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
