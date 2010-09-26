@@ -40,6 +40,14 @@ MODPROBE=/sbin/modprobe
 # Port forwardings, requires NAT
 #PORTFW=$BASEDIR/port-forwards
 
+
+# Multiport support?
+# yes/no/auto  (auto will try to detect if we support multiport or not, may not always work)
+IPTABLES_MULTIPORT=auto
+
+# Multiport module name for kernel - use to override defaults
+#NF_MULTIPORT="xt_multiport"
+
 # TCP/UDP/Protocol to allow
 TCPPORTS="20 21 22 53 80 113 123 443"
 UDPPORTS="53"

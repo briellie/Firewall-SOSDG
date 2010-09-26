@@ -240,6 +240,23 @@ if [ -s "$BASEDIR/include/ipv4_custom_allowedports" ]; then
 	. "$BASEDIR/include/ipv4_custom_allowedports"
 fi
 
+if [ "$IPTABLES_MULTIPORT" ] {
+	case $IPTABLES_MULTIPORT in
+	  auto|AUTO|Auto)
+	  		if `${MODPROBE} ${NF_MULTIPORT} &>/dev/null`; then
+	  			display_c YELLOW "Multiport successfully loaded."
+	  		else
+	  			display_c RED "Multiport was not loaded successfully.  Disabling."
+	  			IPTABLES_MULTIPORT="no"
+	  		fi ;;
+	  yes|YES|Yes)
+	  		${MODPROBE} ${NF_MULTIPORT}
+	  		display_c PURPLE "Multiport loading forced, not error checking." ;;
+	  *)  IPTABLES_MULTIPORT="no"
+	  esac
+fi
+	  	
+
 if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 	display_c YELLOW "Adding allowed port: " N
 

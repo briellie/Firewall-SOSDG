@@ -48,3 +48,6 @@ MOD_U32="xt_u32"
 
 # Location of the ipv4 network conf in proc
 PROC_NET_IPV4="/proc/sys/net/ipv4/conf"
+
+# Multiport module name for kernel - override in options
+NF_MULTIPORT="xt_multiport"
