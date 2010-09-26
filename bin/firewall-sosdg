@@ -245,13 +245,15 @@ if [ "$IPTABLES_MULTIPORT" ]; then
 	  auto|AUTO|Auto)
 	  		if `${MODPROBE} ${NF_MULTIPORT} &>/dev/null`; then
 	  			display_c YELLOW "Multiport successfully loaded."
+	  			IPTABLES_MULTIPORT="yes"
 	  		else
 	  			display_c RED "Multiport was not loaded successfully.  Disabling."
 	  			IPTABLES_MULTIPORT="no"
 	  		fi ;;
 	  yes|YES|Yes)
 	  		${MODPROBE} ${NF_MULTIPORT}
-	  		display_c PURPLE "Multiport loading forced, not error checking." ;;
+	  		display_c PURPLE "Multiport loading forced, not error checking."
+	  		IPTABLES_MULTIPORT="yes" ;;
 	  *)  IPTABLES_MULTIPORT="no"
 	  esac
 fi
@@ -259,12 +261,29 @@ fi
 
 if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 	display_c YELLOW "Adding allowed port: " N
-
 	if [ "$TCPPORTS" ]; then
-		for i in $TCPPORTS; do
-			echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
-			$IPTABLES -A INPUT -p tcp --dport $i -j ACCEPT
-		done
+		if [ $IPTABLES_MULTIPORT == "yes" ]; then
+			TCPPORTS=($TCPPORTS)
+			PORTS_COUNT=${#TCPPORTS[@]}
+			PORTS_COUNT_CURR=0
+			while [ $PORTS_COUNT_CURR -lt $PORTS_COUNT ]; do
+				for ((y=$PORTS_COUNT_CURR; y <=(($PORTS_COUNT_CURR+((MULTI_MAX_PORTS-1)))); y++)); do
+					if [ ${TCPPORTS[$y]} ]; then
+						PORTS="$PORTS,${TCPPORTS[$y]}"
+					fi
+				done
+				echo -en "${PURPLE}Multiport-TCP${DEFAULT_COLOR}/${GREEN}${PORTS#,}"
+				${IPTABLES} -A INPUT -p tcp -m multiport --dports ${PORTS#,} -j ACCEPT"
+				unset PORTS
+        		PORTS_COUNT_CURR=$y
+			done
+			unset y PORTS PORTS_COUNT_CURR PORTS_COUNT
+		else
+			for i in $TCPPORTS; do
+				echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
+				$IPTABLES -A INPUT -p tcp --dport $i -j ACCEPT
+			done
+		fi
 	fi
 	if [ "$UDPPORTS" ]; then
 		for i in $UDPPORTS; do
@@ -545,14 +564,29 @@ if [ $IPV6 ]; then
 	fi
 	if [ "$IPV6TCP" ] || [ "$IPV6UDP" ]; then
 		display_c YELLOW "Adding allowed IPv6 port: " N
-
 		if [ "$IPV6TCP" ]; then
-			for i in $IPV6TCP; do
-				echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
-				$IP6TABLES -A INPUT -p tcp --dport $i -j ACCEPT
+			if [ $IPTABLES_MULTIPORT == "yes" ]; then
+				IPV6TCP=($IPV6TCP)
+				PORTS_COUNT=${#IPV6TCP[@]}
+				PORTS_COUNT_CURR=0
+				while [ $PORTS_COUNT_CURR -lt $PORTS_COUNT ]; do
+					for ((y=$PORTS_COUNT_CURR; y <=(($PORTS_COUNT_CURR+((MULTI_MAX_PORTS-1)))); y++)); do
+						if [ ${IPV6TCP[$y]} ]; then
+							PORTS="$PORTS,${IPV6TCP[$y]}"
+						fi
+				done
+				echo -en "${PURPLE}Multiport-TCP${DEFAULT_COLOR}/${GREEN}${PORTS#,}"
+				${IPTABLES} -A INPUT -p tcp -m multiport --dports ${PORTS#,} -j ACCEPT"
+				unset PORTS
+        		PORTS_COUNT_CURR=$y
 			done
+			unset y PORTS PORTS_COUNT_CURR PORTS_COUNT
+		else
+				for i in $IPV6TCP; do
+					echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
+					$IP6TABLES -A INPUT -p tcp --dport $i -j ACCEPT
+				done
 		fi
-
 		if [ "$IPV6UDP" ]; then
 			for i in $IPV6UDP; do
 				echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "

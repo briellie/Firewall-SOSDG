@@ -42,11 +42,13 @@ MODPROBE=/sbin/modprobe
 
 
 # Multiport support?
-# yes/no/auto  (auto will try to detect if we support multiport or not, may not always work)
+# yes/no/auto  (auto will try to detect if we support multiport or not,
+# may not always work but is recommended unless you have a reason otherwise)
 IPTABLES_MULTIPORT=auto
 
-# Multiport module name for kernel - use to override defaults
+# Multiport options - use to override defaults
 #NF_MULTIPORT="xt_multiport"
+#NF_MULTIPORT_MAX_PORTS="7"
 
 # TCP/UDP/Protocol to allow
 TCPPORTS="20 21 22 53 80 113 123 443"
