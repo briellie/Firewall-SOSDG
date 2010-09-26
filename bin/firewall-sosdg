@@ -240,7 +240,7 @@ if [ -s "$BASEDIR/include/ipv4_custom_allowedports" ]; then
 	. "$BASEDIR/include/ipv4_custom_allowedports"
 fi
 
-if [ "$IPTABLES_MULTIPORT" ] {
+if [ "$IPTABLES_MULTIPORT" ]; then
 	case $IPTABLES_MULTIPORT in
 	  auto|AUTO|Auto)
 	  		if `${MODPROBE} ${NF_MULTIPORT} &>/dev/null`; then
