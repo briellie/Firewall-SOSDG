@@ -267,7 +267,7 @@ if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 			PORTS_COUNT=${#TCPPORTS[@]}
 			PORTS_COUNT_CURR=0
 			while [[ $PORTS_COUNT_CURR < $PORTS_COUNT ]]; do
-				for ((i=$PORTS_COUNT_CURR; i <=(($PORTS_COUNT_CURR+(($NF_MULTI_MAX_PORTS-1)))); i++)); do
+				for ((i=$PORTS_COUNT_CURR; i <=(($PORTS_COUNT_CURR+(($NF_MULTIPORT_MAX_PORTS-1)))); i++)); do
 					if [ ${TCPPORTS[$i]} ]; then
 						PORTS="${PORTS},${TCPPORTS[$i]}"
 					fi
@@ -570,7 +570,7 @@ if [ $IPV6 ]; then
 				PORTS_COUNT=${#IPV6TCP[@]}
 				PORTS_COUNT_CURR=0
 				while [[ $PORTS_COUNT_CURR < $PORTS_COUNT ]]; do
-					for ((i=$PORTS_COUNT_CURR; i <=(($PORTS_COUNT_CURR+(($NF_MULTI_MAX_PORTS-1)))); i++)); do
+					for ((i=$PORTS_COUNT_CURR; i <=(($PORTS_COUNT_CURR+(($NF_MULTIPORT_MAX_PORTS-1)))); i++)); do
 						if [ ${IPV6TCP[$i]} ]; then
 							PORTS="${PORTS},${IPV6TCP[$i]}"
 						fi
