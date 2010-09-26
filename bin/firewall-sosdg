@@ -273,7 +273,7 @@ if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 					fi
 				done
 				echo -en "${PURPLE}Multiport-TCP${DEFAULT_COLOR}/${GREEN}${PORTS#,}"
-				${IPTABLES} -A INPUT -p tcp -m multiport --dports ${PORTS#,} -j ACCEPT"
+				${IPTABLES} -A INPUT -p tcp -m multiport --dports ${PORTS#,} -j ACCEPT
 				unset PORTS
         		PORTS_COUNT_CURR=$y
 			done
@@ -576,7 +576,7 @@ if [ $IPV6 ]; then
 						fi
 				done
 				echo -en "${PURPLE}Multiport-TCP${DEFAULT_COLOR}/${GREEN}${PORTS#,}"
-				${IPTABLES} -A INPUT -p tcp -m multiport --dports ${PORTS#,} -j ACCEPT"
+				$IPTABLES -A INPUT -p tcp -m multiport --dports ${PORTS#,} -j ACCEPT
 				unset PORTS
         		PORTS_COUNT_CURR=$y
 			done
