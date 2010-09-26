@@ -262,7 +262,7 @@ fi
 if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 	display_c YELLOW "Adding allowed port: " N
 	if [ "$TCPPORTS" ]; then
-		if [ $IPTABLES_MULTIPORT == "yes" ]; then
+		if [ $IPTABLES_MULTIPORT == "yes" ] && [ $NF_MULTIPORT_MAX_PORTS ]; then
 			TCPPORTS=($TCPPORTS)
 			PORTS_COUNT=${#TCPPORTS[@]}
 			PORTS_COUNT_CURR=0
@@ -273,7 +273,7 @@ if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 					fi
 				done
 				echo -en "${PURPLE}Multiport-TCP${DEFAULT_COLOR}/${GREEN}${PORTS#,}"
-				${IPTABLES} -A INPUT -p tcp -m multiport --dports ${PORTS#,} -j ACCEPT
+				$IPTABLES -A INPUT -p tcp -m multiport --dports ${PORTS#,} -j ACCEPT
 				unset PORTS
         		PORTS_COUNT_CURR=$y
 			done
