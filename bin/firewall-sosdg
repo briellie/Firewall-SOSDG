@@ -275,7 +275,7 @@ if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 				echo -en "${PURPLE}Multiport-TCP${DEFAULT_COLOR}/${GREEN}${PORTS#,}"
 				$IPTABLES -A INPUT -p tcp -m multiport --dports ${PORTS#,} -j ACCEPT
 				unset PORTS
-        		PORTS_COUNT_CURR=$y
+        		PORTS_COUNT_CURR=$i
 			done
 			unset y PORTS PORTS_COUNT_CURR PORTS_COUNT
 		else
