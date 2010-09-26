@@ -263,13 +263,13 @@ if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 	display_c YELLOW "Adding allowed port: " N
 	if [ "$TCPPORTS" ]; then
 		if [ $IPTABLES_MULTIPORT == "yes" ] && [ $NF_MULTIPORT_MAX_PORTS ]; then
-			TCPPORTS_ARRAY=($TCPPORTS)
+			TCPPORTS=($TCPPORTS)
 			PORTS_COUNT=${#TCPPORTS[@]}
 			PORTS_COUNT_CURR=0
 			while [ $PORTS_COUNT_CURR -lt $PORTS_COUNT ]; do
 				for ((y=$PORTS_COUNT_CURR; y <=(($PORTS_COUNT_CURR+((MULTI_MAX_PORTS-1)))); y++)); do
-					if [ ${TCPPORTS_ARRAY[$y]} ]; then
-						PORTS="${PORTS},${TCPPORTS_ARRAY[$y]}"
+					if [ ${TCPPORTS[$y]} ]; then
+						PORTS="${PORTS},${TCPPORTS[$y]}"
 					fi
 				done
 				echo -en "${PURPLE}Multiport-TCP${DEFAULT_COLOR}/${GREEN}${PORTS#,}"
