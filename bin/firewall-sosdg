@@ -262,7 +262,7 @@ fi
 if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 	display_c YELLOW "Adding allowed port: " N
 	if [ "$TCPPORTS" ]; then
-		if [ $IPTABLES_MULTIPORT == "yes" ] && [ $NF_MULTIPORT_MAX_PORTS ]; then
+		if [ "$IPTABLES_MULTIPORT" == "yes" ] && [ "$NF_MULTIPORT_MAX_PORTS" ]; then
 			TCPPORTS=($TCPPORTS)
 			PORTS_COUNT=${#TCPPORTS[@]}
 			PORTS_COUNT_CURR=0
@@ -277,7 +277,7 @@ if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 				unset PORTS
         		PORTS_COUNT_CURR=$i
 			done
-			unset y PORTS PORTS_COUNT_CURR PORTS_COUNT
+			unset i PORTS PORTS_COUNT_CURR PORTS_COUNT
 		else
 			for i in $TCPPORTS; do
 				echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
@@ -565,7 +565,7 @@ if [ $IPV6 ]; then
 	if [ "$IPV6TCP" ] || [ "$IPV6UDP" ]; then
 		display_c YELLOW "Adding allowed IPv6 port: " N
 		if [ "$IPV6TCP" ]; then
-			if [ $IPTABLES_MULTIPORT == "yes" ] && [ $NF_MULTIPORT_MAX_PORTS ]; then
+			if [ "$IPTABLES_MULTIPORT" == "yes" ] && [ "$NF_MULTIPORT_MAX_PORTS" ]; then
 				IPV6TCP=($IPV6TCP)
 				PORTS_COUNT=${#IPV6TCP[@]}
 				PORTS_COUNT_CURR=0
@@ -580,7 +580,7 @@ if [ $IPV6 ]; then
 					unset PORTS
         			PORTS_COUNT_CURR=$i
 				done
-				unset y PORTS PORTS_COUNT_CURR PORTS_COUNT
+				unset i PORTS PORTS_COUNT_CURR PORTS_COUNT
 			fi
 		else
 				for i in $IPV6TCP; do
