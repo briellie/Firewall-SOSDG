@@ -151,8 +151,8 @@ if [ "$BLOCK_OUTGOING_RFC1918" ]; then
 		for i in $BLOCK_OUTGOING_RFC1918; do
 			display_c BLUE "$i" N
 			for x in $RFC1918_SPACE; do
-				$IPTABLES -A OUTPUT -d $i -s $x -j DROP
-				$IPTABLES -A FORWARD -d $i -s $x -j DROP
+				$IPTABLES -A OUTPUT -o $i -s $x -j DROP
+				$IPTABLES -A FORWARD -o $i -s $x -j DROP
 			done
 		done
 		echo -ne "\n"
