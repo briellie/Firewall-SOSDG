@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FW_VERSION="0.9.7"
+FW_VERSION="0.9.8"
 
 # These option is here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
@@ -143,6 +143,33 @@ if [ $BLOCKEDIP ]; then
 		$IPTABLES -A OUTPUT -d $i -j DROP
 	done
 echo -ne "\n"
+fi
+
+
+if [ "$BLOCK_OUTGOING_RFC1918" ]; then
+	display_c YELLOW "Blocking RFC1918 space going out on: " N
+		for i in $BLOCK_OUTGOING_RFC1918; do
+			display_c BLUE "$i" N
+			for x in $RFC1918_SPACE; do
+				$IPTABLES -A OUTPUT -d $i -s $x -j DROP
+				$IPTABLES -A FORWARD -d $i -s $x -j DROP
+			done
+		done
+		echo -ne "\n"
+		unset i x
+fi
+
+if [ "$BLOCK_INCOMING_RFC1918" ]; then
+	display_c YELLOW "Blocking RFC1918 space coming in on: " N
+		for i in $BLOCK_INCOMING_RFC1918; do
+			display_c BLUE "$i" N
+			for x in $RFC1918_SPACE; do
+				$IPTABLES -A OUTPUT -s $i -s $x -j DROP
+				$IPTABLES -A FORWARD -s $i -s $x -j DROP
+			done
+		done
+		echo -ne "\n"
+		unset i x
 fi
 
 if [ "$STRIPECN" ]; then

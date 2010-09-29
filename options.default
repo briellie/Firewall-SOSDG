@@ -82,7 +82,6 @@ IPv4_MARK=$BASEDIR/ipv4-marks
 #
 HACK_IPV4="NS-IN-DDOS"
 
-
 #==============
 # Obsolete - DO NOT USE ANYMORE. Will be removed in 1.0
 # IP ranges(s) to NAT using SNAT.
@@ -97,7 +96,6 @@ HACK_IPV4="NS-IN-DDOS"
 # MASQ:<INT IF>:<INT IP>:<EXT IF>
 #NAT_RANGE=
 
-
 # IP Ranges to block all traffic incoming/outgoing
 BLOCKEDIP=$BASEDIR/blocked
 
@@ -108,6 +106,20 @@ BLOCKEDIP=$BASEDIR/blocked
 # Strip ECN off of packets - helps with blackholes
 # Either individual IPs or 0.0.0.0/0
 STRIPECN="0.0.0.0/0"
+
+# Block private LAN traffic (RFC reserved space) going OUT on these interfaces
+# for security reasons.  This has the potential to cause issues if your
+# provider uses private IP space for uplinks in PPPoE/PPPoA, so don't use it
+# and use BLOCK_INCOMING_RFC1981 instead.
+#BLOCK_OUTGOING_RFC1918="ppp0"
+
+# Block private LAN traffic (RFC reserved space) coming IN on these interfaces
+# for security reasons.  This is a bit more safer to use if your provider uses
+# private IP space for the other end of PPP links.
+#BLOCK_INCOMING_RFC1918="ppp0"
+
+# RFC1918 Space override, don't change or uncomment this unless you absolutely need to
+#RFC1918_SPACE="192.168.0.0/16 172.16.0.0/12 10.0.0.0/8"
 
 
 # IPv6 related features.  Commenting out IPV6 variable disables ALL
