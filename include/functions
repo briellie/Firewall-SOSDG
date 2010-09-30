@@ -161,4 +161,5 @@ function apply_ipv4_hack {
 		esac
 		shift
 	done
+	echo -en "\n"
 }
