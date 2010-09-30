@@ -208,7 +208,7 @@ echo -en "\n"
 fi
 
 
-if [ $HACK_IPV4 ]; then
+if [ "$HACK_IPV4" ]; then
 	apply_ipv4_hack $HACK_IPV4
 fi
 
