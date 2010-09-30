@@ -241,22 +241,12 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 		for i in $BLOCKTCPPORTS; do
 			echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
 			$IPTABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
-			#if [ "$NATRANGE" ]; then
-			#	for src in $NATRANGE; do
-			#		$IPTABLES -A FORWARD -p tcp -s $src --dport $i --syn -j DROP
-			#	done
-			#fi
 		done
 	fi
 	if  [ "$BLOCKUDPPORTS" ]; then
 		for i in $BLOCKUDPPORTS; do
 			echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
 			$IPTABLES -A OUTPUT -p udp --dport $i -j DROP
-			#if [ "$NATRANGE" ]; then
-			#	for src in $NATRANGE; do
-			#		$IPTABLES -A FORWARD -p udp -s $src --dport $i -j DROP
-			#	done
-			#fi
 		done
 	fi
 	reset_color
@@ -478,23 +468,6 @@ if [ $NAT ]; then
 			esac
 		done
 		reset_color
-	fi
-	#=================
-    # This section is going away in 1.0
-	if [ "$NATRANGE" ]; then
-		echo -e "${RED} **** WARNING ****"
-		echo -e "${RED} NATRANGE option detected.  Please switch to using"
-		echo -e "${RED} NAT_RANGE which uses the newer style NAT mappings."
-		echo -e "${RED} NATRANGE will be removed in v1.0"
-		for i in $NATRANGE; do
-			$IPTABLES -A POSTROUTING -t nat -s $i -o $NATEXTIF -j SNAT --to-source $NATEXTIP
-		done
-	 	#This is necessary to make sure that PMTU works
-		$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o $NATEXTIF \
-				-j ACCEPT
-		$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
-				-o $NATEXTIF -j ACCEPT
-	#=================
 	fi
 fi
 

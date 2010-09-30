@@ -82,15 +82,6 @@ IPv4_MARK=$BASEDIR/ipv4-marks
 #
 HACK_IPV4="NS-IN-DDOS"
 
-#==============
-# Obsolete - DO NOT USE ANYMORE. Will be removed in 1.0
-# IP ranges(s) to NAT using SNAT.
-#NATRANGE="192.168.1.0/24"
-# External IP and interface for SNAT
-#NATEXTIP="172.16.1.1"
-#NATEXTIF="eth0"
-#==============
-
 # IP NAT Rules
 # SNAT:<INT IF>:<INT IP>:<EXT IF>:<EXT IP>
 # MASQ:<INT IF>:<INT IP>:<EXT IF>
