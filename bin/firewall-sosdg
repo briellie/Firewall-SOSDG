@@ -245,7 +245,7 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 			#	for src in $NATRANGE; do
 			#		$IPTABLES -A FORWARD -p tcp -s $src --dport $i --syn -j DROP
 			#	done
-			fi
+			#fi
 		done
 	fi
 	if  [ "$BLOCKUDPPORTS" ]; then
@@ -256,7 +256,7 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 			#	for src in $NATRANGE; do
 			#		$IPTABLES -A FORWARD -p udp -s $src --dport $i -j DROP
 			#	done
-			fi
+			#fi
 		done
 	fi
 	reset_color
