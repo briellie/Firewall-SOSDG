@@ -131,7 +131,7 @@ function apply_ipv4_hack {
 		NS-IN-DDOS)
 			# NS-IN-DDOS - Block DNS DDoS using NS/IN spoof, see:
 			# http://www.stupendous.net/archives/2009/01/24/dropping-spurious-nsin-recursive-queries/
-			display_c PURPLE " ./NS/IN-DDOS-FIX"
+			display_c PURPLE " ./NS/IN-DDOS-FIX" N
 			if `$MODPROBE --quiet $MOD_U32 &>/dev/null`; then
 				$IPTABLES -A INPUT -j DROP -p udp --dport 53 -m u32 --u32 \
 				"0>>22&0x3C@12>>16=1&&0>>22&0x3C@20>>24=0&&0>>22&0x3C@21=0x00020001"
@@ -144,7 +144,7 @@ function apply_ipv4_hack {
 			#						do not actually have the IP in question.  In some (alot in my case),
 			#						I have things going through specific wires for a reason.  This fixes
 			#						that and makes it behave as expected.
-			display_c PURPLE " MULTI-NIC-ARP-LOCK"
+			display_c PURPLE " MULTI-NIC-ARP-LOCK" N
 			for i in default all; do
 				if [ -w ${PROC_NET_IPV4}/$i/arp_ignore ]; then
 					echo "1" > ${PROC_NET_IPV4}/$i/arp_ignore
