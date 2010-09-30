@@ -151,8 +151,8 @@ if [ "$BLOCK_OUTGOING_RFC1918" ]; then
 		for i in $BLOCK_OUTGOING_RFC1918; do
 			display_c BLUE "$i " N
 			for x in $RFC1918_SPACE; do
-				$IPTABLES -A OUTPUT -o $i -s $x -j DROP
-				$IPTABLES -A FORWARD -o $i -s $x -j DROP
+				$IPTABLES -A INPUT -i $i -s $x -j DROP
+				$IPTABLES -A FORWARD -i $i -s $x -j DROP
 			done
 		done
 		echo -ne "\n"
@@ -241,10 +241,10 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 		for i in $BLOCKTCPPORTS; do
 			echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
 			$IPTABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
-			if [ "$NATRANGE" ]; then
-				for src in $NATRANGE; do
-					$IPTABLES -A FORWARD -p tcp -s $src --dport $i --syn -j DROP
-				done
+			#if [ "$NATRANGE" ]; then
+			#	for src in $NATRANGE; do
+			#		$IPTABLES -A FORWARD -p tcp -s $src --dport $i --syn -j DROP
+			#	done
 			fi
 		done
 	fi
@@ -252,10 +252,10 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 		for i in $BLOCKUDPPORTS; do
 			echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
 			$IPTABLES -A OUTPUT -p udp --dport $i -j DROP
-			if [ "$NATRANGE" ]; then
-				for src in $NATRANGE; do
-					$IPTABLES -A FORWARD -p udp -s $src --dport $i -j DROP
-				done
+			#if [ "$NATRANGE" ]; then
+			#	for src in $NATRANGE; do
+			#		$IPTABLES -A FORWARD -p udp -s $src --dport $i -j DROP
+			#	done
 			fi
 		done
 	fi
