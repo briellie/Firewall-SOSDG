@@ -402,6 +402,7 @@ fi
 
 if [ "$LANDHCPSERVER" ]; then
 	for i in $LANDHCPSERVER; do
+		$IPTABLES -A INPUT -i $i -s 0.0.0.0 -j ACCEPT
 		$IPTABLES -A INPUT -i $i -p udp --dport 67:68 -j ACCEPT
 		$IPTABLES -A INPUT -i $i -p tcp --dport 67:68 -j ACCEPT
 		$IPTABLES -A OUTPUT -o $i -p udp --dport 67:68 -j ACCEPT

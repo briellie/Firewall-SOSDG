@@ -1,6 +1,8 @@
 0.9.8 - Brielle Bruns <bruns@2mbit.com>
 	- Almost at v1.0 quality for my tastes
 	- BLOCK_(INCOMING/OUTGOING)_RFC1918 options to help sure up security of LAN space leakage
+	- Changes to LANDHCPSERVER so it accepts interface names, plus a possible fix for win7
+	  hammering DHCP server for unknown reason?
 
 0.9.7 - Brielle Bruns <bruns@2mbit.com>
 	- Support for marking packets, uses new config file and
