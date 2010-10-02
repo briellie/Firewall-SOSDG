@@ -31,8 +31,9 @@ MODPROBE=/sbin/modprobe
 # Space separated list of interfaces to apply this on
 #CLAMPMSS="ppp0 eth0"
 
-# Do we run a LAN DHCP server?
-#LANDHCPSERVER=1
+# Do we run a LAN DHCP server?  Put the interfaces here
+# where this server is providing services.
+#LANDHCPSERVER="eth0 eth1"
 
 # Internal Interface
 #INTINF=ppp+

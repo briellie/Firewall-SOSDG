@@ -400,10 +400,11 @@ if [ $PORTFW ] && [ $NAT ]; then
 reset_color
 fi
 
-if [ $LANDHCPSERVER ]; then
-	$IPTABLES -A INPUT -i ${INTIF} -p udp --dport 67:68 -j ACCEPT
-    $IPTABLES -A INPUT -i ${INTIF} -p udp -d 255.255.255.255 --dport 67 -j ACCEPT
-
+if [ "$LANDHCPSERVER" ]; then
+	for i in $LANDHCPSERVER; do
+		$IPTABLES -A INPUT -i $i -p udp --dport 67:68 -j ACCEPT
+		$IPTABLES -A INPUT -i $i -p udp -d 255.255.255.255 --dport 67 -j ACCEPT
+	done
 fi
 
 if [ -s "$BASEDIR/include/ipv4_custom_mark" ]; then
