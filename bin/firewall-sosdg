@@ -401,9 +401,8 @@ reset_color
 fi
 
 if [ $LANDHCPSERVER ]; then
-	#$IPTABLES -A INPUT -i $INTIF -s 0.0.0.0 -j ACCEPT
-	$IPTABLES  -I INPUT -i $INTIF -p udp --dport 67:68 --sport \
-     67:68 -j ACCEPT
+	$IPTABLES -A INPUT -i ${INTIF} -p udp --dport 67:68 -j ACCEPT
+    $IPTABLES -A INPUT -i ${INTIF} -p udp -d 255.255.255.255 --dport 67 -j ACCEPT
 
 fi
 
