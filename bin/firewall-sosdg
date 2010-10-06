@@ -135,7 +135,7 @@ if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
 	. "$BASEDIR/include/ipv4_custom_blockip"
 fi
 
-if [ $BLOCKEDIP ]; then
+if [ "$BLOCKEDIP" ]; then
 	display_c YELLOW "Adding blocked IPs... "
 	for i in `grep -v "\#" $BLOCKEDIP`; do
 		#echo -n "$i "
@@ -562,6 +562,65 @@ if [ $IPV6 ]; then
 		$IP6TABLES -A OUTPUT -d $i -j ACCEPT
 	done
 	reset_color
+	
+	if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
+	display_c YELLOW "Loading custom ip block rules..."
+	. "$BASEDIR/include/ipv4_custom_blockip"
+fi
+
+if [ "$BLOCKEDIPV6" ]; then
+	display_c YELLOW "Adding blocked IPv6 addresses... "
+	for i in `grep -v "\#" $BLOCKEDIPV6`; do
+		if [[ "$i" =~ "|" ]]; then
+			IFS_OLD=${IFS};IFS=\|
+			ADVBLKIP=($i)
+			IFS=${IFS_OLD}
+			SRCIF=${ADVBLKIP[0]}
+			SRCIP=${ADVBLKIP[1]}
+			SRCPORT=${ADVBLKIP[2]}
+			DSTIF=${ADVBLKIP[3]}
+			DSTIP=${ADVBLKIP[4]}
+			DSTPORT=${ADVBLKIP[5]}
+			DIRECTION=${ADVBLKIP[6]}
+			PROTO=${ADVBLKIP[7]}
+			if [ "$SRCIF" ]; then
+				SRCIF="-i ${SRCIF} "
+			fi
+			if [ "$SRCIP" ]; then
+				SRCIP="-s ${SRCIP} "
+			fi
+			if [ "$SRCPORT" ]; then
+				SRCPORT="--sport ${SRCPORT/-/:} "
+			fi
+			if [ "$DSTIF" ]; then
+				DSTIF="-o ${DSTIF} "
+			fi
+			if [ "$DSTIP" ]; then
+				DSTIP="-d ${DSTIP} "
+			fi
+			if [ "$DSTPORT" ]; then
+				DSTPORT="--dport ${DSTPORT/-/:} "
+			fi
+			if [ "$PROTO" ]; then
+				case $PROTO in
+					TCP|tcp) PROTO="-p tcp";;
+					UDP|udp) PROTO="-p udp";;
+					*) PROTO="-p ${PROTO}";;
+				esac
+			fi
+			case $DIRECTION in
+				IN) DIRECTION="INPUT" ;;
+				OUT) DIRECTION="OUTPUT" ;;
+				FWD) DIRECTION="FORWARD" ;;
+				*) DIRECTION="INPUT" ;;
+			esac
+			${IP6TABLES} -A ${DIRECTION} ${PROTO} ${SRCIF} ${SRCIP} ${SRCPORT} ${DSTIF} ${DSTIP} ${DSTPORT} -j DROP
+		else
+			$IP6TABLES -A INPUT -s $i -j DROP
+			$IP6TABLES -A OUTPUT -d $i -j DROP
+		fi
+	done
+fi
 
 	if [ -s "$BASEDIR/include/ipv6_custom_mssclamp" ]; then
 		display_c YELLOW "Loading custom IPv6 MSS Clamp rules..."

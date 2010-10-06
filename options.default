@@ -130,6 +130,9 @@ IPV6BLOCKINCOMING=1
 # Useful if clients do not have proper ipv6 firewalls.
 #IPV6ROUTEDCLIENTBLOCK=1
 
+# IPv6 Ranges to block all traffic incoming/outgoing
+#BLOCKEDIPV6=$BASEDIR/ipv6-blocked
+
 # Clamp MSS, useful on DSL/VPN links
 # Space separated list of interfaces to apply this on
 # it may be used eventually.
