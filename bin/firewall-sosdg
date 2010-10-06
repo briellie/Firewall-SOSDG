@@ -136,13 +136,12 @@ if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
 fi
 
 if [ $BLOCKEDIP ]; then
-	display_c YELLOW "Adding blocked IPs: " N
+	display_c YELLOW "Adding blocked IPs... "
 	for i in `grep -v "\#" $BLOCKEDIP`; do
-		echo -n "$i "
+		#echo -n "$i "
 		$IPTABLES -A INPUT -s $i -j DROP
 		$IPTABLES -A OUTPUT -d $i -j DROP
 	done
-echo -ne "\n"
 fi
 
 

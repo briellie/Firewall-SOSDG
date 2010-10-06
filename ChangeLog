@@ -4,6 +4,8 @@
 	- Changes to LANDHCPSERVER so it accepts interface names, plus a possible fix for win7
 	  hammering DHCP server for unknown reason?
 	- Cleanups
+	- No longer display list of blocked IPs, considering if they are
+	  as long as my list is, they'll take 4 pages to display...
 
 0.9.7 - Brielle Bruns <bruns@2mbit.com>
 	- Support for marking packets, uses new config file and
