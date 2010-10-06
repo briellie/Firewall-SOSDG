@@ -8,15 +8,17 @@ if [ ! -r $BASEDIR/include/static ] || [ ! -r $BASEDIR/include/functions ]; then
 	exit 1
 fi
 
-. $BASEDIR/include/static
-. $BASEDIR/include/functions
-
 if [ -r $BASEDIR/options ]; then
 	. $BASEDIR/options
 else
 	echo -e "${RED}Error: Can not load options file.  Did you forget to rename options.default?"
 	exit 1
 fi
+
+. $BASEDIR/include/static
+. $BASEDIR/include/functions
+
+
 
 
 
