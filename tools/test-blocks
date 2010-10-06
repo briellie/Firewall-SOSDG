@@ -26,7 +26,7 @@ display_c YELLOW "rules used for blocking in ${BLOCKEDIP}. It is"
 display_c YELLOW "a good way to verify the rules will work how"
 display_c YELLOW "you intend."
 
-if [ ! "$BLOCKEDIP" ]; then
+if [ ! -r "$BLOCKEDIP" ]; then
 	display_c RED "Error: No blocked ips file found."
 	exit 1
 fi
