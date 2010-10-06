@@ -1,0 +1,83 @@
+#!/bin/bash
+BASEDIR=/etc/firewall-sosdg
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+if [ ! -r $BASEDIR/include/static ] || [ ! -r $BASEDIR/include/functions ]; then
+	echo "Error: Missing either include/static or include/functions. These are critical to operation"
+	echo "of this script.  Please make sure they are readable and exist!"
+	exit 1
+fi
+
+. $BASEDIR/include/static
+. $BASEDIR/include/functions
+
+if [ -r $BASEDIR/options ]; then
+	. $BASEDIR/options
+else
+	echo -e "${RED}Error: Can not load options file.  Did you forget to rename options.default?"
+	exit 1
+fi
+
+
+
+
+display_c YELLOW "This is a simple tool to display the iptables"
+display_c YELLOW "rules used for blocking in ${BLOCKEDIP}. It is"
+display_c YELLOW "a good way to verify the rules will work how"
+display_c YELLOW "you intend."
+
+if [ ! "$BLOCKEDIP" ]; then
+	display_c RED "Error: No blocked ips file found."
+	exit 1
+fi
+
+for i in `grep -v "\#" $BLOCKEDIP`; do
+		if [[ "$i" =~ ":" ]]; then
+			IFS_OLD=${IFS};IFS=:
+			ADVBLKIP=($BLOCK)
+			IFS=${IFS_OLD}
+			SRCIF=${ADVBLKIP[0]}
+			SRCIP=${ADVBLKIP[1]}
+			SRCPORT=${ADVBLKIP[2]}
+			DSTIF=${ADVBLKIP[3]}
+			DSTIP=${ADVBLKIP[4]}
+			DSTPORT=${ADVBLKIP[5]}
+			DIRECTION=${ADVBLKIP[6]}
+			PROTO=${ADVBLKIP[7]}
+			if [ "$SRCIF" ]; then
+				SRCIF="-i ${SRCIF} "
+			fi
+			if [ "$SRCIP" ]; then
+				SRCIP="-s ${SRCIP} "
+			fi
+			if [ "$SRCPORT" ]; then
+				SRCPORT="--sport ${SRCPORT/-/:} "
+			fi
+			if [ "$DSTIF" ]; then
+				DSTIF="-o ${DSTIF} "
+			fi
+			if [ "$DSTIP" ]; then
+				DSTIP="-d ${DSTIP} "
+			fi
+			if [ "$DSTPORT" ]; then
+				DSTPORT="--dport ${DSTPORT/-/:} "
+			fi
+			if [ "$PROTO" ]; then
+				case $PROTO in
+					TCP|tcp) PROTO="-p tcp";;
+					UDP|udp) PROTO="-p udp";;
+					*) PROTO="-p ${PROTO}";;
+				esac
+			fi
+			case $DIRECTION in
+				IN) DIRECTION="INPUT" ;;
+				OUT) DIRECTION="OUTPUT" ;;
+				FWD) DIRECTION="FORWARD" ;;
+				*) DIRECTION="INPUT" ;;
+			esac
+			echo "${IPTABLES} -A ${DIRECTION} ${SRCIF} ${SRCIP} ${SRCPORT} ${DSTIF} ${DSTIP} ${DSTPORT} ${PROTO} -j DROP"
+		else
+			echo "${IPTABLES} -A INPUT -s $i -j DROP"
+			echo "${IPTABLES} -A OUTPUT -d $i -j DROP"
+		fi
+done
