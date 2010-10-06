@@ -12,7 +12,8 @@
 	- Rename blocked to ipv4-blocked since we're going to have
 	  ipv6 support
 	- ipv6 blocking support.  Different format for config file
-	  because IPv6 uses :, which means we get to use |
+	  because IPv6 uses :, which means we get to use | for both
+	  ipv4 and ipv6 (goes against a previous commit)
 
 0.9.7 - Brielle Bruns <bruns@2mbit.com>
 	- Support for marking packets, uses new config file and
