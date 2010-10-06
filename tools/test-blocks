@@ -30,15 +30,10 @@ display_c YELLOW "rules used for blocking in ${BLOCKEDIP}. It is"
 display_c YELLOW "a good way to verify the rules will work how"
 display_c YELLOW "you intend."
 
-if [ ! -r "$BLOCKEDIP" ]; then
-	display_c RED "Error: No blocked ips file found."
-	exit 1
-fi
 
-for i in `grep -v "\#" $BLOCKEDIP`; do
-		if [[ "$i" =~ ":" ]]; then
+if [[ "$1" =~ ":" ]]; then
 			IFS_OLD=${IFS};IFS=:
-			ADVBLKIP=($BLOCK)
+			ADVBLKIP=($1)
 			IFS=${IFS_OLD}
 			SRCIF=${ADVBLKIP[0]}
 			SRCIP=${ADVBLKIP[1]}
@@ -80,8 +75,4 @@ for i in `grep -v "\#" $BLOCKEDIP`; do
 				*) DIRECTION="INPUT" ;;
 			esac
 			echo "${IPTABLES} -A ${DIRECTION} ${SRCIF} ${SRCIP} ${SRCPORT} ${DSTIF} ${DSTIP} ${DSTPORT} ${PROTO} -j DROP"
-		else
-			echo "${IPTABLES} -A INPUT -s $i -j DROP"
-			echo "${IPTABLES} -A OUTPUT -d $i -j DROP"
-		fi
-done
+fi
