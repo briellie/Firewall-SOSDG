@@ -20,6 +20,11 @@ You can now place custom rules in at specific points of the firewall
 rule loading.  See include/README for more details.
 
 
+[Update 10/6/2010]
+I've made some major changes as of 0.9.8, so please make sure
+you are using a compatible config file.  When in doubt, copy
+options.default to options and start over.
+
 This is a script in progress, and is nowhere near complete.  If you
 find obvious bugs or have a patch to add new features/remove bugs,
 please send them to me.
