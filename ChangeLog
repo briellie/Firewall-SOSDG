@@ -9,6 +9,10 @@
 	- New block file format, much more capable now, thanks to
 	  an hour or two of improving my bash scripting skills to the
 	  point where I can do more complex breakdowns of formats
+	- Rename blocked to ipv4-blocked since we're going to have
+	  ipv6 support
+	- ipv6 blocking support.  Different format for config file
+	  because IPv6 uses :, which means we get to use |
 
 0.9.7 - Brielle Bruns <bruns@2mbit.com>
 	- Support for marking packets, uses new config file and

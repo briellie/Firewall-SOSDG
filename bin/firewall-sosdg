@@ -139,8 +139,8 @@ if [ $BLOCKEDIP ]; then
 	display_c YELLOW "Adding blocked IPs... "
 	for i in `grep -v "\#" $BLOCKEDIP`; do
 		#echo -n "$i "
-		if [[ "$i" =~ ":" ]]; then
-			IFS_OLD=${IFS};IFS=:
+		if [[ "$i" =~ "|" ]]; then
+			IFS_OLD=${IFS};IFS=\|
 			ADVBLKIP=($i)
 			IFS=${IFS_OLD}
 			SRCIF=${ADVBLKIP[0]}
