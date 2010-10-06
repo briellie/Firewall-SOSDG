@@ -25,7 +25,7 @@
 # These defines are here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
 # but if you want to make sure you have a current options file, define this to 0.
-if [ $COMPAT_CONFIG == "1" ]; then
+if [[ "$COMPAT_CONFIG" == "1" ]]; then
 	MODPROBE=`which modprobe`
 fi
 

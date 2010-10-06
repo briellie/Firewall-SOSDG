@@ -14,3 +14,6 @@ default:
 tarball:
 	cd .. ;\
         $(TAR) jcf $(TARBALL) --exclude='.svn' firewall-sosdg
+
+upgrade:
+	mv -f blocked ipv4-blocked &>/dev/null
