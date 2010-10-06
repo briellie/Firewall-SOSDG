@@ -141,7 +141,7 @@ if [ $BLOCKEDIP ]; then
 		#echo -n "$i "
 		if [[ "$i" =~ ":" ]]; then
 			IFS_OLD=${IFS};IFS=:
-			ADVBLKIP=($BLOCK)
+			ADVBLKIP=($i)
 			IFS=${IFS_OLD}
 			SRCIF=${ADVBLKIP[0]}
 			SRCIP=${ADVBLKIP[1]}
