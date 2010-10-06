@@ -15,8 +15,10 @@ else
 	exit 1
 fi
 
+
 . $BASEDIR/include/static
 . $BASEDIR/include/functions
+
 
 
 
