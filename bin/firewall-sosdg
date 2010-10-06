@@ -139,8 +139,54 @@ if [ $BLOCKEDIP ]; then
 	display_c YELLOW "Adding blocked IPs... "
 	for i in `grep -v "\#" $BLOCKEDIP`; do
 		#echo -n "$i "
-		$IPTABLES -A INPUT -s $i -j DROP
-		$IPTABLES -A OUTPUT -d $i -j DROP
+		if [[ "$i" =~ ":" ]]; then
+			IFS_OLD=${IFS};IFS=:
+			ADVBLKIP=($BLOCK)
+			IFS=${IFS_OLD}
+			SRCIF=${ADVBLKIP[0]}
+			SRCIP=${ADVBLKIP[1]}
+			SRCPORT=${ADVBLKIP[2]}
+			DSTIF=${ADVBLKIP[3]}
+			DSTIP=${ADVBLKIP[4]}
+			DSTPORT=${ADVBLKIP[5]}
+			DIRECTION=${ADVBLKIP[6]}
+			PROTO=${ADVBLKIP[7]}
+			if [ "$SRCIF" ]; then
+				SRCIF="-i ${SRCIF} "
+			fi
+			if [ "$SRCIP" ]; then
+				SRCIP="-s ${SRCIP} "
+			fi
+			if [ "$SRCPORT" ]; then
+				SRCPORT="--sport ${SRCPORT/-/:} "
+			fi
+			if [ "$DSTIF" ]; then
+				DSTIF="-o ${DSTIF} "
+			fi
+			if [ "$DSTIP" ]; then
+				DSTIP="-d ${DSTIP} "
+			fi
+			if [ "$DSTPORT" ]; then
+				DSTPORT="--dport ${DSTPORT/-/:} "
+			fi
+			if [ "$PROTO" ]; then
+				case $PROTO in
+					TCP|tcp) PROTO="-p tcp";;
+					UDP|udp) PROTO="-p udp";;
+					*) PROTO="-p ${PROTO}";;
+				esac
+			fi
+			case $DIRECTION in
+				IN) DIRECTION="INPUT" ;;
+				OUT) DIRECTION="OUTPUT" ;;
+				FWD) DIRECTION="FORWARD" ;;
+				*) DIRECTION="INPUT" ;;
+			esac
+			${IPTABLES} -A ${DIRECTION} ${SRCIF} ${SRCIP} ${SRCPORT} ${DSTIF} ${DSTIP} ${DSTPORT} ${PROTO} -j DROP"
+		else
+			$IPTABLES -A INPUT -s $i -j DROP
+			$IPTABLES -A OUTPUT -d $i -j DROP
+		fi
 	done
 fi
 
@@ -385,7 +431,7 @@ if [ -s "$BASEDIR/include/ipv4_custom_portforward" ]; then
 	. "$BASEDIR/include/ipv4_custom_portforward"
 fi
 
-if [ $PORTFW ] && [ $NAT ]; then
+if [ "$PORTFW" ] && [ "$NAT" ]; then
 	display_c YELLOW "Adding port forward for:"
 	for i in `grep -v "\#" $PORTFW`; do
 		PORTADD=( ${i//:/ } )

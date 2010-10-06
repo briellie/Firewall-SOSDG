@@ -89,9 +89,11 @@ HACK_IPV4="NS-IN-DDOS"
 #NAT_RANGE=
 
 # IP Ranges to block all traffic incoming/outgoing
-BLOCKEDIP=$BASEDIR/blocked
+# New functionality in 0.9.8 obsoletes BLOCKTCPPORTS and BLOCKUDPPORTS
+BLOCKEDIP=$BASEDIR/ipv4-blocked
 
 # Block outgoing traffic on these TCP/UDP ports
+# Obsoleted: Use BLOCKEDIP above in new format.  Going away in 1.0
 #BLOCKTCPPORTS="6881"
 #BLOCKUDPPORTS="6881"
 
