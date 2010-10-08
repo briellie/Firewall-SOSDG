@@ -1,3 +1,10 @@
+0.9.8a - Brielle Bruns <bruns@2mbit.com>
+	- Fixing executable file permission issues
+	- Use /bin/bash in initscript cause dash does not recognize
+	  more advanced methods that bash can use.  Oops.  Easiest
+	  way to keep up to date is to symlink /etc/init.d/firewall-sosdg
+	  to /etc/firewall-sosdg/doc/firewall-sosdg.init
+
 0.9.8 - Brielle Bruns <bruns@2mbit.com>
 	- Almost at v1.0 quality for my tastes
 	- BLOCK_(INCOMING/OUTGOING)_RFC1918 options to help sure up security of LAN space leakage

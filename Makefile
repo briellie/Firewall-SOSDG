@@ -1,4 +1,4 @@
-VERSION=0.9.8
+VERSION=0.9.8a
 TAR=/usr/bin/tar
 TARBALL="firewall-sosdg-$(VERSION).tar.bz2"
 
