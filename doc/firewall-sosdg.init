@@ -12,19 +12,18 @@
 ### END INIT INFO
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
-FIREWALL_START=/etc/firewall-sosdg/bin/firewall-sosdg
-FIREWALL_STOP=/etc/firewall-sosdg/stop-firewall
+FIREWALL_CMD=/etc/firewall-sosdg/bin/firewall-sosdg
 . /lib/lsb/init-functions
 
 case "${1:-}" in
   start)
         log_begin_msg "Starting Firewall/SOSDG..."
-        $FIREWALL_START
+        $FIREWALL_CMD
         log_end_msg $?
   ;;
   stop)
         log_begin_msg "Stopping Firewall/SOSDG..."
-	$FIREWALL_STOP
+	$FIREWALL_CMD --flush
         log_end_msg $?
   ;;
   *)
