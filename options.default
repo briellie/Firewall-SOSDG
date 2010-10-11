@@ -1,3 +1,7 @@
+# I'm trying to make this config as simple as possible.  Comment out
+# options you don't want to use, uncomment them to use them.
+# Don't forget to rename this file to 'options'!
+
 # Config file version.  Don't change this.  Will be used some day to
 # figure out if we need to alert the user that they need to redo their
 # config file.
@@ -11,13 +15,11 @@ IP6TABLES=/bin/true
 #IPTABLES=/sbin/iptables
 #IP6TABLES=/sbin/ip6tables
 
-#This is important for loading kernel modules
+# This is important for loading kernel modules
 MODPROBE=/sbin/modprobe
 
-# Don't forget to rename this file to 'options'!
-
-# I'm trying to make this config as simple as possible.  Comment out
-# options you don't want to use, uncomment them to use them.
+# Extra modules to load such as ftp connection tracking
+#MODULES_LOAD="nf_conntrack_ftp nf_conntrack_h323 nf_conntrack_irc nf_conntrack_pptp nf_conntrack_proto_gre nf_conntrack_proto_sctp nf_conntrack_proto_udplite nf_conntrack_proto_sip nf_conntrack_proto_tftp nf_conntrack_proto_sane"
 
 # Do we want NAT/Conntrack/Forward features?
 #NAT=1
@@ -40,7 +42,6 @@ MODPROBE=/sbin/modprobe
 
 # Port forwardings, requires NAT
 #PORTFW=$BASEDIR/port-forwards
-
 
 # Multiport support?
 # yes/no/auto  (auto will try to detect if we support multiport or not,

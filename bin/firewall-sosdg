@@ -112,6 +112,15 @@ if [ -x $PRERUN ]; then
 	$PRERUN
 fi
 
+if [ "$MODULES_LOAD" ]; then
+	display_c YELLOW "Loading modules: " N
+	for i in $MODULES_LOAD; do
+		display_c BLUE "$i " N
+		${MODPROBE} $i
+	done
+	echo -ne "\n"
+fi
+
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
