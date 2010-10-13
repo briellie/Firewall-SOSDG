@@ -98,14 +98,9 @@ HACK_IPV4="NS-IN-DDOS"
 # New functionality in 0.9.8 obsoletes BLOCKTCPPORTS and BLOCKUDPPORTS
 BLOCKEDIP=$BASEDIR/ipv4-blocked
 
-# Block outgoing traffic on these TCP/UDP ports
-# Obsoleted: Use BLOCKEDIP above in new format.  Going away in 1.0
-#BLOCKTCPPORTS="6881"
-#BLOCKUDPPORTS="6881"
-
 # Strip ECN off of packets - helps with blackholes
 # Either individual IPs or 0.0.0.0/0
-STRIPECN="0.0.0.0/0"
+#STRIPECN="0.0.0.0/0"
 
 # Block private LAN traffic (RFC reserved space) going OUT on these interfaces
 # for security reasons.  This has the potential to cause issues if your
@@ -124,11 +119,11 @@ STRIPECN="0.0.0.0/0"
 
 # IPv6 related features.  Commenting out IPV6 variable disables ALL
 # IPv6 related items
-IPV6=1
+#IPV6=1
 
 # Do we want IPv6 FORWARD and Connection tracking features?
-#IPV6FORWARD=1
-#IPV6CONNTRACK=1
+#IPV6_FORWARD=1
+#IPV6_CONNTRACK=1
 
 # Allow outgoing DNS requests - important if you did not activate connection
 # tracking.  Set this to the interfaces you wish to use for outgoing requests
@@ -136,40 +131,39 @@ IPV6=1
 #IPV6_DNS_REQUESTS_OUT="eth0|2001::1|2001::2|2001::3 eth1"
 
 # Default block all incoming ipv6 connections?
-IPV6BLOCKINCOMING=1
+#IPV6_BLOCKINCOMING=1
 
 # Special case for routers that have ipv6 clients behind them.
 # Useful if clients do not have proper ipv6 firewalls.
-#IPV6ROUTEDCLIENTBLOCK=1
+#IPV6_ROUTEDCLIENTBLOCK=1
+
+# IP range(s) to forward
+#IPV6_ROUTING=$BASEDIR/ipv6-routing
 
 # Mark ipv6 packets for advanced purposes
-#IPv6_MARK=$BASEDIR/ipv6-marks
+#IPV6_MARK=$BASEDIR/ipv6-marks
 
 # IPv6 Ranges to block all traffic incoming/outgoing
-#BLOCKEDIPV6=$BASEDIR/ipv6-blocked
+#IPV6_BLOCKEDIP=$BASEDIR/ipv6-blocked
 
 # Clamp MSS, useful on DSL/VPN links
 # Space separated list of interfaces to apply this on
 # it may be used eventually.
-#CLAMPMSSIPV6="he-ipv6"
+#IPV6_CLAMPMSS="he-ipv6"
 
 # Interface IPv6 comes in on (either tunnel or real network interface)
-#IPV6INT=he-ipv6
+#IPV6_INT=he-ipv6
 
 # LAN interface for IPv6
-#IPV6LAN=eth1
+#IPV6_LAN=eth1
 
 # Trusted IPv6 ranges
-IPV6TRUSTED="::1"
+#IPV6_TRUSTED="::1"
 
 # Allowed incoming IPv6 ports (for now, use $TCPPORTS and $UDPPORTS to
 # have same for both ipv4 and ipv6)
-IPV6TCP=$TCPPORTS
-IPV6UDP=$UDPPORTS
+#IPV6_TCPPORTS=$TCPPORTS
+#IPV6_UDPPORTS=$UDPPORTS
 
 # IPv6 range to forward
-#IPV6FORWARDRANGE=""
-
-# Block outgoing IPv6 traffic on these TCP/UDP ports
-#BLOCKIPV6TCPPORTS=$BLOCKTCPPORTS
-#BLOCKIPV6UDPPORTS=$BLOCKUDPPORTS
+#IPV6_FORWARDRANGE=""

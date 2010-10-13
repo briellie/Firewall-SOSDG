@@ -618,10 +618,14 @@ if [ "$IPV6_DNS_REQUESTS_OUT" ]; then
 		fi
 	done
 fi
-
-if [ "$BLOCKEDIPV6" ]; then
+	if [ -s "$BASEDIR/include/ipv6_custom_blockoutports" ]; then
+		display_c YELLOW "Loading custom IPv6 blocked outbound port rules..."
+		. "$BASEDIR/include/ipv6_custom_blockoutports"
+	fi
+	
+if [ "$IPV6_BLOCKEDIP" ]; then
 	display_c YELLOW "Adding blocked IPv6 addresses... "
-	for i in `grep -v "\#" $BLOCKEDIPV6`; do
+	for i in `grep -v "\#" $IPV6_BLOCKEDIP`; do
 		if [[ "$i" =~ "|" ]]; then
 			IFS_OLD=${IFS};IFS=\|
 			ADVBLKIP=($i)
@@ -678,9 +682,9 @@ fi
 		. "$BASEDIR/include/ipv6_custom_mssclamp"
 	fi
 
-	if [ "$CLAMPMSSIPV6" ]; then
+	if [ "$IPV6_CLAMPMSS" ]; then
 		display_c YELLOW "Clamping IPV6 MSS to PMTU..."
-		for i in $CLAMPMSSIPV6; do
+		for i in $IPV6_CLAMPMSS; do
 			$IP6TABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN \
 			-j TCPMSS --clamp-mss-to-pmtu -o $i -m tcpmss \
 			--mss 1280:1536
@@ -699,36 +703,15 @@ fi
 		done
 	fi
 
-	if [ -s "$BASEDIR/include/ipv6_custom_blockoutports" ]; then
-		display_c YELLOW "Loading custom IPv6 blocked outbound port rules..."
-		. "$BASEDIR/include/ipv6_custom_blockoutports"
-	fi
-	if [ "$BLOCKIPV6TCPPORTS" ] || [ "$BLOCKIPV6UDPPORTS" ]; then
-		display_c YELLOW "Blocking outbound port: " N
-		if [ "$BLOCKIPV6TCPPORTS" ]; then
-			for i in $BLOCKIPV6TCPPORTS; do
-				echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
-				$IP6TABLES -A OUTPUT -p tcp --dport $i --syn -j DROP
-			done
-		fi
-		if [ "$BLOCKIPV6UDPPORTS" ]; then
-			for i in $BLOCKIPV6UDPPORTS; do
-				echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
-				$IP6TABLES -A OUTPUT -p udp --dport $i -j DROP
-			done
-		fi
-		reset_color
-	fi
-
 	if [ -s "$BASEDIR/include/ipv6_custom_allowedports" ]; then
 		display_c YELLOW "Loading custom IPv6 allowed port rules..."
 		. "$BASEDIR/include/ipv6_custom_allowedports"
 	fi
-	if [ "$IPV6TCP" ] || [ "$IPV6UDP" ]; then
+	if [ "$IPV6_TCPPORTS" ] || [ "$IPV6_UDPPORTS" ]; then
 		display_c YELLOW "Adding allowed IPv6 port: " N
-		if [ "$IPV6TCP" ]; then
+		if [ "$IPV6_TCPPORTS" ]; then
 			if [ "$IPTABLES_MULTIPORT" == "yes" ] && [ "$NF_MULTIPORT_MAX_PORTS" ]; then
-				IPV6TCP=($IPV6TCP)
+				IPV6_TCPPORTS=($IPV6_TCPPORTS)
 				PORTS_COUNT=${#IPV6TCP[@]}
 				PORTS_COUNT_CURR=0
 				while (( "$PORTS_COUNT_CURR" < "$PORTS_COUNT" )); do
@@ -750,8 +733,8 @@ fi
 					$IP6TABLES -A INPUT -p tcp --dport $i -j ACCEPT
 				done
 		fi
-		if [ "$IPV6UDP" ]; then
-			for i in $IPV6UDP; do
+		if [ "$IPV6_UDPPORTS" ]; then
+			for i in $IPV6_UDPPORTS; do
 				echo -en "${BLUE}UDP${DEFAULT_COLOR}/${GREEN}$i "
 				$IP6TABLES -A OUTPUT -p udp --sport 1:65535 --dport $i -j ACCEPT
 	        		$IP6TABLES -A INPUT -p udp --dport $i --sport 1:65535 -j ACCEPT
@@ -767,9 +750,9 @@ fi
 		. "$BASEDIR/include/ipv6_custom_mark"
 	fi
 
-	if [ -r "$IPv6_MARK" ]; then
+	if [ -r "$IPV6_MARK" ]; then
 		display_c YELLOW "Adding IPv6 mark: "
-		for i in `grep -v "\#" $IPv6_MARK`; do
+		for i in `grep -v "\#" $IPV6_MARK`; do
 			MARK=( ${i//|/ } )
 			INIF=${MARK[0]}
 			INIP=${MARK[1]}
@@ -798,7 +781,7 @@ fi
 		. "$BASEDIR/include/ipv6_custom_conntrack"
 	fi
 
-	if [ "$IPV6CONNTRACK" ]; then
+	if [ "$IPV6_CONNTRACK" ]; then
 		$IP6TABLES -A INPUT -m state --state NEW -j ACCEPT
 		$IP6TABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 		$IP6TABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
@@ -810,7 +793,7 @@ fi
 		$IP6TABLES -A FORWARD -m state --state INVALID -j DROP
 	fi
 
-	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
+	if [ $IPV6_ROUTEDCLIENTBLOCK ]; then
 		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -i $IPV6INT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP
@@ -823,8 +806,8 @@ fi
 		display_c YELLOW "Loading custom IPv6 routing rules..."
 		. "$BASEDIR/include/ipv6_custom_routing"
 	fi
-	if [ "$IPV6FORWARDRANGE" ]; then
-		for i in $IPV6FORWARDRANGE; do
+	if [ "$IPV6_FORWARDRANGE" ]; then
+		for i in $IPV6_FORWARDRANGE; do
 			$IP6TABLES -A FORWARD -s $i -j ACCEPT
 			$IP6TABLES -A FORWARD -d $i -j ACCEPT
 		done
@@ -834,7 +817,7 @@ fi
 		display_c YELLOW "Loading custom IPv6 incoming blocked port rules..."
 		. "$BASEDIR/include/ipv6_custom_blockincoming"
 	fi
-	if [ $IPV6BLOCKINCOMING ]; then
+	if [ $IPV6_BLOCKINCOMING ]; then
 		$IP6TABLES -A INPUT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -p udp -j DROP
 	fi
