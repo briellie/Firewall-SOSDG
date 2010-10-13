@@ -1,3 +1,7 @@
+0.9.9  - Brielle Bruns <bruns@2mbit.com>
+	- Loadable module support during firewall loading
+	- More init script fixes.
+
 0.9.8a - Brielle Bruns <bruns@2mbit.com>
 	- Fixing executable file permission issues
 	- Use /bin/bash in initscript cause dash does not recognize

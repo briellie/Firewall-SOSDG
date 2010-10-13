@@ -52,6 +52,11 @@ IPTABLES_MULTIPORT=auto
 #NF_MULTIPORT="xt_multiport"
 #NF_MULTIPORT_MAX_PORTS="7"
 
+# Allow outgoing DNS requests - important if you did not activate connection
+# tracking.  Set this to the interfaces you wish to use for outgoing requests
+# plus the IP addresses of your upstream servers (up to 3) if you need to.
+#DNS_REQUESTS_OUT="eth0|4.2.2.1|4.2.2.2|4.2.2.3 eth1"
+
 # TCP/UDP/Protocol to allow
 TCPPORTS="20 21 22 53 80 113 123 443"
 UDPPORTS="53"

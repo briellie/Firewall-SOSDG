@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FW_VERSION="0.9.8"
+FW_VERSION="0.9.9"
 
 # These option is here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
@@ -137,6 +137,28 @@ if [ "$TRUSTEDIP" ]; then
 		$IPTABLES -A OUTPUT -d $i -j ACCEPT
 	done
 	echo -ne "\n"
+fi
+
+if [ "$DNS_REQUESTS_OUT" ]; then
+	display_c YELLOW "Adding DNS reply allows for trusted DNS servers.."
+	for i in $DNS_REQUESTS_OUT; do
+		if [[ "$i" =~ "|" ]]; then
+			echo "Original variable: ${DNS_REQUESTS_OUT}"
+			IFS_OLD=${IFS};IFS=\|
+			DNSREQ=($i)
+			IFS=${IFS_OLD}
+			SRCIF=${DNSREQ[0]}
+			DNSIP_NUM=${#DNSREQ[@]}
+			DNSIP_COUNT_CURR=1
+			for ((i=$DNSIP_COUNT_CURR; i <= $DNSIP_NUM; i++)); do
+				if [ ${DNSREQ[$i]} ]; then
+					${IPTABLES} -A INPUT -i ${SRCIF} -p udp --sport 53 -s ${DNSREQ[$i]} --destination-port 1024:65535 -j ACCEPT
+				fi
+			done			
+		else
+			{$IPTABLES} -A INPUT -i $i -p udp --sport 53 --destination-port 1024:65535 -j ACCEPT
+		fi
+	done
 fi
 
 if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
