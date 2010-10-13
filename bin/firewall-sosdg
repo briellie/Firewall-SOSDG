@@ -143,7 +143,6 @@ if [ "$DNS_REQUESTS_OUT" ]; then
 	display_c YELLOW "Adding DNS reply allows for trusted DNS servers.."
 	for i in $DNS_REQUESTS_OUT; do
 		if [[ "$i" =~ "|" ]]; then
-			echo "Original variable: ${DNS_REQUESTS_OUT}"
 			IFS_OLD=${IFS};IFS=\|
 			DNSREQ=($i)
 			IFS=${IFS_OLD}
@@ -599,6 +598,27 @@ if [ $IPV6 ]; then
 	. "$BASEDIR/include/ipv4_custom_blockip"
 fi
 
+if [ "$IPV6_DNS_REQUESTS_OUT" ]; then
+	display_c YELLOW "Adding IPv6 DNS reply allows for trusted DNS servers.."
+	for i in $DNS_REQUESTS_OUT; do
+		if [[ "$i" =~ "|" ]]; then
+			IFS_OLD=${IFS};IFS=\|
+			DNSREQ=($i)
+			IFS=${IFS_OLD}
+			SRCIF=${DNSREQ[0]}
+			DNSIP_NUM=${#DNSREQ[@]}
+			DNSIP_COUNT_CURR=1
+			for ((i=$DNSIP_COUNT_CURR; i <= $DNSIP_NUM; i++)); do
+				if [ ${DNSREQ[$i]} ]; then
+					${IP6TABLES} -A INPUT -i ${SRCIF} -p udp --sport 53 -s ${DNSREQ[$i]} --destination-port 1024:65535 -j ACCEPT
+				fi
+			done			
+		else
+			${IP6TABLES} -A INPUT -i $i -p udp --sport 53 --destination-port 1024:65535 -j ACCEPT
+		fi
+	done
+fi
+
 if [ "$BLOCKEDIPV6" ]; then
 	display_c YELLOW "Adding blocked IPv6 addresses... "
 	for i in `grep -v "\#" $BLOCKEDIPV6`; do
@@ -747,7 +767,12 @@ fi
 		. "$BASEDIR/include/ipv6_custom_conntrack"
 	fi
 
-	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
+	if [ -s "$BASEDIR/include/ipv6_custom_conntrack" ]; then
+		display_c YELLOW "Loading custom IPv6 conntrack rules..."
+		. "$BASEDIR/include/ipv6_custom_conntrack"
+	fi
+
+	if [ "$IPV6CONNTRACK" ]; then
 		$IP6TABLES -A INPUT -m state --state NEW -j ACCEPT
 		$IP6TABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 		$IP6TABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
@@ -757,6 +782,9 @@ fi
 		$IP6TABLES -A INPUT -m state --state INVALID -j DROP
 		$IP6TABLES -A OUTPUT -m state --state INVALID -j DROP
 		$IP6TABLES -A FORWARD -m state --state INVALID -j DROP
+	fi
+
+	if [ $IPV6ROUTEDCLIENTBLOCK ]; then
 		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -i $IPV6INT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP

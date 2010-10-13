@@ -9,4 +9,4 @@ ipv4_custom_blockip	   ipv4_custom_mark
 
 ipv6_custom_flush          ipv6_custom_trust        ipv6_custom_mssclamp
 ipv6_custom_blockoutports  ipv6_custom_allowedports ipv6_custom_conntrack
-ipv6_custom_routing        ipv6_custom_blockincoming
+ipv6_custom_routing        ipv6_custom_blockincoming ipv6_custom_conntrack

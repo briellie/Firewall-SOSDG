@@ -54,7 +54,7 @@ IPTABLES_MULTIPORT=auto
 
 # Allow outgoing DNS requests - important if you did not activate connection
 # tracking.  Set this to the interfaces you wish to use for outgoing requests
-# plus the IP addresses of your upstream servers (up to 3) if you need to.
+# plus the IP addresses of your upstream servers (recommended up to 3) if you need to.
 #DNS_REQUESTS_OUT="eth0|4.2.2.1|4.2.2.2|4.2.2.3 eth1"
 
 # TCP/UDP/Protocol to allow
@@ -128,6 +128,14 @@ IPV6=1
 
 # IPv6 Forwarding
 #IPV6FORWARD=1
+
+# Do IPv6 connection tracking?
+#IPV6CONNTRACK=1
+
+# Allow outgoing DNS requests - important if you did not activate connection
+# tracking.  Set this to the interfaces you wish to use for outgoing requests
+# plus the IP addresses of your upstream servers (recommended up to 3) if you need to.
+#IPV6_DNS_REQUESTS_OUT="eth0|2001::1|2001::2|2001::3 eth1"
 
 # Default block all incoming ipv6 connections?
 IPV6BLOCKINCOMING=1

@@ -1,6 +1,9 @@
 0.9.9  - Brielle Bruns <bruns@2mbit.com>
 	- Loadable module support during firewall loading
 	- More init script fixes.
+	- Non-conntracked DNS reply packets allow options
+	- Slightly improved IPv6 support to start to bring
+	  it up to par with IPv4 support.Ã
 
 0.9.8a - Brielle Bruns <bruns@2mbit.com>
 	- Fixing executable file permission issues
