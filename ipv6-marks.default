@@ -1,0 +1,6 @@
+# IPv6 Packet Marking
+# Used to mark packets for specific routing (or other) purposes
+# incoming-interface|src-range|dst-range|mark-num
+# Use ! before IP/range to negate
+# eth0:2002::0/32|2001::/64|5
+# ORDER MATTERS!
