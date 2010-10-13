@@ -586,11 +586,13 @@ if [ $IPV6 ]; then
 		display_c YELLOW "Loading custom IPv6 trust rules..."
 		. "$BASEDIR/include/ipv6_custom_trust"
 	fi
-	for i in $IPV6TRUSTED; do
-		echo -n "$i "
-		$IP6TABLES -A INPUT -s $i -j ACCEPT
-		$IP6TABLES -A OUTPUT -d $i -j ACCEPT
-	done
+	if [ "$IPV6_TRUSTED" ]; then
+		for i in $IPV6_TRUSTED; do
+			echo -n "$i "
+			$IP6TABLES -A INPUT -s $i -j ACCEPT
+			$IP6TABLES -A OUTPUT -d $i -j ACCEPT
+		done
+	fi
 	reset_color
 	
 	if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then

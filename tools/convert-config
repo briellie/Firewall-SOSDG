@@ -1,7 +1,7 @@
 #!/bin/bash
-echo "This script converts certain aspects of old config files, such as renamed variables"
-echo "to the new variable names.  It is NOT foolproof, so please check your config files"
-echo "afterwards."
+echo "This script converts certain aspects of old config files, such 
+echo "as renamed variables to the new variable names.  It is NOT foolproof"
+echo "so please check your config files afterwards."
 
 sed -e 's/IPV6FORWARD/IPV6_FORWARD/' \
 	-e 's/IPV6CONNTRACK/IPV6_CONNTRACK/' \
