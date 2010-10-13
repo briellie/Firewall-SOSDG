@@ -794,10 +794,10 @@ fi
 	fi
 
 	if [ $IPV6_ROUTEDCLIENTBLOCK ]; then
-		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p tcp --syn -j DROP
-		$IP6TABLES -A INPUT -i $IPV6INT -p tcp --syn -j DROP
-		$IP6TABLES -A INPUT -i $IPV6INT -p udp ! --dport 32768:65535 -j DROP
-		$IP6TABLES -A FORWARD -i $IPV6INT -o $IPV6LAN -p udp ! --dport 32768:65535 -j DROP
+		$IP6TABLES -A FORWARD -i $IPV6_INT -o $IPV6LAN -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -i $IPV6_INT -p tcp --syn -j DROP
+		$IP6TABLES -A INPUT -i $IPV6_INT -p udp ! --dport 32768:65535 -j DROP
+		$IP6TABLES -A FORWARD -i $IPV6_INT -o $IPV6LAN -p udp ! --dport 32768:65535 -j DROP
 	fi
 	
 
