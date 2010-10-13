@@ -4,6 +4,7 @@
 	- Non-conntracked DNS reply packets allow options
 	- Slightly improved IPv6 support to start to bring
 	  it up to par with IPv4 support.Ã
+	- ipv6 marking support, changed ipv4 to use | instead of :
 
 0.9.8a - Brielle Bruns <bruns@2mbit.com>
 	- Fixing executable file permission issues

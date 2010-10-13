@@ -497,7 +497,7 @@ fi
 if [ -r "$IPv4_MARK" ]; then
 	display_c YELLOW "Adding mark: "
 	for i in `grep -v "\#" $IPv4_MARK`; do
-		MARK=( ${i//:/ } )
+		MARK=( ${i//|/ } )
 		INIF=${MARK[0]}
 		INIP=${MARK[1]}
 		DSTIP=${MARK[2]}
@@ -761,12 +761,38 @@ fi
 		reset_color
 	fi
 	fi
-
-	if [ -s "$BASEDIR/include/ipv6_custom_conntrack" ]; then
-		display_c YELLOW "Loading custom IPv6 conntrack rules..."
-		. "$BASEDIR/include/ipv6_custom_conntrack"
+	
+	if [ -s "$BASEDIR/include/ipv6_custom_mark" ]; then
+		display_c YELLOW "Loading custom IPv6 mark rules..."
+		. "$BASEDIR/include/ipv6_custom_mark"
 	fi
 
+	if [ -r "$IPv6_MARK" ]; then
+		display_c YELLOW "Adding IPv6 mark: "
+		for i in `grep -v "\#" $IPv6_MARK`; do
+			MARK=( ${i//|/ } )
+			INIF=${MARK[0]}
+			INIP=${MARK[1]}
+			DSTIP=${MARK[2]}
+			IPMARK=${MARK[3]}
+
+			case $INIP in
+				!*) INNEG="!"
+					INIP=${INIP#\!};;
+			esac
+			case $DSTIP in
+				!*) DSTNEG="!"
+					DSTIP=${DSTIP#\!};;
+			esac
+
+			${IP6TABLES} -t mangle -A PREROUTING -i ${INIF} ${INNEG} -s ${INIP} \
+   			     ${DSTNEG} -d ${DSTIP} -j MARK --set-mark=${IPMARK}
+			display_c DEFAULT "\t${GREEN}${INNEG}${INIF};${PURPLE}${INIP}${AQUA}->${BLUE}${DSTNEG}${DSTIP};${RED}${IPMARK}"
+			unset INNEG DSTNEG
+		done
+	echo -ne "\n"
+	fi
+	
 	if [ -s "$BASEDIR/include/ipv6_custom_conntrack" ]; then
 		display_c YELLOW "Loading custom IPv6 conntrack rules..."
 		. "$BASEDIR/include/ipv6_custom_conntrack"
