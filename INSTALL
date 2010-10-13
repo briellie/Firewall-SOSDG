@@ -29,3 +29,9 @@ This is a script in progress, and is nowhere near complete.  If you
 find obvious bugs or have a patch to add new features/remove bugs,
 please send them to me.
 
+
+[Update 10/13/2010] - 0.9.9
+!!! IMPORTANT !!!
+If you are upgrading from pre 0.9.9 config, please either run 'make config_update'
+or 'tools/convert-config' to update your config file with the variable changes for IPV6
+options.

@@ -17,3 +17,6 @@ tarball:
 
 upgrade:
 	mv -f blocked ipv4-blocked &>/dev/null
+	
+config_update:
+	tools/convert-config
