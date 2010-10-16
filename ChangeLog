@@ -5,7 +5,8 @@
 	- Slightly improved IPv6 support to start to bring
 	  it up to par with IPv4 support.
 	- ipv6 marking support, changed ipv4 to use | instead of :
-	- Renamed IPV6 variables, compatibility in place for now in static file
+	- Renamed IPV6 variables, please read INSTALL file about conversion of config file
+	  to new format.
 
 0.9.8a - Brielle Bruns <bruns@2mbit.com>
 	- Fixing executable file permission issues

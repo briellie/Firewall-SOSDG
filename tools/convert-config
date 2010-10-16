@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "This script converts certain aspects of old config files, such 
+echo "This script converts certain aspects of old config files, such"
 echo "as renamed variables to the new variable names.  It is NOT foolproof"
 echo "so please check your config files afterwards."
 
