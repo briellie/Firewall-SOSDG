@@ -718,8 +718,8 @@ fi
 				PORTS_COUNT_CURR=0
 				while (( "$PORTS_COUNT_CURR" < "$PORTS_COUNT" )); do
 					for ((i=$PORTS_COUNT_CURR; i <=(($PORTS_COUNT_CURR+(($NF_MULTIPORT_MAX_PORTS-1)))); i++)); do
-						if [ ${IPV6TCP[$i]} ]; then
-							PORTS="${PORTS},${IPV6TCP[$i]}"
+						if [ ${IPV6_TCPPORTS[$i]} ]; then
+							PORTS="${PORTS},${IPV6_TCPPORTS[$i]}"
 						fi
 					done
 					echo -en "${PURPLE}Multiport-TCP${DEFAULT_COLOR}/${GREEN}${PORTS#,} "
