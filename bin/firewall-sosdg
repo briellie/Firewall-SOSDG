@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FW_VERSION="0.9.9"
+FW_VERSION="0.9.10"
 
 # These option is here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
@@ -137,6 +137,26 @@ if [ "$TRUSTEDIP" ]; then
 		$IPTABLES -A OUTPUT -d $i -j ACCEPT
 	done
 	echo -ne "\n"
+fi
+
+if [ "$CLAMPMSS" ]; then
+	display_c YELLOW "Clamping MSS to PMTU..."
+	for i in $CLAMPMSS; do
+		$IPTABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
+		$IPTABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
+			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
+		# This is necessary to make sure that PMTU works
+		$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
+			-o $i -j ACCEPT
+		$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded \
+			-i $i -j ACCEPT
+		$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
+			-o $i -j ACCEPT
+		$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
+			-i $i -j ACCEPT
+	done
+echo -en "\n"
 fi
 
 if [ "$DNS_REQUESTS_OUT" ]; then
@@ -260,26 +280,6 @@ fi
 if [ -s "$BASEDIR/include/ipv4_custom_mssclamp" ]; then
 	display_c YELLOW "Loading custom MSS Clamp rules..."
 	. "$BASEDIR/include/ipv4_custom_mssclamp"
-fi
-
-if [ "$CLAMPMSS" ]; then
-	display_c YELLOW "Clamping MSS to PMTU..."
-	for i in $CLAMPMSS; do
-		$IPTABLES -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
-		$IPTABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
-			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
-		# This is necessary to make sure that PMTU works
-		$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
-			-o $i -j ACCEPT
-		$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded \
-			-i $i -j ACCEPT
-		$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
-			-o $i -j ACCEPT
-		$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
-			-i $i -j ACCEPT
-	done
-echo -en "\n"
 fi
 
 

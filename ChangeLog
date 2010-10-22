@@ -1,3 +1,7 @@
+0.9.10 - Brielle Bruns <bruns@2mbit.com>
+	- Move clamp mss up earlier in the rules to possibly
+	  fix an issue I noticed during testing
+
 0.9.9a - Brielle Bruns <bruns@2mbit.com>
 	- Minor bug fixes for my coding errors introduced in
 	  the change of IPv6 variables
