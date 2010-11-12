@@ -530,6 +530,7 @@ fi
 if [ $NAT ]; then
 	if [ "$NAT_RANGE" ]; then
 		display_c YELLOW "Adding NAT rule:"
+		unset INIF_EXISTS OUTIF_EXISTS
 		for i in $NAT_RANGE; do
 			NAT_RULE=( ${i//:/ } )
 			case ${NAT_RULE[0]} in
@@ -537,8 +538,11 @@ if [ $NAT ]; then
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j SNAT \
 					-o ${NAT_RULE[3]} --to-source ${NAT_RULE[4]} 
 				display_c DEFAULT "\t${GREEN}SNAT:${PURPLE}${NAT_RULE[1]}:${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}:${NAT_RULE[4]}"
-				$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -j ACCEPT
-				$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -j ACCEPT
+				if [[ ! "$INIF_EXISTS" =~ "${NAT_RULE[1]}" ]]; then
+					$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -j ACCEPT
+					$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -j ACCEPT
+					INIF_EXISTS="${INIF_EXISTS} $i"
+				fi
 				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A FORWARD -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
@@ -547,8 +551,11 @@ if [ $NAT ]; then
 			MASQ)
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j MASQUERADE -o ${NAT_RULE[3]}
 				display_c DEFAULT "\t${GREEN}MASQ:${PURPLE}${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}"
-				$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -j ACCEPT
-				$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -j ACCEPT
+				if [[ ! "$INIF_EXISTS" =~ "${NAT_RULE[1]}" ]]; then
+					$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -j ACCEPT
+					$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -j ACCEPT
+					INIF_EXISTS="${INIF_EXISTS} $i"
+				fi
 				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A FORWARD -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
