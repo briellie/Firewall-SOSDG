@@ -543,8 +543,11 @@ if [ $NAT ]; then
 					$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -j ACCEPT
 					INIF_EXISTS="${INIF_EXISTS} $i"
 				fi
-				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
-				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+				if [[ ! "$OUTIF_EXISTS" =~ "${NAT_RULE[3]}" ]]; then
+					$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
+					$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+					OUTIF_EXISTS="${OUTIF_EXISTS} $i"
+				fi
 				$IPTABLES -A FORWARD -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A FORWARD -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
 					;;
@@ -556,8 +559,11 @@ if [ $NAT ]; then
 					$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -j ACCEPT
 					INIF_EXISTS="${INIF_EXISTS} $i"
 				fi
-				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
-				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+				if [[ ! "$OUTIF_EXISTS" =~ "${NAT_RULE[3]}" ]]; then
+					$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
+					$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+					OUTIF_EXISTS="${OUTIF_EXISTS} $i"
+				fi
 				$IPTABLES -A FORWARD -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A FORWARD -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
 					;;
