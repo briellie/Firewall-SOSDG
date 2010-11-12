@@ -81,12 +81,12 @@ echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
  redistribute it under certain conditions.
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
 
-if [ $UID != "0" ]; then
+if [ "$UID" != "0" ]; then
 	display_c RED "You must be root to run this script."
 	exit 2
 fi
 
-if [ ! -x $IPTABLES ]; then
+if [ ! -x "$IPTABLES" ]; then
 	display_c RED "iptables command not found.  Please make sure you have the iptables"
 	display_c RED "installed (package or source) and you have the IPTABLES option properly"
 	display_c RED "defined in the 'options' file."
@@ -94,7 +94,7 @@ if [ ! -x $IPTABLES ]; then
 fi
 
 
-if [ ! -x $IP6TABLES ] && [ $IPV6 == "1" ]; then
+if [ ! -x "$IP6TABLES" ] && [ $IPV6 == "1" ]; then
 	display_c RED "ip6tables command not found.  Please make sure you have the iptables"
 	display_c RED "installed (package or source) and you have the IP6TABLES option properly"
 	display_c RED "defined in the 'options' file."
@@ -108,7 +108,7 @@ if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then
 	. "$BASEDIR/include/ipv4_custom_flush"
 fi
 
-if [ -x $PRERUN ]; then
+if [ -x "$PRERUN" ]; then
 	$PRERUN
 fi
 
@@ -147,14 +147,14 @@ if [ "$CLAMPMSS" ]; then
 		$IPTABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
 			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
 		# This is necessary to make sure that PMTU works
-		$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
-			-o $i -j ACCEPT
-		$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded \
-			-i $i -j ACCEPT
-		$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
-			-o $i -j ACCEPT
-		$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
-			-i $i -j ACCEPT
+		#$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
+		#	-o $i -j ACCEPT
+		#$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded \
+		#	-i $i -j ACCEPT
+		#$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
+		#	-o $i -j ACCEPT
+		#$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
+		#	-i $i -j ACCEPT
 	done
 echo -en "\n"
 fi
@@ -292,7 +292,7 @@ if [ -s "$BASEDIR/include/ipv4_custom_conntrack" ]; then
 	. "$BASEDIR/include/ipv4_custom_conntrack"
 fi
 
-if [ $CONNTRACK ]; then
+if [ "$CONNTRACK" ]; then
 	$IPTABLES -A INPUT -m state --state NEW -j ACCEPT
 	$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 	$IPTABLES -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
@@ -537,14 +537,22 @@ if [ $NAT ]; then
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j SNAT \
 					-o ${NAT_RULE[3]} --to-source ${NAT_RULE[4]} 
 				display_c DEFAULT "\t${GREEN}SNAT:${PURPLE}${NAT_RULE[1]}:${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}:${NAT_RULE[4]}"
+				$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -j ACCEPT
+				$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+				$IPTABLES -A FORWARD -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
+				$IPTABLES -A FORWARD -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
 					;;
 			MASQ)
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j MASQUERADE -o ${NAT_RULE[3]}
 				display_c DEFAULT "\t${GREEN}MASQ:${PURPLE}${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}"
+				$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -j ACCEPT
+				$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded -o ${NAT_RULE[3]} -j ACCEPT
 				$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed -o ${NAT_RULE[3]} -j ACCEPT
+				$IPTABLES -A FORWARD -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
+				$IPTABLES -A FORWARD -p icmp --icmp-type fragmentation-needed -i ${NAT_RULE[1]} -o ${NAT_RULE[3]} -j ACCEPT
 					;;
 				*) display_c RED "Invalid NAT rule in NAT_RANGE" ;;
 			esac
