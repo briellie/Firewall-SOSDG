@@ -3,6 +3,8 @@
 	  fix an issue I noticed during testing
 	- Move icmp allow code
 	- Prevent duplicate icmp allow rules in NAT code
+	- NETMAP support in NAT code
+	- Removed pointless(?) and unneeded dupe codeâ
 
 0.9.9a - Brielle Bruns <bruns@2mbit.com>
 	- Minor bug fixes for my coding errors introduced in
