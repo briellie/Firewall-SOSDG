@@ -77,6 +77,13 @@ DONTTRACK="127.0.0.1"
 # Mark ipv4 packets for advanced purposes
 #IPv4_MARK=$BASEDIR/ipv4-marks
 
+# IP NAT Rules
+# SNAT:<INT IF>:<INT IP>:<EXT IF>:<EXT IP>
+# MASQ:<INT IF>:<INT IP>:<EXT IF>
+# NETMAP::<INT IP RANGE>::<EXT IP RANGE>
+#NAT_RANGE=""
+
+
 # Hacks to either block specific kinds of attacks or fix problems
 #
 # NS-IN-DDOS - 			Block DNS DDoS using NS/IN spoof, see:
