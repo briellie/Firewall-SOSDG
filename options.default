@@ -21,6 +21,10 @@ MODPROBE=/sbin/modprobe
 # Extra modules to load such as ftp connection tracking
 #MODULES_LOAD="nf_conntrack_ftp nf_conntrack_h323 nf_conntrack_irc nf_conntrack_pptp nf_conntrack_proto_gre nf_conntrack_proto_sctp nf_conntrack_proto_udplite nf_conntrack_sip nf_conntrack_tftp nf_conntrack_sane"
 
+# Run commands before/after rules
+PRERUN="$BASEDIR/conf/prerun"
+POSTRUN="$BASEDIR/conf/postrun"
+
 # Do we want NAT/Conntrack/Forward features?
 #NAT=1
 #CONNTRACK=1
@@ -41,7 +45,7 @@ MODPROBE=/sbin/modprobe
 #INTINF=ppp+
 
 # Port forwardings, requires NAT
-#PORTFW=$BASEDIR/port-forwards
+#PORTFW=$BASEDIR/conf/port-forwards
 
 # Multiport support?
 # yes/no/auto  (auto will try to detect if we support multiport or not,
@@ -72,10 +76,10 @@ TRUSTEDIP="127.0.0.1"
 DONTTRACK="127.0.0.1"
 
 # IP range(s) to forward
-#ROUTING=$BASEDIR/ipv4-routing
+#ROUTING=$BASEDIR/conf/ipv4-routing
 
 # Mark ipv4 packets for advanced purposes
-#IPv4_MARK=$BASEDIR/ipv4-marks
+#IPv4_MARK=$BASEDIR/conf/ipv4-marks
 
 # IP NAT Rules
 # SNAT:<INT IF>:<INT IP>:<EXT IF>:<EXT IP>
@@ -103,7 +107,7 @@ HACK_IPV4="NS-IN-DDOS"
 
 # IP Ranges to block all traffic incoming/outgoing
 # New functionality in 0.9.8 obsoletes BLOCKTCPPORTS and BLOCKUDPPORTS
-BLOCKEDIP=$BASEDIR/ipv4-blocked
+BLOCKEDIP=$BASEDIR/conf/ipv4-blocked
 
 # Strip ECN off of packets - helps with blackholes
 # Either individual IPs or 0.0.0.0/0
@@ -145,13 +149,13 @@ BLOCKEDIP=$BASEDIR/ipv4-blocked
 #IPV6_ROUTEDCLIENTBLOCK=1
 
 # IP range(s) to forward
-#IPV6_ROUTING=$BASEDIR/ipv6-routing
+#IPV6_ROUTING=$BASEDIR/conf/ipv6-routing
 
 # Mark ipv6 packets for advanced purposes
-#IPV6_MARK=$BASEDIR/ipv6-marks
+#IPV6_MARK=$BASEDIR/conf/ipv6-marks
 
 # IPv6 Ranges to block all traffic incoming/outgoing
-#IPV6_BLOCKEDIP=$BASEDIR/ipv6-blocked
+#IPV6_BLOCKEDIP=$BASEDIR/conf/ipv6-blocked
 
 # Clamp MSS, useful on DSL/VPN links
 # Space separated list of interfaces to apply this on

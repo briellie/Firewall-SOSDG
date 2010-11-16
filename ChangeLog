@@ -1,3 +1,8 @@
+0.9.11 - Brielle Bruns <bruns@2mbt.com>
+	- Move some of the config clutter to conf/ - you can
+	  put your config files anywhere, but by default, they're
+	  now going to be in conf/
+
 0.9.10 - Brielle Bruns <bruns@2mbit.com>
 	- Move clamp mss up earlier in the rules to possibly
 	  fix an issue I noticed during testing
