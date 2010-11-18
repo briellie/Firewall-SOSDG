@@ -29,7 +29,7 @@ AUTOCONFIG_BIN="iptables:IPTABLES ip6tables:IP6TABLES modprobe:MODPROBE"
 
 # These are string variables
 WELCOME_HEAD="Welcome to the Firewall/SOSDG Config Tool v${CONFIGTOOL_VER}"
-WELCOME_BODY="This tool is a quick way to do a basic setup of the firewall script.\nThe results of this tool will be output to a file of your choosing at the end of configuration.\nContinue?"
+WELCOME_BODY="This tool is a quick way to do a basic setup of the firewall script.\n\nThe results of this tool will be output to a file of your choosing at the end of configuration.\nContinue?"
 AUTOCONFIG_PATHS="Would you like to try to configure paths of important programs automatically?"
 
 if [ ! -x $WHIPTAIL ]; then
@@ -52,14 +52,14 @@ else
 	exit 1
 fi
 
-if ( $WHIPTAIL --yesno "${AUTOCONFIG_PATHS}" 5 40 ); then
+if ( $WHIPTAIL --yesno "${AUTOCONFIG_PATHS}" 10 40 ); then
 	for i in $AUTOCONFIG_BIN; do
 		IFS_OLD=${IFS};IFS=:
 		BIN_PATH=($i)
 		IFS=${IFS_OLD}
 		if ( $WHICH $BIN_PATH[0] ); then
 			BIN_FULL="`${WHICH} ${BIN_PATH[0]}`"
-			echo "${BIN_PATH[1]}=\"${BIN_PATH[0]}\"" >>${TMPCONFIG}
+			echo "${BIN_PATH[1]}=\"${BIN_PATH[0]}\"" >>"${TMPCONFIG}"
 		fi
 	done
 #
