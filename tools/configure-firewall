@@ -59,7 +59,7 @@ if ( $WHIPTAIL --yesno "${AUTOCONFIG_PATHS}" 5 40 ); then
 		IFS=${IFS_OLD}
 		if ( $WHICH $BIN_PATH[0] ); then
 			BIN_FULL="`${WHICH} ${BIN_PATH[0]}`"
-			echo "${BIN_PATH[1]}="${BIN_PATH[0]}" >>${TMPCONFIG}
+			echo "${BIN_PATH[1]}=\"${BIN_PATH[0]}\"" >>${TMPCONFIG}
 		fi
 	done
 #
