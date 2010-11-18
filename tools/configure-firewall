@@ -65,10 +65,10 @@ if ( $WHIPTAIL --title "${TOOL_TITLE}" --yesno "${AUTOCONFIG_PATHS}" 10 40 ); th
 			echo "${BIN_PATH[1]}=\"${BIN_FULL}\"" >>"${TMPCONFIG}"
 		else
 			FAILED_CMD_PATH="${FAILED_CMD_PATH} ${BIN_PATH[0]"
-			echo "#${BIN_PATH[1]}=\"\"" >>"${TMPCONFIG}"
+			echo "\#${BIN_PATH[1]}=\"\"" >>"${TMPCONFIG}"
 		fi
 	done
-	if [ $FAILED_CMD_PATH ]; then
+	if [ "$FAILED_CMD_PATH" ]; then
 		$WHIPTAIL --title "${TOOL_TITLE}" --msgbox "${FAILED_BINS}\n${FAILED_CMD_PATH}\n${FAILED_BINS_FOOT}" 10 60
 	fi
 #
