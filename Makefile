@@ -20,3 +20,10 @@ upgrade:
 	
 config_update:
 	tools/convert-config
+
+config_move:
+	mv -f ipv4-* conf/ &>/dev/null
+	mv -f ipv6-* conf/ &>/dev/null
+	mv -f port-forwards* conf/ &>/dev/null
+	mv -f postrun* conf/ &>/dev/null
+	mv -f prerun* conf/ &>/dev/null
