@@ -47,10 +47,10 @@ if ! ( $WHIPTAIL --title "${TOOL_TITLE}" --yesno "${WELCOME_BODY}" 12 70 --no-bu
 	exit 1
 fi
 
-if [ -w $TMPCONFIG ]; then
+if [ -w "$TMPCONFIG" ]; then
 	echo "# Automatically generated config file, please check before actually using." >"${TMPCONFIG}"
 else
-	echo "Error: could not write tmp file for config generation!"
+	echo "Error: could not write tmp file for config generation."
 	exit 1
 fi
 
@@ -60,18 +60,23 @@ if ( $WHIPTAIL --title "${TOOL_TITLE}" --yesno "${AUTOCONFIG_PATHS}" 10 40 ); th
 		IFS_OLD=${IFS};IFS=:
 		BIN_PATH=($i)
 		IFS=${IFS_OLD}
-		if ( ${WHICH} ${BIN_PATH[0]}&>/dev/null ); then
+		if ( ${WHICH} ${BIN_PATH[0]} &>/dev/null ); then
 			BIN_FULL="`${WHICH} ${BIN_PATH[0]}`"
 			echo "${BIN_PATH[1]}=\"${BIN_FULL}\"" >>"${TMPCONFIG}"
 		else
-			FAILED_CMD_PATH="${FAILED_CMD_PATH} ${BIN_PATH[0]"
-			echo "\#${BIN_PATH[1]}=\"\"" >>"${TMPCONFIG}"
+			FAILED_CMD_PATH="${FAILED_CMD_PATH} ${BIN_PATH[0]}"
+			echo "#${BIN_PATH[1]}=\"\"" >>"${TMPCONFIG}"
 		fi
 	done
 	if [ "$FAILED_CMD_PATH" ]; then
 		$WHIPTAIL --title "${TOOL_TITLE}" --msgbox "${FAILED_BINS}\n${FAILED_CMD_PATH}\n${FAILED_BINS_FOOT}" 10 60
 	fi
-#
-#else
+else
+	for i in $AUTOCONFIG_BIN; do
+		IFS_OLD=${IFS};IFS=:
+		BIN_PATH=($i)
+		IFS=${IFS_OLD}
+		echo "#${BIN_PATH[1]}=\"\"" >>"${TMPCONFIG}"
 fi
-	
+
+
