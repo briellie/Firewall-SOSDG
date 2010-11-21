@@ -644,9 +644,9 @@ if [ $IPV6 ]; then
 	fi
 	reset_color
 	
-	if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
+	if [ -s "$BASEDIR/include/ipv6_custom_blockip" ]; then
 	display_c YELLOW "Loading custom ip block rules..."
-	. "$BASEDIR/include/ipv4_custom_blockip"
+	. "$BASEDIR/include/ipv6_custom_blockip"
 fi
 
 if [ "$IPV6_DNS_REQUESTS_OUT" ]; then
