@@ -163,3 +163,8 @@ function apply_ipv4_hack {
 	done
 	echo -en "\n"
 }
+
+# write_out_rules
+function write_out_rules {
+	echo "$*" >> "$RULE_CACHE"
+}

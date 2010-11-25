@@ -62,6 +62,9 @@ while [ $# -gt 0 ]; do
 		show_help
 		exit 0
 		;;	
+	--generate-cache)
+		GEN_CACHE="force"
+		;;
 	esac
 	shift
 done
@@ -136,6 +139,18 @@ else
 	C_STATE="--ctstate"
 fi
 
+if [ "$GEN_CACHE" ]; then
+	case $GEN_CACHE in
+		force)
+			IPTABLES="write_out_rules"
+			if [ "$IPV6" ]; then
+				IP6TABLES="write_out_rules"
+			fi
+			rm -f "${RULE_CACHE}" &>/dev/null
+			;;
+	esac
+fi
+
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
@@ -161,15 +176,6 @@ if [ "$CLAMPMSS" ]; then
 			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
 		$IPTABLES -A OUTPUT -p tcp --tcp-flags SYN,RST SYN -j TCPMSS \
 			--clamp-mss-to-pmtu -o $i -m tcpmss --mss 1400:1536
-		# This is necessary to make sure that PMTU works
-		#$IPTABLES -A OUTPUT -p icmp --icmp-type time-exceeded \
-		#	-o $i -j ACCEPT
-		#$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded \
-		#	-i $i -j ACCEPT
-		#$IPTABLES -A OUTPUT -p icmp --icmp-type fragmentation-needed \
-		#	-o $i -j ACCEPT
-		#$IPTABLES -A INPUT -p icmp --icmp-type fragmentation-needed \
-		#	-i $i -j ACCEPT
 	done
 echo -en "\n"
 fi

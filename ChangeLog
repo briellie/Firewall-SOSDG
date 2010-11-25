@@ -4,6 +4,9 @@
 	  now going to be in conf/
 	- Beginning work on configuration tool.  If it ever
 	  gets completed is a whole different story.  :)
+	- Option to use state or conntrack module for state tracking.
+	  By default, use conntrack.
+	- After some research, we seem to not need NEW state match in FORWARD
 
 0.9.10 - Brielle Bruns <bruns@2mbit.com>
 	- Move clamp mss up earlier in the rules to possibly
