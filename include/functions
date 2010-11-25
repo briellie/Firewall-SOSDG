@@ -119,6 +119,7 @@ function show_help {
 	 echo "Firewall/SOSDG ${FW_VERSION} - Brielle Bruns <bruns@2mbit.com>"
  	 echo -e "\t--help\t\tShows this info"
  	 echo -e "\t--flush\t\tFlushes all rules back to default ACCEPT"
+ 	 echo -e "\t--generate-cache\tGenerate cached rule file"
  }
  
  
@@ -164,7 +165,10 @@ function apply_ipv4_hack {
 	echo -en "\n"
 }
 
-# write_out_rules
+# write_out_rules(_v6)
 function write_out_rules {
 	echo "$*" >> "$RULE_CACHE"
+}
+function write_out_rules_v6 {
+	echo "$*" >> "$RULE_CACHE_V6"
 }

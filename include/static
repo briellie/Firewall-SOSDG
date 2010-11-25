@@ -62,3 +62,4 @@ STATE_TYPE="conntrack"
 
 # Where we store output of cached rules
 RULE_CACHE=$BASEDIR/cache/ipt-rules
+RULE_CACHE_V6=$BASEDIR/cache/ipt6-rules

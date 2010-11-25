@@ -144,7 +144,8 @@ if [ "$GEN_CACHE" ]; then
 		force)
 			IPTABLES="write_out_rules"
 			if [ "$IPV6" ]; then
-				IP6TABLES="write_out_rules"
+				IP6TABLES="write_out_rules_v6"
+				rm -f "${RULE_CACHE_V6}" &>/dev/null
 			fi
 			rm -f "${RULE_CACHE}" &>/dev/null
 			;;
