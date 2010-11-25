@@ -56,3 +56,6 @@ NF_MULTIPORT_MAX_PORTS="7"
 
 # RFC 1918 Space
 RFC1918_SPACE="192.168.0.0/16 172.16.0.0/12 10.0.0.0/8"
+
+# By default, use conntrack instead of state
+STATE_TYPE="conntrack"

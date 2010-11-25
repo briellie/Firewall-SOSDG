@@ -30,6 +30,10 @@ POSTRUN="$BASEDIR/conf/postrun"
 #CONNTRACK=1
 #FORWARD=1
 
+# Use old style state matches or new conntrack matches?
+# By default, lets use conntrack.
+#STATE_TYPE="conntrack"
+
 # Blocking incoming connections by default?
 #BLOCKINCOMING=1
 
