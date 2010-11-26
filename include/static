@@ -60,6 +60,9 @@ RFC1918_SPACE="192.168.0.0/16 172.16.0.0/12 10.0.0.0/8"
 # By default, use conntrack instead of state
 STATE_TYPE="conntrack"
 
+# Auto detect multiport
+IPTABLES_MULTIPORT=auto
+
 # Where we store output of cached rules
 RULE_CACHE=$BASEDIR/cache/ipt-rules
 RULE_CACHE_V6=$BASEDIR/cache/ipt6-rules
