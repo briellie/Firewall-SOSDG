@@ -801,7 +801,7 @@ fi
 				unset i PORTS PORTS_COUNT_CURR PORTS_COUNT
 			fi
 		else
-				for i in $IPV6TCP; do
+				for i in $IPV6_TCPPORTS; do
 					echo -en "${PURPLE}TCP${DEFAULT_COLOR}/${GREEN}$i "
 					$IP6TABLES -A INPUT -p tcp --dport $i -j ACCEPT
 				done
