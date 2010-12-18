@@ -1,6 +1,6 @@
 # Format is:
 # External interface:Src IP:External IP:External port:Internal ip:Internal port
-# You can safely leave the interface field blank as well as the Src IP field blank
-# However, you must have EXTIP defined or detected properly if you leave the External IP field blank
+# You can safely leave the interface field blank as well as the Src IP and External IP field blank
+# However, you need to define at least the interface or external IP or you probably will have issues.
 # Rename this file to port-forwards before using!
 #eth0:4.2.2.0:4.2.2.1:8080:tcp:192.168.0.100:80

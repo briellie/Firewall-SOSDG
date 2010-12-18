@@ -513,7 +513,7 @@ if [ "$PORTFW" ] && [ "$NAT" ]; then
 		if [ "$SRCIP" ]; then
 			SRCIP="-s ${SRCIP}"
 		fi
-		if [ ! "$DSTIP" ]; then
+		if [[ ! "$DSTIP" ]] && [[ ! "$DSTIF" ]]; then
 			DSTIP="$EXTIP"
 		fi
 		#PORTADD=( ${i//:/ } )
