@@ -106,12 +106,16 @@ fi
 
 
 if [[ "$EXTIF" == "auto" ]]; then
+	if [ ! "$EXTIF_FIND" ]; then
+		
 	EXTIF=$EXTIF_FIND
 	display_c YELLOW "Found default interface at: ${BLUE}${EXTIF}${DEFAULT_COLOR}"
 fi
 
 if [[ "$EXTIP" == "auto" ]]; then
-	EXTIP=$EXTIP_FIND
+	if [ ! "$EXTIP_FIND" ]; then
+		EXTIP=$(expr "`ifconfig ${EXTIF}`" : '.*inet addr:\([^ ]*\).*')
+	fi
 	display_c YELLOW "Found default interface IP at: ${BLUE}${EXTIP}${DEFAULT_COLOR}"
 fi
 

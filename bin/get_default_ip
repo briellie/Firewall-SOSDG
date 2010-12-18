@@ -1,0 +1,7 @@
+#!/bin/bash
+# Thanks to the people at: 
+# http://www.linuxquestions.org/questions/programming-9/using-grep-and-awk-to-get-ip-address-627626/
+
+echo $(expr "`ifconfig $1`" : '.*inet addr:\([^ ]*\).*')
+
+#ifconfig ${EXTIF}| awk -F ' *|:' '/inet addr/{print $4}'

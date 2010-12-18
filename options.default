@@ -57,22 +57,18 @@ EXTIF="auto"
 # the primary external IP using the information from EXTIF
 EXTIP="auto"
 
+# Program/script for finding the default external interface
+# Only used if EXTIF is set to auto
+#
+# If you need to write your own script to find the info, change below
+#EXTIF_FIND="$BASEDIR/bin/get_default_if"
+
 # Pattern for finding the default external interface IP address
 # Only used if EXTIP is set to auto
 #
-# Thanks to the people at: 
-# http://www.linuxquestions.org/questions/programming-9/using-grep-and-awk-to-get-ip-address-627626/
-#
-# Uncomment one of these if the default doesn't work
-#EXTIP_FIND=$(expr "`ifconfig ${EXTIF}`" : '.*inet addr:\([^ ]*\).*')
-#EXTIP_FIND=`ifconfig ${EXTIF}| awk -F ' *|:' '/inet addr/{print $4}'`
-
-# Pattern for finding the default external interface
-# Only used if EXTIF is set to auto
-#
-# Uncomment one of these if the default doesn't work
-#EXTIF_FIND=`ip route | awk '/^default/{print $3}'`
-#EXTIF_FIND=`netstat -rn | awk '/^0.0.0.0/{print $8}'`
+# If you need to write your own script to find the info, change below
+# note that the script passes the interface from $EXTIF as first option
+#EXTIP_FIND="$BASEDIR/bin/get_default_ip"
 
 # Internal Interface
 #INTINF=ppp+
