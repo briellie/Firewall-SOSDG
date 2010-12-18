@@ -513,15 +513,17 @@ if [ "$PORTFW" ] && [ "$NAT" ]; then
 		if [ "$SRCIP" ]; then
 			SRCIP="-s ${SRCIP}"
 		fi
-		if [[ ! "$DSTIP" ]] && [[ ! "$DSTIF" ]]; then
-			DSTIP="$EXTIP"
+		if [ ! "$DSTIP" ] && [ ! "$DSTIF" ]; then
+			DSTIP="-d $EXTIP"
+		elif [ "$DSTIP" ]; then
+			DSTIP="-d $DSTIP"
 		fi
 		#PORTADD=( ${i//:/ } )
 		$IPTABLES -A PREROUTING -t nat ${DSTIF} -p ${DSTPROTO} ${SRCIP} \
 			--dport ${DSTPORT} -d ${DSTIP} -j DNAT --to \
 			${DSTINTIP}:${DSTINTPORT}
 		$IPTABLES -A INPUT -p ${DSTPROTO} ${M_STATE} ${C_STATE} NEW ${DSTIF} ${SRCIP} \
-			--dport ${DSTPORT} -d ${DSTIP} -j ACCEPT
+			--dport ${DSTPORT} ${DSTIP} -j ACCEPT
 		display_c DEFAULT "\t${GREEN}${PORTFWADD[0]}:${BLUE}${PORTFWADD[1]}:${PURPLE}${PORTFWADD[2]}:${PORTFWADD[3]}:${PORTFWADD[4]}${AQUA}->${BLUE}${PORTFWADD[5]}:${PORTFWADD[6]} "
 	done
 reset_color
