@@ -521,7 +521,7 @@ if [ "$PORTFW" ] && [ "$NAT" ]; then
 		fi
 		#PORTADD=( ${i//:/ } )
 		$IPTABLES -A PREROUTING -t nat ${DSTIF} -p ${DSTPROTO} ${SRCIP} \
-			--dport ${DSTPORT} -d ${DSTIP} -j DNAT --to \
+			--dport ${DSTPORT} ${DSTIP} -j DNAT --to \
 			${DSTINTIP}:${DSTINTPORT}
 		$IPTABLES -A INPUT -p ${DSTPROTO} ${M_STATE} ${C_STATE} NEW ${DSTIF} ${SRCIP} \
 			--dport ${DSTPORT} ${DSTIP} -j ACCEPT
