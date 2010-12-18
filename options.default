@@ -50,11 +50,16 @@ POSTRUN="$BASEDIR/conf/postrun"
 # which will try to detect the proper interface,
 # but requires a default route to be properly setup
 # first.
-EXTIF="auto"
+# We recommend manually defining this unless you really
+# need to automagically detect the interface.
+EXTIF="eth0"
 
 # Primary external IP address
 # Can be an IP address or auto, which will try to detect
 # the primary external IP using the information from EXTIF
+# This is mostly useful for people who have a dynamic external
+# IP address.  Everyone else should manually define this to
+# avoid potential detection issues.
 EXTIP="auto"
 
 # Program/script for finding the default external interface

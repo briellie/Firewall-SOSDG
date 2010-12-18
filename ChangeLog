@@ -7,6 +7,9 @@
 	- Option to use state or conntrack module for state tracking.
 	  By default, use conntrack.
 	- After some research, we seem to not need NEW state match in FORWARD
+	- Auto detect default gateway interface and IP of interface.  Has potential problems
+	  if run before we've got a default interface, so manually define EXTIF to be sure, and
+	  things should be okay.  This is mostly for people with dynamic IPs.
 
 0.9.10 - Brielle Bruns <bruns@2mbit.com>
 	- Move clamp mss up earlier in the rules to possibly

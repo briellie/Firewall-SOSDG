@@ -1,6 +1,6 @@
 # Format is:
 # External interface:Src IP:External IP:External port:Internal ip:Internal port
-# If you want to allow any source IP or a dynamic IP external IP, use 0/0 and not 0.0.0.0
-# (iptables translates 0.0.0.0 to 0.0.0.0/32 which won't work)
+# You can safely leave the interface field blank as well as the Src IP field blank
+# However, you must have EXTIP defined or detected properly if you leave the External IP field blank
 # Rename this file to port-forwards before using!
 #eth0:4.2.2.0:4.2.2.1:8080:tcp:192.168.0.100:80
