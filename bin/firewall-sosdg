@@ -104,6 +104,11 @@ if [ ! -x "$IP6TABLES" ] && [ $IPV6 == "1" ]; then
 	exit 3
 fi
 
+
+if [[ "$EXTIF" == "auto" ]]; then
+	EXTIF=$EXTIF_FIND
+}
+
 iptables_rules_flush ipv4
 
 if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then

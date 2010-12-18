@@ -45,6 +45,22 @@ POSTRUN="$BASEDIR/conf/postrun"
 # where this server is providing services.
 #LANDHCPSERVER="eth0 eth1"
 
+# Primary external interface
+# Can be an interface name (ppp0, eth0) or auto
+# which will try to detect the proper interface,
+# but requires a default route to be properly setup
+# first.
+EXTIF="auto"
+
+# Pattern for finding the default external interface
+# Pick one or create your own if the firewall script
+# has problems figuring it out.
+#
+# Common patterns for getting default route:
+# netstat -rn | awk '/^0.0.0.0/{print $8}'
+# ip route | awk -F '/^default/{print $3}'
+#EXTIF_FIND=`ip route | awk '/^default/{print $3}'`
+
 # Internal Interface
 #INTINF=ppp+
 
