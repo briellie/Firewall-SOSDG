@@ -52,14 +52,27 @@ POSTRUN="$BASEDIR/conf/postrun"
 # first.
 EXTIF="auto"
 
-# Pattern for finding the default external interface
-# Pick one or create your own if the firewall script
-# has problems figuring it out.
+# Primary external IP address
+# Can be an IP address or auto, which will try to detect
+# the primary external IP using the information from EXTIF
+EXTIP="auto"
+
+# Pattern for finding the default external interface IP address
+# Only used if EXTIP is set to auto
 #
-# Common patterns for getting default route:
-# netstat -rn | awk '/^0.0.0.0/{print $8}'
-# ip route | awk -F '/^default/{print $3}'
+# Thanks to the people at: 
+# http://www.linuxquestions.org/questions/programming-9/using-grep-and-awk-to-get-ip-address-627626/
+#
+# Uncomment one of these if the default doesn't work
+#EXTIP_FIND=$(expr "`ifconfig ${EXTIF}`" : '.*inet addr:\([^ ]*\).*')
+#EXTIP_FIND=`ifconfig ${EXTIF}| awk -F ' *|:' '/inet addr/{print $4}'`
+
+# Pattern for finding the default external interface
+# Only used if EXTIF is set to auto
+#
+# Uncomment one of these if the default doesn't work
 #EXTIF_FIND=`ip route | awk '/^default/{print $3}'`
+#EXTIF_FIND=`netstat -rn | awk '/^0.0.0.0/{print $8}'`
 
 # Internal Interface
 #INTINF=ppp+

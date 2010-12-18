@@ -67,5 +67,7 @@ IPTABLES_MULTIPORT=auto
 RULE_CACHE=$BASEDIR/cache/ipt-rules
 RULE_CACHE_V6=$BASEDIR/cache/ipt6-rules
 
+EXTIP="auto"
 EXTIF="auto"
 EXTIF_FIND=`ip route | awk '/^default/{print $3}'`
+EXTIP_FIND=$(expr "`ifconfig ${EXTIF}`" : '.*inet addr:\([^ ]*\).*')
