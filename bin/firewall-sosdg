@@ -107,7 +107,7 @@ fi
 
 if [[ "$EXTIF" == "auto" ]]; then
 	EXTIF=$EXTIF_FIND
-	display_c YELLOW "Found default interface at: ${EXTIF}"
+	display_c YELLOW "Found default interface at: ${BLUE}${EXTIF}${DEFAULT_COLOR}"
 fi
 
 iptables_rules_flush ipv4
