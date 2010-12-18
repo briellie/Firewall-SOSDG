@@ -502,7 +502,7 @@ if [ "$PORTFW" ] && [ "$NAT" ]; then
 		if [ "$SRCIP" ]; then
 			SRCIP="-s ${SRCIP}"
 		fi
-		//PORTADD=( ${i//:/ } )
+		#PORTADD=( ${i//:/ } )
 		$IPTABLES -A PREROUTING -t nat ${DSTIF} -p ${DSTPROTO} ${SRCIP} \
 			--dport ${DSTPORT} -d ${DSTIP} -j DNAT --to \
 			${DSTINTIP}:${DSTINTPORT}
