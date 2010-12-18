@@ -68,6 +68,6 @@ RULE_CACHE=$BASEDIR/cache/ipt-rules
 RULE_CACHE_V6=$BASEDIR/cache/ipt6-rules
 
 EXTIP="auto"
-EXTIF="auto"
+EXTIF="eth0"
 EXTIF_FIND="$BASEDIR/bin/get_default_if"
 EXTIP_FIND="$BASEDIR/bin/get_default_ip"
