@@ -515,7 +515,8 @@ if [ "$PORTFW" ] && [ "$NAT" ]; then
 		fi
 		if [ "$DSTIP" ]; then
 			DSTIP="-d $DSTIP"
-		elif [ ! "$DSTIP" ] && [ ! "$DSTIF" ]; then
+		fi
+		if [ ! "$DSTIP" ] && [ ! "$DSTIF" ]; then
 			DSTIP="-d $EXTIP"
 		fi
 		#PORTADD=( ${i//:/ } )
