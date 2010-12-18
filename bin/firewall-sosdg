@@ -111,7 +111,7 @@ if [[ "$EXTIF" == "auto" ]]; then
 fi
 
 if [[ "$EXTIP" == "auto" ]]; then
-	EXTIP=`$EXTIP_FIND`
+	EXTIP=`$EXTIP_FIND ${EXTIF}`
 	display_c YELLOW "Found default interface IP at: ${BLUE}${EXTIP}${DEFAULT_COLOR}"
 fi
 
