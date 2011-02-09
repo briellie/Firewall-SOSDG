@@ -179,8 +179,9 @@ BLOCKEDIP=$BASEDIR/conf/ipv4-blocked
 #IPV6_BLOCKINCOMING=1
 
 # Special case for routers that have ipv6 clients behind them.
-# Useful if clients do not have proper ipv6 firewalls.
-#IPV6_ROUTEDCLIENTBLOCK=1
+# Useful if clients do not have proper ipv6 firewalls.  Give list
+# of IPv6 netblocks to enable this on.
+#IPV6_ROUTEDCLIENTBLOCK=""
 
 # IP range(s) to forward
 #IPV6_ROUTING=$BASEDIR/conf/ipv6-routing

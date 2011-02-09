@@ -700,8 +700,26 @@ if [ $IPV6 ]; then
 	reset_color
 	
 	if [ -s "$BASEDIR/include/ipv6_custom_blockip" ]; then
-	display_c YELLOW "Loading custom ip block rules..."
+	display_c YELLOW "Loading custom IPv6 block rules..."
 	. "$BASEDIR/include/ipv6_custom_blockip"
+fi
+
+
+if [ -s "$BASEDIR/include/ipv6_custom_conntrack" ]; then
+	display_c YELLOW "Loading custom IPv6 conntrack rules..."
+	. "$BASEDIR/include/ipv6_custom_conntrack"
+fi
+
+if [ "$IPV6_CONNTRACK" ]; then
+	$IP6TABLES -A INPUT ${M_STATE} ${C_STATE} NEW -j ACCEPT
+	$IP6TABLES -A INPUT ${M_STATE} ${C_STATE} RELATED,ESTABLISHED -j ACCEPT
+	$IP6TABLES -A FORWARD ${M_STATE} ${C_STATE} RELATED,ESTABLISHED -j ACCEPT
+	#$IP6TABLES -A FORWARD ${M_STATE} ${C_STATE} NEW -j ACCEPT
+	$IP6TABLES -A OUTPUT ${M_STATE} ${C_STATE} RELATED,ESTABLISHED -j ACCEPT 
+	$IP6TABLES -A OUTPUT ${M_STATE} ${C_STATE} NEW -j ACCEPT
+	$IP6TABLES -A INPUT ${M_STATE} ${C_STATE} INVALID -j DROP
+	$IP6TABLES -A OUTPUT ${M_STATE} ${C_STATE} INVALID -j DROP
+	$IP6TABLES -A FORWARD ${M_STATE} ${C_STATE} INVALID -j DROP
 fi
 
 if [ "$IPV6_DNS_REQUESTS_OUT" ]; then
@@ -881,29 +899,14 @@ fi
 		done
 	echo -ne "\n"
 	fi
-	
-	if [ -s "$BASEDIR/include/ipv6_custom_conntrack" ]; then
-		display_c YELLOW "Loading custom IPv6 conntrack rules..."
-		. "$BASEDIR/include/ipv6_custom_conntrack"
-	fi
 
-	if [ "$IPV6_CONNTRACK" ]; then
-		$IP6TABLES -A INPUT ${M_STATE} ${C_STATE} NEW -j ACCEPT
-		$IP6TABLES -A INPUT ${M_STATE} ${C_STATE} RELATED,ESTABLISHED -j ACCEPT
-		$IP6TABLES -A FORWARD ${M_STATE} ${C_STATE} RELATED,ESTABLISHED -j ACCEPT
-		#$IP6TABLES -A FORWARD ${M_STATE} ${C_STATE} NEW -j ACCEPT
-		$IP6TABLES -A OUTPUT ${M_STATE} ${C_STATE} RELATED,ESTABLISHED -j ACCEPT 
-		$IP6TABLES -A OUTPUT ${M_STATE} ${C_STATE} NEW -j ACCEPT
-		$IP6TABLES -A INPUT ${M_STATE} ${C_STATE} INVALID -j DROP
-		$IP6TABLES -A OUTPUT ${M_STATE} ${C_STATE} INVALID -j DROP
-		$IP6TABLES -A FORWARD ${M_STATE} ${C_STATE} INVALID -j DROP
-	fi
-
-	if [ $IPV6_ROUTEDCLIENTBLOCK ]; then
-		$IP6TABLES -A FORWARD -i $IPV6_INT -o $IPV6_LAN -p tcp --syn -j DROP
-		$IP6TABLES -A INPUT -i $IPV6_INT -p tcp --syn -j DROP
-		$IP6TABLES -A INPUT -i $IPV6_INT -p udp ! --dport 32768:65535 -j DROP
-		$IP6TABLES -A FORWARD -i $IPV6_INT -o $IPV6_LAN -p udp ! --dport 32768:65535 -j DROP
+	if [ "$IPV6_ROUTEDCLIENTBLOCK" ]; then
+		for i in $IPV6_ROUTEDCLIENTBLOCK; do
+			$IP6TABLES -A OUTPUT -d $i -p tcp --syn -j DROP
+			$IP6TABLES -A OUTPUT -d $i -p udp ! --dport 32768:65535 -j DROP
+			$IP6TABLES -A FORWARD -d $i -p tcp --syn -j DROP
+			$IP6TABLES -A FORWARD -d $i -p udp ! --dport 32768:65535 -j DROP
+		done
 	fi
 	
 
