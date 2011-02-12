@@ -217,4 +217,10 @@ BLOCKEDIP=$BASEDIR/conf/ipv4-blocked
 # Allow critical ICMP messages to go through, such as packet too big.
 # You should _really_ make sure you don't disable this if you have any
 # kind of MTU changes inside or outside your network.
+# Allows: time-exceeded packet-too-big
 IPV6_ICMP_CRITICAL=1
+
+# Allow other common IPV6 ICMP messages through the firewall.  Though not
+# really critical, these can help with general IPv6 usage/diagnostic
+# Allows: destination-unreachable parameter-problem
+#IPV6_ICMP_OPT=1

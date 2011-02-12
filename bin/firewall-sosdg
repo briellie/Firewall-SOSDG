@@ -817,6 +817,17 @@ fi
 			fi
 	fi
 	
+	if [ "$IPV6_ICMP_OPT" ]; then
+			$IP6TABLES -A INPUT -p icmpv6 --icmpv6-type destination-unreachable -j ACCEPT
+			$IP6TABLES -A INPUT -p icmpv6 --icmpv6-type parameter-problem -j ACCEPT
+			$IP6TABLES -A OUTPUT -p icmpv6 --icmpv6-type destination-unreachable -j ACCEPT
+			$IP6TABLES -A OUTPUT -p icmpv6 --icmpv6-type parameter-problem -j ACCEPT
+			if [ "$IPV6_FORWARDRANGE" ]; then
+				$IP6TABLES -A FORWARD -p icmpv6 --icmpv6-type destination-unreachable -j ACCEPT
+				$IP6TABLES -A FORWARD -p icmpv6 --icmpv6-type parameter-problem -j ACCEPT
+			fi
+	fi
+	
 	if [ -s "$BASEDIR/include/ipv6_custom_mssclamp" ]; then
 		display_c YELLOW "Loading custom IPv6 MSS Clamp rules..."
 		. "$BASEDIR/include/ipv6_custom_mssclamp"
