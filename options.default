@@ -213,3 +213,8 @@ BLOCKEDIP=$BASEDIR/conf/ipv4-blocked
 
 # IPv6 range to forward
 #IPV6_FORWARDRANGE=""
+
+# Allow critical ICMP messages to go through, such as packet too big.
+# You should _really_ make sure you don't disable this if you have any
+# kind of MTU changes inside or outside your network.
+IPV6_ICMP_CRITICAL=1

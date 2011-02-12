@@ -71,3 +71,6 @@ EXTIP="auto"
 EXTIF="eth0"
 EXTIF_FIND="$BASEDIR/bin/get_default_if"
 EXTIP_FIND="$BASEDIR/bin/get_default_ip"
+
+# By default, we allow ipv6 critical icmp
+IPV6_ICMP_CRITICAL=1
