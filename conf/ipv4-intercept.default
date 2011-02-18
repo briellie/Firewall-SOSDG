@@ -3,5 +3,5 @@
 # incoming-interface|src-range|dst-range|proto|port|proxy
 # Use ! before IP/range to negate, and put BYPASS in as proxy
 # want to put in a bypass rule
-# eth1|192.168.0.0/24|192.168.1.0/24|tcp|80|192.16.1.1:3128
+# eth1|192.168.0.0/24|192.168.1.0/24|tcp|80|192.168.1.1:3128
 # ORDER MATTERS!

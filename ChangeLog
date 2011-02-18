@@ -2,6 +2,7 @@
 	- Change IPV6_ROUTEDCLIENTBLOCK so you can specify ranges to
 	  block incoming to.
 	- Add support for allowing IPV6 critical ICMP messages, on by default
+	- Add support for interception of IPv4 packets, aka transparent proxy
 
 0.9.11 - Brielle Bruns <bruns@2mbit.com>
 	- Move some of the config clutter to conf/ - you can

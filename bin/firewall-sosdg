@@ -449,7 +449,7 @@ if [ "$ALLOWEDPROTO" ]; then
 fi
 
 if [ "$IPV4_INTERCEPT" ]; then
-	display_c YELLOW "Adding packet interception rules: " N
+	display_c YELLOW "Adding packet interception rules: "
 		for i in `grep -v "\#" $IPV4_INTERCEPT`; do
 		IFS_OLD=${IFS};IFS=\|
 		INTERCEPTADD=($i)
