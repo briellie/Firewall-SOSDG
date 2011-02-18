@@ -1,3 +1,8 @@
+0.9.13 - Brielle Bruns <bruns@2mbit.com>
+	- Fix location of ipv6 fi statement, moved to end of ipv6 rules
+	- Add default policy rules and IPV{4|6}_P{INPUT|OUTPUT|FORWARD} options
+	  to control them.  Note the difference between BLOCKINCOMING and the PINPUT variable
+
 0.9.12 - Brielle Bruns <bruns@2mbit.com>
 	- Change IPV6_ROUTEDCLIENTBLOCK so you can specify ranges to
 	  block incoming to.
