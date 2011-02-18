@@ -20,7 +20,12 @@
 #
 #
 # This file defines static variables that we will be using.  Normally, you
-# should not be needing to edit these.
+# should not be needing to edit these.  You can override them in your options
+# file easily, thus avoiding problems with overwriting settings during upgrades.
+
+# You should always make sure this file is from the most recent firewall package,
+# as missing variables here could foul up the firewall's ability to setup rules
+# correctly.
 
 # These defines are here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
