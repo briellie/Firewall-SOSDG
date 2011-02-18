@@ -41,6 +41,16 @@ POSTRUN="$BASEDIR/conf/postrun"
 # Space separated list of interfaces to apply this on
 #CLAMPMSS="ppp0 eth0"
 
+
+# Default IPv4 policies
+# IPV4_INPUT set to DROP is different from BLOCKINCOMING,
+# as BLOCKINCOMING only blocks syn packets for TCP while still
+# allowing established connections even if connection tracking is off.
+# BLOCKINCOMING does however, deny all incoming UDP just like INPUT=DROP does.
+IPV4_INPUT=ACCEPT
+IPV4_OUTPUT=ACCEPT
+IPV4_FORWARD=DROP
+
 # Do we run a LAN DHCP server?  Put the interfaces here
 # where this server is providing services.
 #LANDHCPSERVER="eth0 eth1"
@@ -172,6 +182,15 @@ BLOCKEDIP=$BASEDIR/conf/ipv4-blocked
 # Do we want IPv6 FORWARD and Connection tracking features?
 #IPV6_FORWARD=1
 #IPV6_CONNTRACK=1
+
+# Default IPv6 policies
+# IPV6_INPUT set to DROP is different from IPV6_BLOCKINCOMING,
+# as BLOCKINCOMING only blocks syn packets for TCP while still
+# allowing established connections even if connection tracking is off.
+# BLOCKINCOMING does however, deny all incoming UDP just like INPUT=DROP does.
+IPV6_INPUT=ALLOW
+IPV6_OUTPUT=ALLOW
+IPV6_FORWARD=DROP
 
 # Allow outgoing DNS requests - important if you did not activate connection
 # tracking.  Set this to the interfaces you wish to use for outgoing requests

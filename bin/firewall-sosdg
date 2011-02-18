@@ -3,8 +3,8 @@
 # URL: http://www.sosdg.org/freestuff/firewall
 # License: GPLv3
 #
-#    Copyright (C) 2009 - 2010  Brielle Bruns
-#    Copyright (C) 2009 - 2010  The Summit Open Source Development Group
+#    Copyright (C) 2009 - 2011  Brielle Bruns
+#    Copyright (C) 2009 - 2011  The Summit Open Source Development Group
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FW_VERSION="0.9.12"
+FW_VERSION="0.9.13"
 
 # These option is here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
@@ -699,9 +699,9 @@ if [ $NAT ]; then
 	fi
 fi
 
-$IPTABLES --policy INPUT ACCEPT
-$IPTABLES --policy OUTPUT ACCEPT
-$IPTABLES --policy FORWARD DROP
+$IPTABLES --policy INPUT ${IPV4_INPUT}
+$IPTABLES --policy OUTPUT ${IPV4_OUTPUT}
+$IPTABLES --policy FORWARD ${IPV4_FORWARD}
 
 
 if [ -s "$BASEDIR/include/ipv4_custom_blockincoming" ]; then
@@ -928,7 +928,6 @@ fi
 		fi
 		reset_color
 	fi
-	fi
 	
 	if [ -s "$BASEDIR/include/ipv6_custom_mark" ]; then
 		display_c YELLOW "Loading custom IPv6 mark rules..."
@@ -971,7 +970,6 @@ fi
 	fi
 	
 
-
 	if [ -s "$BASEDIR/include/ipv6_custom_routing" ]; then
 		display_c YELLOW "Loading custom IPv6 routing rules..."
 		. "$BASEDIR/include/ipv6_custom_routing"
@@ -991,6 +989,10 @@ fi
 		$IP6TABLES -A INPUT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -p udp -j DROP
 	fi
+	$IP6TABLES --policy INPUT ${IPV6_INPUT}
+	$IP6TABLES --policy OUTPUT ${IPV6_OUTPUT}
+	$IP6TABLES --policy FORWARD ${IPV6_FORWARD}
+fi
 
 if [ $TWEAKS ]; then
 	for i in `grep -v "\#" $TWEAKS`; do

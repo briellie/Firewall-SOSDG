@@ -80,7 +80,17 @@ IPV6_ICMP_CRITICAL=1
 # http://stackoverflow.com/questions/53497/regular-expression-that-matches-valid-ipv6-addresses
 IPV4_MATCH="(?:(?>(?>([a-f0-9]{1,4})(?>:(?1)){7})|(?>(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?))|(?>(?>(?>(?1)(?>:(?1)){5}:)|(?>(?!(?:.*[a-f0-9]:){6,})((?1)(?>:(?1)){0,4})?::(?>(?3):)?))?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))"
 IPV6_MATCH="(?:(?>(?>([a-f0-9]{1,4})(?>:(?1)){7})|(?>(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?))|(?>(?>(?>(?1)(?>:(?1)){5}:)|(?>(?!(?:.*[a-f0-9]:){6,})((?1)(?>:(?1)){0,4})?::(?>(?3):)?))?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))"
+
 # At the moment I don't have a valid way of verifying ranges within a certain constraint (ie /0 through /32)
 # If anyone wants to write these, feel free to!
 IPV4_NETMASK_MATCH=""
 IPV6_NETMASK_MATCH=""
+
+# Default policies for IPv4 and IPv6.  Make these ACCEPT by default, except for FORWARD,
+# since one wrong configuration can lock someone out.
+IPV4_INPUT=ACCEPT
+IPV4_OUTPUT=ACCEPT
+IPV4_FORWARD=DROP
+IPV6_INPUT=ACCEPT
+IPV6_OUTPUT=ACCEPT
+IPV6_FORWARD=DROP
