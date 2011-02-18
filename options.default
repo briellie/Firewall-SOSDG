@@ -43,13 +43,13 @@ POSTRUN="$BASEDIR/conf/postrun"
 
 
 # Default IPv4 policies
-# IPV4_INPUT set to DROP is different from BLOCKINCOMING,
+# IPV4_PINPUT set to DROP is different from BLOCKINCOMING,
 # as BLOCKINCOMING only blocks syn packets for TCP while still
 # allowing established connections even if connection tracking is off.
 # BLOCKINCOMING does however, deny all incoming UDP just like INPUT=DROP does.
-IPV4_INPUT=ACCEPT
-IPV4_OUTPUT=ACCEPT
-IPV4_FORWARD=DROP
+IPV4_PINPUT=ACCEPT
+IPV4_POUTPUT=ACCEPT
+IPV4_PFORWARD=DROP
 
 # Do we run a LAN DHCP server?  Put the interfaces here
 # where this server is providing services.
@@ -184,13 +184,13 @@ BLOCKEDIP=$BASEDIR/conf/ipv4-blocked
 #IPV6_CONNTRACK=1
 
 # Default IPv6 policies
-# IPV6_INPUT set to DROP is different from IPV6_BLOCKINCOMING,
+# IPV6_PINPUT set to DROP is different from IPV6_BLOCKINCOMING,
 # as BLOCKINCOMING only blocks syn packets for TCP while still
 # allowing established connections even if connection tracking is off.
 # BLOCKINCOMING does however, deny all incoming UDP just like INPUT=DROP does.
-IPV6_INPUT=ALLOW
-IPV6_OUTPUT=ALLOW
-IPV6_FORWARD=DROP
+IPV6_PINPUT=ALLOW
+IPV6_POUTPUT=ALLOW
+IPV6_PFORWARD=DROP
 
 # Allow outgoing DNS requests - important if you did not activate connection
 # tracking.  Set this to the interfaces you wish to use for outgoing requests

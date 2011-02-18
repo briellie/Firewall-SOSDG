@@ -699,9 +699,9 @@ if [ $NAT ]; then
 	fi
 fi
 
-$IPTABLES --policy INPUT ${IPV4_INPUT}
-$IPTABLES --policy OUTPUT ${IPV4_OUTPUT}
-$IPTABLES --policy FORWARD ${IPV4_FORWARD}
+$IPTABLES --policy INPUT ${IPV4_PINPUT}
+$IPTABLES --policy OUTPUT ${IPV4_POUTPUT}
+$IPTABLES --policy FORWARD ${IPV4_PFORWARD}
 
 
 if [ -s "$BASEDIR/include/ipv4_custom_blockincoming" ]; then
@@ -989,9 +989,9 @@ fi
 		$IP6TABLES -A INPUT -p tcp --syn -j DROP
 		$IP6TABLES -A INPUT -p udp -j DROP
 	fi
-	$IP6TABLES --policy INPUT ${IPV6_INPUT}
-	$IP6TABLES --policy OUTPUT ${IPV6_OUTPUT}
-	$IP6TABLES --policy FORWARD ${IPV6_FORWARD}
+	$IP6TABLES --policy INPUT ${IPV6_PINPUT}
+	$IP6TABLES --policy OUTPUT ${IPV6_POUTPUT}
+	$IP6TABLES --policy FORWARD ${IPV6_PFORWARD}
 fi
 
 if [ $TWEAKS ]; then
