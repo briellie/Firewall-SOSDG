@@ -109,6 +109,9 @@ TRUSTEDIP="127.0.0.1"
 # use otherwise.
 DONTTRACK="127.0.0.1"
 
+# Intercept IPv4 packets for use in a transparent proxy
+#IPV4_INTERCEPT=$BASEDIR/conf/ipv4-intercept
+
 # IP range(s) to forward
 #ROUTING=$BASEDIR/conf/ipv4-routing
 

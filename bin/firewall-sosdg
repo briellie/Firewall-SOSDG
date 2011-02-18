@@ -29,6 +29,15 @@ BASEDIR=/etc/firewall-sosdg
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 #BASEDIR=`pwd`
 
+# We require at least bash v3 or later at this point given some of the more complex
+# operations we do to make the firewall script work.
+if (( ${BASH_VERSINFO[0]} <= "2" )); then
+	echo "Error: We can only run with bash 3.0 or higher.  Please upgrade your version"
+	echo "of bash to something more recent, preferably the latest which is, as of this"
+	echo "writing, 4.x"
+	exit 1
+fi
+
 TWEAKS=$BASEDIR/tweaks
 
 if [ ! -r $BASEDIR/include/static ] || [ ! -r $BASEDIR/include/functions ]; then
@@ -435,6 +444,39 @@ if [ "$ALLOWEDPROTO" ]; then
 		echo -n "$i "
 		$IPTABLES -A INPUT -p $i -j ACCEPT
 		$IPTABLES -A OUTPUT -p $i -j ACCEPT
+	done
+	reset_color
+fi
+
+if [ "$IPV4_INTERCEPT" ]; then
+	display_c YELLOW "Adding packet interception rules: " N
+		for i in `grep -v "\#" $IPV4_INTERCEPT`; do
+		IFS_OLD=${IFS};IFS=\|
+		INTERCEPTADD=($i)
+		IFS=${IFS_OLD}
+		SRCIF=${INTERCEPTADD[0]}
+		SRCIP=${INTERCEPTADD[1]}
+		DSTIP=${INTERCEPTADD[2]}
+		DSTPROTO=${INTERCEPTADD[3]}
+		DSTPORT=${INTERCEPTADD[4]}
+		PROXY=${INTERCEPTADD[5]}
+		if [ "$SRCIF" ]; then
+			SRCIF="-i ${SRCIF}"
+		fi
+		if [ "$SRCIP" ]; then
+			SRCIP="-s ${SRCIP}"
+		fi
+		if [ "$DSTIP" ]; then
+			DSTIP="-d $DSTIP"
+		fi
+		if [ "$PROXY" != "BYPASS" ]; then
+			FINAL_RULE="-j DNAT --to-destination ${PROXY}"
+		else
+			FINAL_RULE="-j ACCEPT"
+		fi
+		$IPTABLES -t nat -A PREROUTING ${SRCIF} ${SRCIP} ${DSTIP} -p ${DSTPROTO} --dport ${DSTPORT} \
+			${FINAL_RULE}
+		display_c DEFAULT "\t${GREEN}${INTERCEPTADD[0]}:${BLUE}${INTERCEPTADD[1]}:${PURPLE}${INTERCEPTADD[2]}->${INTERCEPTADD[3]}:${INTERCEPTADD[4]}${AQUA}:proxy->${BLUE}${INTERCEPTADD[5]} "
 	done
 	reset_color
 fi
