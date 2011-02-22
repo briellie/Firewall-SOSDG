@@ -1,0 +1,7 @@
+# List of IPs to allow
+# One ip or range per line with added specific IN/OUT/FWD and TCP/UDP port (added in 0.9.8)
+#		<SRC IF>|<SRC IP>|<SRC PORT RNG>|<DST IF>|<DST IP>|<DST PORT RNG>|<IN/OUT/FWD>|<PROTO>
+# One can leave out <SRC IF> <SRC IP> <SRC PORT RNG> <DST IF> <DST IP> <DST PORT RNG> 
+# if you want to apply to all ports/interfaces/etc
+# Example:
+#  eth1|::1|80|eth0|2001::1|20-21|IN|TCP

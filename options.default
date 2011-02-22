@@ -238,6 +238,11 @@ IPV6_PFORWARD=DROP
 #IPV6_TCPPORTS=$TCPPORTS
 #IPV6_UDPPORTS=$UDPPORTS
 
+# Allowed IPv6 IPs and ports
+# this is a more advanced form of IPV6_TCPPORTS and IPV6_UDPPORTS,
+# and will eventually replace it
+#IPV6_ALLOWED=$BASEDIR/conf/ipv6-allowed
+
 # IPv6 range to forward
 #IPV6_FORWARDRANGE=""
 
