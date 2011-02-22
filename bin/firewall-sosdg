@@ -222,10 +222,7 @@ if [ "$DNS_REQUESTS_OUT" ]; then
 	done
 fi
 
-if [ -s "$BASEDIR/include/ipv4_custom_blockincoming" ]; then
-	display_c YELLOW "Loading custom incoming blocked rules..."
-	. "$BASEDIR/include/ipv4_custom_blockincoming"
-fi
+
 
 if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
 	display_c YELLOW "Loading custom ip block rules..."
@@ -708,8 +705,10 @@ $IPTABLES --policy INPUT ${IPV4_PINPUT}
 $IPTABLES --policy OUTPUT ${IPV4_POUTPUT}
 $IPTABLES --policy FORWARD ${IPV4_PFORWARD}
 
-
-
+if [ -s "$BASEDIR/include/ipv4_custom_blockincoming" ]; then
+	display_c YELLOW "Loading custom incoming blocked rules..."
+	. "$BASEDIR/include/ipv4_custom_blockincoming"
+fi
 
 if [ $BLOCKINCOMING ]; then
 		$IPTABLES -A INPUT -p tcp --syn -j DROP
