@@ -393,7 +393,57 @@ if [ "$IPTABLES_MULTIPORT" ]; then
 	  *)  IPTABLES_MULTIPORT="no"
 	  esac
 fi
-	  	
+
+if [ "$IPV4_ALLOWED" ]; then
+	display_c YELLOW "Adding allowed IPs and ports... "
+	for i in `grep -v "\#" $IPV4_ALLOWED`; do
+		if [[ "$i" =~ "|" ]]; then
+			IFS_OLD=${IFS};IFS=\|
+			ADVALLOWIP=($i)
+			IFS=${IFS_OLD}
+			SRCIF=${ADVALLOWIP[0]}
+			SRCIP=${ADVALLOWIP[1]}
+			SRCPORT=${ADVALLOWIP[2]}
+			DSTIF=${ADVALLOWIP[3]}
+			DSTIP=${ADVALLOWIP[4]}
+			DSTPORT=${ADVALLOWIP[5]}
+			DIRECTION=${ADVALLOWIP[6]}
+			PROTO=${ADVALLOWIP[7]}
+			if [ "$SRCIF" ]; then
+				SRCIF="-i ${SRCIF} "
+			fi
+			if [ "$SRCIP" ]; then
+				SRCIP="-s ${SRCIP} "
+			fi
+			if [ "$SRCPORT" ]; then
+				SRCPORT="--sport ${SRCPORT/-/:} "
+			fi
+			if [ "$DSTIF" ]; then
+				DSTIF="-o ${DSTIF} "
+			fi
+			if [ "$DSTIP" ]; then
+				DSTIP="-d ${DSTIP} "
+			fi
+			if [ "$DSTPORT" ]; then
+				DSTPORT="--dport ${DSTPORT/-/:} "
+			fi
+			if [ "$PROTO" ]; then
+				case $PROTO in
+					TCP|tcp) PROTO="-p tcp";;
+					UDP|udp) PROTO="-p udp";;
+					*) PROTO="-p ${PROTO}";;
+				esac
+			fi
+			case $DIRECTION in
+				IN) DIRECTION="INPUT" ;;
+				OUT) DIRECTION="OUTPUT" ;;
+				FWD) DIRECTION="FORWARD" ;;
+				*) DIRECTION="INPUT" ;;
+			esac
+			${IPTABLES} -A ${DIRECTION} ${PROTO} ${SRCIF} ${SRCIP} ${SRCPORT} ${DSTIF} ${DSTIP} ${DSTPORT} -j ACCEPT
+		fi
+	done
+fi
 
 if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 	display_c YELLOW "Adding allowed port: " N

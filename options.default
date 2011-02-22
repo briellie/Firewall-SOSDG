@@ -119,6 +119,11 @@ TRUSTEDIP="127.0.0.1"
 # use otherwise.
 DONTTRACK="127.0.0.1"
 
+# Allowed IPs and ports
+# this is a more advanced form of TCPPORTS and UDPPORTS,
+# and will eventually replace it
+#IPV4_ALLOWED=$BASEDIR/conf/ipv4-allowed
+
 # Intercept IPv4 packets for use in a transparent proxy
 #IPV4_INTERCEPT=$BASEDIR/conf/ipv4-intercept
 
