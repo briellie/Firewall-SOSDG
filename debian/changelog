@@ -1,4 +1,6 @@
 firewall-sosdg (0.9.14-1) stable; urgency=low
-	* Upstream build 0.9.14
+
+* Upstream build 0.9.14
 
 -- Brielle Bruns <bruns@2mbit.com> Wed, 02 Mar 2010 21:00:17 -0700
+
