@@ -1,13 +1,15 @@
-Package: firewall-sosdg
-Version: 0.9.14-1
+Source: firewall-sosdg
 Section: net
 Priority: optional
-Architecture: any
-Essential: no
+Maintainer: Brielle Bruns <bruns@2mbit.com>
+
+Package: firewall-sosdg
+#Version: 0.9.14-1
+Architecture: all
 Depends: iptables (>= 1.2.7), iproute, ${shlibs:Depends}
 Pre-Depends: bash (>= 3.0) | dash
+Essential: no
 Suggests: conntrack, iptstate, fail2ban, dnsmasq
-Maintainer: Brielle Bruns <bruns@2mbit.com>
 Conflicts: ipkungfu
 Provides: firewall
 Description: iptables based Linux firewall
