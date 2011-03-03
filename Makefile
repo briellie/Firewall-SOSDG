@@ -1,4 +1,4 @@
-VERSION=0.9.13
+VERSION=0.9.14
 TAR=/usr/bin/tar
 TARBALL="firewall-sosdg-$(VERSION).tar.bz2"
 
@@ -13,7 +13,7 @@ default:
 
 tarball:
 	cd .. ;\
-        $(TAR) jcf $(TARBALL) --exclude='.svn' firewall-sosdg
+        COPYFILE_DISABLE=true $(TAR) vjcf $(TARBALL) --exclude='.svn' firewall-sosdg
 
 upgrade:
 	mv -f blocked ipv4-blocked &>/dev/null

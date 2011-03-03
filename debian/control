@@ -1,11 +1,11 @@
 Package: firewall-sosdg
-Version: 0.9.5-b1
+Version: 0.9.14-1
 Section: net
 Priority: optional
-Architecture: all
+Architecture: any
 Essential: no
 Depends: iptables (>= 1.2.7), iproute, ${shlibs:Depends}
-Pre-Depends: bash (>= 2.0) | dash
+Pre-Depends: bash (>= 3.0) | dash
 Suggests: conntrack, iptstate, fail2ban, dnsmasq
 Maintainer: Brielle Bruns <bruns@2mbit.com>
 Conflicts: ipkungfu

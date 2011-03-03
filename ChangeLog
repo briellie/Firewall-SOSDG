@@ -1,3 +1,6 @@
+0.9.14 - Brielle Bruns <bruns@2mbit.com>
+	-
+
 0.9.13 - Brielle Bruns <bruns@2mbit.com>
 	- Fix location of ipv6 fi statement, moved to end of ipv6 rules
 	- Add default policy rules and IPV{4|6}_P{INPUT|OUTPUT|FORWARD} options
