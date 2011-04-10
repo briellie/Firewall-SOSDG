@@ -233,6 +233,10 @@ IPV6_PFORWARD=DROP
 # Trusted IPv6 ranges
 #IPV6_TRUSTED="::1"
 
+# Do we run a LAN DHCP server?  Put the interfaces here
+# where this server is providing services.
+#IPV6_LANDHCPSERVER="eth0 eth1"
+
 # Allowed incoming IPv6 ports (for now, use $TCPPORTS and $UDPPORTS to
 # have same for both ipv4 and ipv6)
 #IPV6_TCPPORTS=$TCPPORTS

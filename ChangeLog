@@ -1,5 +1,5 @@
 0.9.14 - Brielle Bruns <bruns@2mbit.com>
-	-
+	- IPv6 DHCP bypass rules (IPV6_LANDHCPSERVER)
 
 0.9.13 - Brielle Bruns <bruns@2mbit.com>
 	- Fix location of ipv6 fi statement, moved to end of ipv6 rules

@@ -797,6 +797,18 @@ if [ $IPV6 ]; then
 	. "$BASEDIR/include/ipv6_custom_blockip"
 fi
 
+if [ "$IPV6_LANDHCPSERVER" ]; then
+	for i in $IPV6_LANDHCPSERVER; do
+		$IP6TABLES -A INPUT -i $i -p udp --sport 546:547 --dport 546:547 -j ACCEPT
+		$IP6TABLES -A INPUT -i $i -p tcp --sport 546:547 --dport 546:547 -j ACCEPT
+		$IP6TABLES -A OUTPUT -o $i -p udp --sport 546:547 --dport 546:547 -j ACCEPT
+		$IP6TABLES -A OUTPUT -o $i -p tcp --sport 546:547 --dport 546:547 -j ACCEPT
+		#$IP6TABLES -A INPUT -i $i -p udp -d ff02::1:2 --sport 546:547 --dport 546:547 -j ACCEPT
+		#$IP6TABLES -A INPUT -i $i -p tcp -d ff02::1:2 --sport 546:547 --dport 546:547 -j ACCEPT
+		#$IP6TABLES -A OUTPUT -o $i -p udp -d fe80::/16 --sport 546:547 --dport 546:547 -j ACCEPT
+		#$IP6TABLES -A OUTPUT -o $i -p tcp -d fe80::/16 --sport 546:547 --dport 546:547 -j ACCEPT
+	done
+fi
 
 if [ -s "$BASEDIR/include/ipv6_custom_conntrack" ]; then
 	display_c YELLOW "Loading custom IPv6 conntrack rules..."
