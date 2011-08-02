@@ -1,5 +1,9 @@
 0.9.14 - Brielle Bruns <bruns@2mbit.com>
 	- IPv6 DHCP bypass rules (IPV6_LANDHCPSERVER)
+	- Move FORWARD Established,Related rules to inside NAT rules, since without NAT,
+	  we're not really going to need to track connections forwarding through the system.
+	  I can probably be proven wrong if you don't use NAT but use the script for stateful
+	  firewalling with non-RFC1918 IPs....
 
 0.9.13 - Brielle Bruns <bruns@2mbit.com>
 	- Fix location of ipv6 fi statement, moved to end of ipv6 rules

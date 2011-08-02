@@ -346,7 +346,7 @@ if [ "$CONNTRACK" ]; then
 	#$IPTABLES -A OUTPUT ${M_STATE} ${C_STATE} NEW -j ACCEPT
 	$IPTABLES -A INPUT ${M_STATE} ${C_STATE} INVALID -j DROP
 	$IPTABLES -A OUTPUT ${M_STATE} ${C_STATE} INVALID -j DROP
-	$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} INVALID -j DROP
+	#$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} INVALID -j DROP
 fi
 
 if [ -s "$BASEDIR/include/ipv4_custom_blockoutports" ]; then
@@ -687,7 +687,9 @@ if [ $NAT ]; then
 			SNAT)
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j SNAT \
 					-o ${NAT_RULE[3]} --to-source ${NAT_RULE[4]} 
-				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} RELATED,ESTABLISHED -i ${NAT_RULE[1]} -s ${NAT_RULE[2]} -j ACCEPT
+				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} NEW,RELATED,ESTABLISHED -i ${NAT_RULE[1]} -s ${NAT_RULE[2]} -j ACCEPT
+				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} NEW,RELATED,ESTABLISHED -o ${NAT_RULE[1]} -d ${NAT_RULE[2]} -j ACCEPT
+				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} INVALID -o ${NAT_RULE[1]} -d ${NAT_RULE[2]} -j DROP
 				display_c DEFAULT "\t${GREEN}SNAT:${PURPLE}${NAT_RULE[1]}:${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}:${NAT_RULE[4]}"
 				if [[ ! "$INIF_EXISTS" =~ "${NAT_RULE[1]}:${NAT_RULE[2]}" ]]; then
 					$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} \
@@ -706,7 +708,9 @@ if [ $NAT ]; then
 					;;
 			MASQ)
 				$IPTABLES -A POSTROUTING -t nat -s ${NAT_RULE[2]} -j MASQUERADE -o ${NAT_RULE[3]}
-				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} RELATED,ESTABLISHED -i ${NAT_RULE[1]} -s ${NAT_RULE[2]} -j ACCEPT
+				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} NEW,RELATED,ESTABLISHED -i ${NAT_RULE[1]} -s ${NAT_RULE[2]} -j ACCEPT
+				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} NEW,RELATED,ESTABLISHED -o ${NAT_RULE[1]} -d ${NAT_RULE[2]} -j ACCEPT
+				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} INVALID -o ${NAT_RULE[1]} -d ${NAT_RULE[2]} -j DROP
 				display_c DEFAULT "\t${GREEN}MASQ:${PURPLE}${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[3]}"
 				if [[ ! "$INIF_EXISTS" =~ "${NAT_RULE[1]}:${NAT_RULE[2]}" ]]; then
 					$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} \
@@ -725,7 +729,9 @@ if [ $NAT ]; then
 					;;
 			NETMAP)
 				$IPTABLES -A PREROUTING -t nat -s ${NAT_RULE[2]} -j NETMAP --to ${NAT_RULE[4]}
-				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} RELATED,ESTABLISHED -i ${NAT_RULE[1]} -s ${NAT_RULE[2]} -j ACCEPT
+				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} NEW,RELATED,ESTABLISHED -i ${NAT_RULE[1]} -s ${NAT_RULE[2]} -j ACCEPT
+				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} NEW,RELATED,ESTABLISHED -o ${NAT_RULE[1]} -d ${NAT_RULE[2]} -j ACCEPT
+				$IPTABLES -A FORWARD ${M_STATE} ${C_STATE} INVALID -o ${NAT_RULE[1]} -d ${NAT_RULE[2]} -j DROP
 				display_c DEFAULT "\t${GREEN}NETMAP:${PURPLE}${NAT_RULE[2]}${AQUA}->${BLUE}${NAT_RULE[4]}"
 				if [[ ! "$INIF_EXISTS" =~ "${NAT_RULE[1]}:${NAT_RULE[2]}" ]]; then
 					$IPTABLES -A INPUT -p icmp --icmp-type time-exceeded -i ${NAT_RULE[1]} \
