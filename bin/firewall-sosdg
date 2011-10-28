@@ -56,7 +56,12 @@ else
 	exit 1
 fi
 
-. $BASEDIR/include/functions
+if [ -r $BASEDIR/include/functions ]; then
+	. $BASEDIR/include/functions
+else
+	echo -e "${RED}Error: Can not load functions library file.  There is no way to make this tool work without it."
+	exit 1
+fi
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -98,7 +103,7 @@ if [ "$UID" != "0" ]; then
 	exit 2
 fi
 
-if [ ! -x "$IPTABLES" ]; then
+if [ ! -x "${IPTABLES}" ]; then
 	display_c RED "iptables command not found.  Please make sure you have the iptables"
 	display_c RED "installed (package or source) and you have the IPTABLES option properly"
 	display_c RED "defined in the 'options' file."
@@ -106,7 +111,7 @@ if [ ! -x "$IPTABLES" ]; then
 fi
 
 
-if [ ! -x "$IP6TABLES" ] && [ $IPV6 == "1" ]; then
+if [ ! -x "${IP6TABLES}" ] && [ $IPV6 == "1" ]; then
 	display_c RED "ip6tables command not found.  Please make sure you have the iptables"
 	display_c RED "installed (package or source) and you have the IP6TABLES option properly"
 	display_c RED "defined in the 'options' file."
@@ -114,12 +119,12 @@ if [ ! -x "$IP6TABLES" ] && [ $IPV6 == "1" ]; then
 fi
 
 
-if [[ "$EXTIF" == "auto" ]]; then
+if [[ "${EXTIF}" == "auto" ]]; then
 	EXTIF=`$EXTIF_FIND`
 	display_c YELLOW "Found default interface at: ${BLUE}${EXTIF}${DEFAULT_COLOR}"
 fi
 
-if [[ "$EXTIP" == "auto" ]]; then
+if [[ "${EXTIP}" == "auto" ]]; then
 	EXTIP=`$EXTIP_FIND ${EXTIF}`
 	display_c YELLOW "Found default interface IP at: ${BLUE}${EXTIP}${DEFAULT_COLOR}"
 fi
