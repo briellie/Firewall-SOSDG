@@ -46,8 +46,12 @@ if [ ! -r $BASEDIR/include/static ] || [ ! -r $BASEDIR/include/functions ]; then
 	exit 1
 fi
 
-. $BASEDIR/include/static
-
+if [ -r $BASEDIR/include/static ]; then
+	. $BASEDIR/include/static
+else
+	echo -e "${RED}Error: Can not load static variables file.  There is no way to make this tool work without it."
+	exit 1
+fi
 
 if [ -r $BASEDIR/options ]; then
 	. $BASEDIR/options
@@ -131,13 +135,13 @@ fi
 
 iptables_rules_flush ipv4
 
-if [ -s "$BASEDIR/include/ipv4_custom_flush" ]; then
+if [ -s "${BASEDIR}/include/ipv4_custom_flush" ]; then
 	display_c YELLOW "Loading custom flush rules..."
-	. "$BASEDIR/include/ipv4_custom_flush"
+	. "${BASEDIR}/include/ipv4_custom_flush"
 fi
 
-if [ -x "$PRERUN" ]; then
-	$PRERUN
+if [ -x "${PRERUN}" ]; then
+	${PRERUN}
 fi
 
 if [ "$MODULES_LOAD" ]; then
@@ -164,6 +168,9 @@ else
 	C_STATE="--ctstate"
 fi
 
+# This function currently isn't implemented entirely or properly.  It's mostly
+# used for debugging purposes, and to see what iptables rules will be generated
+# before running.
 if [ "$GEN_CACHE" ]; then
 	case $GEN_CACHE in
 		force)
