@@ -3,6 +3,8 @@
 # Provides:          firewall-sosdg
 # Required-Start:    $local_fs $network
 # Required-Stop:     $local_fs $network
+# Should-Start:	     $network $syslog iptables
+# Should-Stop:	     $network $syslog iptables
 # X-Start-Before:    
 # X-Stop-After:      
 # Default-Start:     2 3 4 5
