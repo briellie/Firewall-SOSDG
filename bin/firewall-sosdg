@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FW_VERSION="0.9.14"
+FW_VERSION="1.0"
 
 # These option is here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
@@ -1129,7 +1129,7 @@ fi
 if [ $TWEAKS ]; then
 	for i in `grep -v "\#" $TWEAKS`; do
 		PROCOPT=( ${i//=/ } )
-		echo ${PROCOPT[1]} > /proc/sys/net/${PROCOPT[0]} &>/dev/null
+		echo ${PROCOPT[1]} > /proc/sys/net/${PROCOPT[0]}
 	done
 fi
 

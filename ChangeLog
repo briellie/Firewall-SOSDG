@@ -1,3 +1,8 @@
+1.0 - Brielle Bruns <bruns@2mbit.com>
+	- Minor tweaks to various config files
+	- Fix issue with tweaks loading
+	- Version 1.0
+
 0.9.14 - Brielle Bruns <bruns@2mbit.com>
 	- IPv6 DHCP bypass rules (IPV6_LANDHCPSERVER)
 	- Move FORWARD Established,Related rules to inside NAT rules, since without NAT,
