@@ -18,7 +18,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-FW_VERSION="1.0"
+FW_VERSION="1.1"
 
 # These option is here to help pre-1.0 users easily upgrade, defines critical defaults
 # that would otherwise require remaking their options file.  I leave this on by default,
@@ -184,6 +184,24 @@ if [ "$GEN_CACHE" ]; then
 	esac
 fi
 
+if [ "$IPTABLES_MULTIPORT" ]; then
+	case $IPTABLES_MULTIPORT in
+	  auto|AUTO|Auto)
+	  		if `${MODPROBE} ${NF_MULTIPORT} &>/dev/null`; then
+	  			display_c YELLOW "Multiport successfully loaded."
+	  			IPTABLES_MULTIPORT="yes"
+	  		else
+	  			display_c RED "Multiport was not loaded successfully.  Disabling."
+	  			IPTABLES_MULTIPORT="no"
+	  		fi ;;
+	  yes|YES|Yes)
+	  		${MODPROBE} ${NF_MULTIPORT}
+	  		display_c PURPLE "Multiport loading forced, not error checking."
+	  		IPTABLES_MULTIPORT="yes" ;;
+	  *)  IPTABLES_MULTIPORT="no"
+	  esac
+fi
+
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
@@ -234,7 +252,61 @@ if [ "$DNS_REQUESTS_OUT" ]; then
 	done
 fi
 
+if [ -s "$BASEDIR/include/ipv4_custom_allowedports" ]; then
+	display_c YELLOW "Loading custom allowed port rules..."
+	. "$BASEDIR/include/ipv4_custom_allowedports"
+fi
 
+if [ "$IPV4_ALLOWED" ]; then
+	display_c YELLOW "Adding allowed IPs and ports... "
+	for i in `grep -v "\#" $IPV4_ALLOWED`; do
+		if [[ "$i" =~ "|" ]]; then
+			IFS_OLD=${IFS};IFS=\|
+			ADVALLOWIP=($i)
+			IFS=${IFS_OLD}
+			SRCIF=${ADVALLOWIP[0]}
+			SRCIP=${ADVALLOWIP[1]}
+			SRCPORT=${ADVALLOWIP[2]}
+			DSTIF=${ADVALLOWIP[3]}
+			DSTIP=${ADVALLOWIP[4]}
+			DSTPORT=${ADVALLOWIP[5]}
+			DIRECTION=${ADVALLOWIP[6]}
+			PROTO=${ADVALLOWIP[7]}
+			if [ "$SRCIF" ]; then
+				SRCIF="-i ${SRCIF} "
+			fi
+			if [ "$SRCIP" ]; then
+				SRCIP="-s ${SRCIP} "
+			fi
+			if [ "$SRCPORT" ]; then
+				SRCPORT="--sport ${SRCPORT/-/:} "
+			fi
+			if [ "$DSTIF" ]; then
+				DSTIF="-o ${DSTIF} "
+			fi
+			if [ "$DSTIP" ]; then
+				DSTIP="-d ${DSTIP} "
+			fi
+			if [ "$DSTPORT" ]; then
+				DSTPORT="--dport ${DSTPORT/-/:} "
+			fi
+			if [ "$PROTO" ]; then
+				case $PROTO in
+					TCP|tcp) PROTO="-p tcp";;
+					UDP|udp) PROTO="-p udp";;
+					*) PROTO="-p ${PROTO}";;
+				esac
+			fi
+			case $DIRECTION in
+				IN) DIRECTION="INPUT" ;;
+				OUT) DIRECTION="OUTPUT" ;;
+				FWD) DIRECTION="FORWARD" ;;
+				*) DIRECTION="INPUT" ;;
+			esac
+			${IPTABLES} -A ${DIRECTION} ${PROTO} ${SRCIF} ${SRCIP} ${SRCPORT} ${DSTIF} ${DSTIP} ${DSTPORT} -j ACCEPT
+		fi
+	done
+fi
 
 if [ -s "$BASEDIR/include/ipv4_custom_blockip" ]; then
 	display_c YELLOW "Loading custom ip block rules..."
@@ -384,79 +456,6 @@ if [ "$BLOCKTCPPORTS" ] || [ "$BLOCKUDPPORTS" ]; then
 	reset_color
 fi
 
-if [ -s "$BASEDIR/include/ipv4_custom_allowedports" ]; then
-	display_c YELLOW "Loading custom allowed port rules..."
-	. "$BASEDIR/include/ipv4_custom_allowedports"
-fi
-
-if [ "$IPTABLES_MULTIPORT" ]; then
-	case $IPTABLES_MULTIPORT in
-	  auto|AUTO|Auto)
-	  		if `${MODPROBE} ${NF_MULTIPORT} &>/dev/null`; then
-	  			display_c YELLOW "Multiport successfully loaded."
-	  			IPTABLES_MULTIPORT="yes"
-	  		else
-	  			display_c RED "Multiport was not loaded successfully.  Disabling."
-	  			IPTABLES_MULTIPORT="no"
-	  		fi ;;
-	  yes|YES|Yes)
-	  		${MODPROBE} ${NF_MULTIPORT}
-	  		display_c PURPLE "Multiport loading forced, not error checking."
-	  		IPTABLES_MULTIPORT="yes" ;;
-	  *)  IPTABLES_MULTIPORT="no"
-	  esac
-fi
-
-if [ "$IPV4_ALLOWED" ]; then
-	display_c YELLOW "Adding allowed IPs and ports... "
-	for i in `grep -v "\#" $IPV4_ALLOWED`; do
-		if [[ "$i" =~ "|" ]]; then
-			IFS_OLD=${IFS};IFS=\|
-			ADVALLOWIP=($i)
-			IFS=${IFS_OLD}
-			SRCIF=${ADVALLOWIP[0]}
-			SRCIP=${ADVALLOWIP[1]}
-			SRCPORT=${ADVALLOWIP[2]}
-			DSTIF=${ADVALLOWIP[3]}
-			DSTIP=${ADVALLOWIP[4]}
-			DSTPORT=${ADVALLOWIP[5]}
-			DIRECTION=${ADVALLOWIP[6]}
-			PROTO=${ADVALLOWIP[7]}
-			if [ "$SRCIF" ]; then
-				SRCIF="-i ${SRCIF} "
-			fi
-			if [ "$SRCIP" ]; then
-				SRCIP="-s ${SRCIP} "
-			fi
-			if [ "$SRCPORT" ]; then
-				SRCPORT="--sport ${SRCPORT/-/:} "
-			fi
-			if [ "$DSTIF" ]; then
-				DSTIF="-o ${DSTIF} "
-			fi
-			if [ "$DSTIP" ]; then
-				DSTIP="-d ${DSTIP} "
-			fi
-			if [ "$DSTPORT" ]; then
-				DSTPORT="--dport ${DSTPORT/-/:} "
-			fi
-			if [ "$PROTO" ]; then
-				case $PROTO in
-					TCP|tcp) PROTO="-p tcp";;
-					UDP|udp) PROTO="-p udp";;
-					*) PROTO="-p ${PROTO}";;
-				esac
-			fi
-			case $DIRECTION in
-				IN) DIRECTION="INPUT" ;;
-				OUT) DIRECTION="OUTPUT" ;;
-				FWD) DIRECTION="FORWARD" ;;
-				*) DIRECTION="INPUT" ;;
-			esac
-			${IPTABLES} -A ${DIRECTION} ${PROTO} ${SRCIF} ${SRCIP} ${SRCPORT} ${DSTIF} ${DSTIP} ${DSTPORT} -j ACCEPT
-		fi
-	done
-fi
 
 if [ "$TCPPORTS" ] || [ "$UDPPORTS" ]; then
 	display_c YELLOW "Adding allowed port: " N
