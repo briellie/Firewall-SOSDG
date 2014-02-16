@@ -202,6 +202,11 @@ if [ "$IPTABLES_MULTIPORT" ]; then
 	  esac
 fi
 
+# Trying to better clean up some of my code, so lets try using a blackhole target
+$IPTABLES -N BLACKHOLE
+$IPTABLES -A BLACKHOLE -j DROP
+
+
 $IPTABLES -A INPUT -i lo -j ACCEPT
 $IPTABLES -A OUTPUT -o lo -j ACCEPT
 
