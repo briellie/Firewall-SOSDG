@@ -202,18 +202,8 @@ if [ "$IPTABLES_MULTIPORT" ]; then
 	  esac
 fi
 
-# Trying to better clean up some of my code, so lets try using some custom chains
-$IPTABLES -N BLACKHOLE
-$IPTABLES -N TRUSTED-IN
-$IPTABLES -N TRUSTED-OUT
-
-$IPTABLES -A INPUT -j TRUSTED-IN
-$IPTABLES -A OUTPUT -j TRUSTED-OUT
-$IPTABLES -A INPUT -j BLACKHOLE
-$IPTABLES -A OUTPUT -j BLACKHOLE
-
-$IPTABLES -A TRUSTED-IN -i lo -j ACCEPT
-$IPTABLES -A TRUSTED-OUT -o lo -j ACCEPT
+$IPTABLES -A INPUT -i lo -j ACCEPT
+$IPTABLES -A OUTPUT -o lo -j ACCEPT
 
 if [ -s "$BASEDIR/include/ipv4_custom_trust" ]; then
 	display_c YELLOW "Loading custom trust rules..."
@@ -224,8 +214,8 @@ if [ "$TRUSTEDIP" ]; then
 	display_c YELLOW "Adding trusted IP: " N
 	for i in $TRUSTEDIP; do
 		echo -n "$i "
-		$IPTABLES -A TRUSTED-IN -s $i -j ACCEPT
-		$IPTABLES -A TRUSTED-OUT -d $i -j ACCEPT
+		$IPTABLES -A INPUT -s $i -j ACCEPT
+		$IPTABLES -A OUTPUT -d $i -j ACCEPT
 	done
 	echo -ne "\n"
 fi
@@ -253,11 +243,11 @@ if [ "$DNS_REQUESTS_OUT" ]; then
 			DNSIP_COUNT_CURR=1
 			for ((i=$DNSIP_COUNT_CURR; i <= $DNSIP_NUM; i++)); do
 				if [ ${DNSREQ[$i]} ]; then
-					${IPTABLES} -A TRUSTED-IN -i ${SRCIF} -p udp --sport 53 -s ${DNSREQ[$i]} --destination-port 1024:65535 -j ACCEPT
+					${IPTABLES} -A INPUT -i ${SRCIF} -p udp --sport 53 -s ${DNSREQ[$i]} --destination-port 1024:65535 -j ACCEPT
 				fi
 			done			
 		else
-			${IPTABLES} -A TRUSTED-IN -i $i -p udp --sport 53 --destination-port 1024:65535 -j ACCEPT
+			${IPTABLES} -A INPUT -i $i -p udp --sport 53 --destination-port 1024:65535 -j ACCEPT
 		fi
 	done
 fi
