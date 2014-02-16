@@ -202,7 +202,8 @@ if [ "$IPTABLES_MULTIPORT" ]; then
 	  esac
 fi
 
-# Trying to better clean up some of my code, so lets try using a blackhole target
+# Trying to better clean up some of my code, so lets try using a blackhole target for
+# in and out
 $IPTABLES -N BLACKHOLE-IN
 $IPTABLES -N BLACKHOLE-OUT
 
