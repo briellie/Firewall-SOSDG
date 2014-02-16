@@ -150,7 +150,11 @@ DONTTRACK="127.0.0.1"
 #						I have things going through specific wires for a reason.  This fixes
 #						that and makes it behave as expected.
 #
-HACK_IPV4="NS-IN-DDOS"
+# NTPDDOSRATELIMIT   -  Basic form of rate limiting/blocking on incoming NTP traffic
+#						that may cause local NTP server to be used in a DDoS attack.
+#						Not well tested yet, use at own risk.
+#
+#HACK_IPV4="NS-IN-DDOS"
 
 # IP Ranges to block all traffic incoming/outgoing
 # New functionality in 0.9.8 obsoletes BLOCKTCPPORTS and BLOCKUDPPORTS

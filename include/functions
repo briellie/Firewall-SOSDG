@@ -92,10 +92,6 @@ function iptables_rules_flush {
 		$VER_IPTABLES -F -t $i &>/dev/null
 	done
 	$VER_IPTABLES -X
-	$VER_IPTABLES -t nat -F
-	$VER_IPTABLES -t nat -X
-	$VER_IPTABLES -t mangle -F
-	$VER_IPTABLES -t mangle -X
 	#if [ $NAT ] && [ $IP_VERSION == "ipv4" ]; then
 	#	$VER_IPTABLES -F -t nat &>/dev/null
 	#fi
