@@ -202,15 +202,17 @@ if [ "$IPTABLES_MULTIPORT" ]; then
 	  esac
 fi
 
-# Trying to better clean up some of my code, so lets try using a blackhole target for
-# in and out
-$IPTABLES -N BLACKHOLE-IN
-$IPTABLES -N BLACKHOLE-OUT
+# Trying to better clean up some of my code, so lets try using some custom chains
+$IPTABLES -N BLACKHOLE
+$IPTABLES -N TRUSTED
 
+$IPTABLES -A INPUT -j TRUSTED
+$IPTABLES -A OUTPUT -j TRUSTED
+$IPTABLES -A INPUT -j BLACKHOLE
+$IPTABLES -A OUTPUT -j BLACKHOLE
 
-
-$IPTABLES -A INPUT -i lo -j ACCEPT
-$IPTABLES -A OUTPUT -o lo -j ACCEPT
+$IPTABLES -A TRUSTED -i lo -j ACCEPT
+$IPTABLES -A TRUSTED -o lo -j ACCEPT
 
 if [ -s "$BASEDIR/include/ipv4_custom_trust" ]; then
 	display_c YELLOW "Loading custom trust rules..."
