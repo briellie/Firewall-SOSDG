@@ -2,8 +2,6 @@
 	- Reorder rules, place allow before block to allow overrides
 	- Fixes for conntrack rules for better security (added -o/-i)
 	- Correct some incorrect info in options.default
-	- Add NTPDDOSRATELIMIT to IPV4_HACKS as a basic protection against being
-	  used as a NTP DDoS source.  Not well tested, use at own risk.
 
 1.0 - Brielle Bruns <bruns@2mbit.com>
 	- Minor tweaks to various config files

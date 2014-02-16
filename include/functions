@@ -160,17 +160,6 @@ function apply_ipv4_hack {
 				fi
 			done
 		;;
-		NTPDDOSRATELIMIT)
-			# Rate limit NTP DDOS UDP traffic using rules provided on the nanog list by
-			# pashdown@xmission.com
-			$IPTABLES -N NTP
-			$IPTABLES -I BLACKHOLE 1 -m recent --set --name ntpv4blackhole --rsource
-			$IPTABLES -A NTP -m recent --update --seconds 5 --hitcount 20 --name \
-					ntpv4 --rsource -j BLACKHOLE
-			$IPTABLES -A NTP -m recent --update --seconds 5 --hitcount 2 --name \
-					ntpv4blackhole --rsource -j DROP
-			$IPTABLES -A NTP -m recent --set --name ntpv4 --rsource -j ACCEPT
-			$IPTABLES -A INPUT -p udp -m udp --dport 123 -j NTP
 		esac
 		shift
 	done

@@ -203,8 +203,9 @@ if [ "$IPTABLES_MULTIPORT" ]; then
 fi
 
 # Trying to better clean up some of my code, so lets try using a blackhole target
-$IPTABLES -N BLACKHOLE
-$IPTABLES -A BLACKHOLE -j DROP
+$IPTABLES -N BLACKHOLE-IN
+$IPTABLES -N BLACKHOLE-OUT
+
 
 
 $IPTABLES -A INPUT -i lo -j ACCEPT
